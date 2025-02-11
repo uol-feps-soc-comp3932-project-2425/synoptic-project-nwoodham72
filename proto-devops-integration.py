@@ -1,15 +1,18 @@
 """ PROTOTYPE: Azure DevOps Integration """
 
+import logging
 from azure.devops.connection import Connection
 from msrest.authentication import BasicAuthentication
 from azure.devops.v7_1.work_item_tracking.models import JsonPatchOperation
+
+logging.basicConfig(level=logging.INFO)
 
 # Board and work item configuration
 ORGANISATION_URL = "https://dev.azure.com/comp3932-flik"
 # PERSONAL_ACCESS_TOKEN can read/write/manage work items
 PERSONAL_ACCESS_TOKEN = "9HIMqHnokwSl9nWZTFtT1mtPQnLl6G1PG6du6wUlKum7jXP5mLZ9JQQJ99BBACAAAAAAAAAAAAASAZDO1umy"
 PROJECT_NAME = "Flik"
-ISSUE = "Issue"
+ISSUE_TYPE = "Issue"
 
 # Establish connection to organisation
 credentials = BasicAuthentication("", PERSONAL_ACCESS_TOKEN)
@@ -30,9 +33,9 @@ def validate_input(project, title, description, priority, assignee, tags):
         raise ValueError("Priority must not be empty or whitespace")
     if priority < 1 or priority > 4:
         raise ValueError("Priority must be between 1 and 4")
-    if assignee and not assignee.strip():
-        raise ValueError("Assignee must not be empty or whitespace") # and assignee must be in client's organisation
-    if tags and not tags.strip():
+    if not assignee and not assignee.strip():
+        raise ValueError("Assignee must not be empty or whitespace")  # and assignee must be in client's organisation
+    if not tags and not tags.strip():
         raise ValueError("Tags must not be empty or whitespace")
 
 # Format work item data
@@ -45,21 +48,30 @@ def prepare_work_item_data(title, description, priority, assignee, tags):
         JsonPatchOperation(
             op="add", path="/fields/Microsoft.VSTS.Common.Priority", value=priority
         ),
-        JsonPatchOperation(op="add", path="/fields/System.AssignedTo", value=f"{assignee}"),
+        JsonPatchOperation(
+            op="add", path="/fields/System.AssignedTo", value=f"{assignee}"
+        ),
         JsonPatchOperation(op="add", path="/fields/System.Tags", value=f"{tags}"),
     ]
 
 # Send work item to Azure DevOps
 def create_work_item(project, title, description, priority, assignee, tags):
-    validate_input(project, title, description, priority, assignee, tags)
-    work_item_data = prepare_work_item_data(title, description, priority, assignee, tags)
+    try:
+        validate_input(project, title, description, priority, assignee, tags)
+        work_item_data = prepare_work_item_data(
+            title, description, priority, assignee, tags
+        )
 
-    # Create work item
-    work_item = client.create_work_item(
-        document=work_item_data, project=project, type=ISSUE
-    )
+        # Create work item
+        work_item = client.create_work_item(
+            document=work_item_data, project=project, type=ISSUE_TYPE
+        )
 
-    return work_item
+        logging.info(f"Created work item: {work_item.id}")
+        return work_item
+    except Exception as e:
+        logging.error(f"Failed to create work item: {e}")
+        raise e
 
 # Example usage
 project_name = PROJECT_NAME
@@ -67,8 +79,8 @@ title = "Testing Title"
 description = "Testing Description"
 priority = 4  # Range: 1-4, 1 being highest priority
 assignee = "nathanmw72@gmail.com"  # Will only accept names defined in Azure DevOps (name or email)
-tags = "test, example"  # Comma-separated list of tags
+tags = "text, example"  # Comma-separated list of tags
 
 ticket = create_work_item(project_name, title, description, priority, assignee, tags)
 
-print("Created issue. ID: ", ticket.id)
+logging.info(f"Sent ticket ID: {ticket.id} to Azure DevOps")
