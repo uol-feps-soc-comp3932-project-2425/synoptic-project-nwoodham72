@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 # Create work item
 def main():
     project_name = PROJECT_NAME
-    title = "modular"
+    title = '2025-02-11 12:00:00 [INFO] __main__: This is an INFO message.'
     description = "Testing Description without any malicious content."
     priority = 4  # Priority range: 1 (highest) to 4.
     assignee = "nathanmw72@gmail.com"  # Must be valid in Azure DevOps.
