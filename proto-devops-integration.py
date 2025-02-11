@@ -21,13 +21,14 @@ client = connection.clients.get_work_item_tracking_client()
 # Send work item to Azure DevOps
 
 
-def create_work_item(project, title, description):
+def create_work_item(project, title, description, priority):
     # Prepare work item data
     work_item_data = [
         JsonPatchOperation(op="add", path="/fields/System.Title", value=f"{title}"),
         JsonPatchOperation(
             op="add", path="/fields/System.Description", value=f"{description}"
         ),
+        JsonPatchOperation(op="add", path="/fields/Microsoft.VSTS.Common.Priority", value=priority),
         JsonPatchOperation(op="add", path="/fields/System.WorkItemType", value="Issue"),
     ]
 
@@ -40,9 +41,10 @@ def create_work_item(project, title, description):
 
 # Example usage
 project_name = PROJECT_NAME
-title = "new bug raised by me on python"
+title = "priority test"
 description = "new bug description"
+priority = 2  # Range: 1-4, 1 being highest priority
 
-issue = create_work_item(project_name, title, description)
+issue = create_work_item(project_name, title, description, priority)
 
 print("Created issue. ID: ", issue.id)
