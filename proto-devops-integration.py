@@ -75,8 +75,28 @@ def create_work_item(project, title, description, priority, assignee, tags):
 
 # Example usage
 project_name = PROJECT_NAME
-title = "Testing Title"
-description = "Testing Description"
+title = "Ticket Title"  # Needs to be auto-generated as this will be redundant if input by users
+actual_behaviour = input("What happened? ")
+given = input("Given (what page were you on, what type of account do you have?) ")
+when = input("When (what did you try to do?) ")
+then = input("Then (what happened?) ")
+expected_behaviour = input("What should have happened? ")
+
+# Need to perform summarisation here, before formatting into structured bug ticket since I do not want to add 'actual behaviour/steps to reproduce...' to the summarisation input
+
+description = f"""
+Actual Behaviour:
+{actual_behaviour}
+
+Steps to Reproduce:
+Given {given}
+When {when}
+Then {then}
+
+Expected Behaviour:
+{expected_behaviour}
+"""
+
 priority = 4  # Range: 1-4, 1 being highest priority
 assignee = "nathanmw72@gmail.com"  # Will only accept names defined in Azure DevOps (name or email)
 tags = "text, example"  # Comma-separated list of tags
