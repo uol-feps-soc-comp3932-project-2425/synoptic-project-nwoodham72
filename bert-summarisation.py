@@ -31,7 +31,7 @@ bert_model = BertModel.from_pretrained('bert-base-uncased')
 
 # Sample bug report text
 original_text = """ 
-The login page is broken. """
+As a user, I am struggling to update my profile picture. I go to my profile page, click on update photo, and then when i select a new picture for my photo and click 'add', nothing happens. I expect to see my new profile picture displayed on my profile page, but the old picture remains."""
 
 # Split text into sentences
 sentences = sent_tokenize(original_text)
