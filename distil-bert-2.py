@@ -1,22 +1,15 @@
-""" DistilBERT Model """
+""" DistilBERT Attempt 2 """
 
-from summarizer import Summarizer
-import nltk
+from transformers import DistilBertTokenizer, DistilBertForSequenceClassification, pipeline
 
-nltk.download("punkt")
+# Load model and tokeniser
+tokeniser = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
+model = DistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased')
 
-# Load DistilBERT-based Summarizer
-summariser = Summarizer(model="distilbert-base-uncased")
+# Create summarisation pipeline
+summariser = pipeline("summarization", model=model, tokenizer=tokeniser)
 
-
-# Generate extractive summary of bug ticket
-def extractive_summary(text, ratio=0.3):  # :param text: The full bug description. :param ratio: Fraction of sentences to retain.
-    summary = summariser(text, ratio=ratio)
-    return summary
-
-
-# Ticket description
-bug_description = """
+input_text = """
     As a Manager User, when attempting to update a team member’s skills, I can type in a new skill, but clicking ‘Add Skill’ does not update the developer’s profile. There is no confirmation message, error message, or indication that the action has been processed. 
     Steps to Reproduce (Given, When, Then Format) 
     Given I am logged in as a Manager user. 
@@ -37,7 +30,5 @@ bug_description = """
     After refreshing, the skill is still missing. 
 """
 
-
-summary = extractive_summary(bug_description)
-
-print("Summary:\n", summary)
+# Generate summary 
+summary = summariser(input_text, max_length=150, min_length=30, do_sample=False)
