@@ -1,32 +1,37 @@
-/* Container for the form steps */
-.form-steps-container {
-  position: relative;
-  overflow: hidden;
-  height: 400px; /* adjust as needed for your content */
-}
-
-/* Each form step is absolutely positioned */
-.form-step {
-  position: absolute;
-  width: 100%;
-  top: 0;
-  left: 0;
-  transition: transform 0.5s ease;
-}
-
-/* Initial positions */
-#step1.active {
-  transform: translateX(0);
-}
-
-#step1.inactive {
-  transform: translateX(-100%);
-}
-
-#step2 {
-  transform: translateX(100%);
-}
-
-#step2.active {
-  transform: translateX(0);
-}
+Center and widen the main content area
+.form-container {
+    max-width: 800px;  /* Adjust to your liking */
+    margin: 0 auto;
+  }
+  
+  /* Container for the form steps */
+  .form-steps-container {
+    position: relative;
+    overflow: hidden;        /* Hides the second step until it's active */
+    min-height: 750px;       /* Ensures enough vertical space */
+    transition: height 0.5s ease;
+  }
+  
+  /* Each step is positioned absolutely on top of each other */
+  .form-step {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+    transition: transform 0.5s ease;
+  }
+  
+  /* Step states */
+  #step1.active {
+    transform: translateX(0);
+  }
+  #step1.inactive {
+    transform: translateX(-100%);
+  }
+  #step2 {
+    transform: translateX(100%);
+  }
+  #step2.active {
+    transform: translateX(0);
+  }
+  
