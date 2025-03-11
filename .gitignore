@@ -1,0 +1,6 @@
+foundation/
+__pycache__/
+instance/
+.env
+.flaskenv
+*.pyc
