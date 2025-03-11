@@ -15,7 +15,11 @@
             <div class="alert alert-success shadow-sm">
                 <h5 class="alert-heading">🎉 Bug Reported Successfully!</h5>
                 <strong>Title:</strong> {{ bug_details.title }}<br>
-                <strong>Description:</strong> {{ bug_details.description }}
+                <strong>Given:</strong> {{ bug_details.given }}<br>
+                <strong>When:</strong> {{ bug_details.when }}<br>
+                <strong>Then:</strong> {{ bug_details.then }}<br>
+                <strong>Expected:</strong> {{ bug_details.expected }}<br>
+                <strong>Actual:</strong> {{ bug_details.actual }}
             </div>
             {% endif %}
 
@@ -27,12 +31,32 @@
 
                         <div class="mb-3">
                             {{ form.title.label(class="form-label") }}
-                            {{ form.title(class="form-control", placeholder="Enter bug title") }}
+                            {{ form.title(class="form-control", placeholder="Give your bug a title") }}
                         </div>
 
                         <div class="mb-3">
-                            {{ form.description.label(class="form-label") }}
-                            {{ form.description(class="form-control", placeholder="Describe the bug", rows=4) }}
+                            {{ form.given.label(class="form-label") }}
+                            {{ form.given(class="form-control", placeholder="What is your role in the app, or where does this bug occur?", rows=4) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.when.label(class="form-label") }}
+                            {{ form.when(class="form-control", placeholder="What are you trying to do?", rows=4) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.then.label(class="form-label") }}
+                            {{ form.then(class="form-control", placeholder="What happens?", rows=4) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.expected.label(class="form-label") }}
+                            {{ form.expected(class="form-control", placeholder="What should have happened instead?", rows=4) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.actual.label(class="form-label") }}
+                            {{ form.actual(class="form-control", placeholder="What actually happened instead?", rows=4) }}
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100">Report Bug</button>

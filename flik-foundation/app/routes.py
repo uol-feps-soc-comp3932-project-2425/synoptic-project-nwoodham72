@@ -16,11 +16,19 @@ def raise_bug():
         # Capture submitted details
         bug_details = {
             'title': form.title.data,
-            'description': form.description.data
+            'given': form.given.data,
+            'when': form.when.data,
+            'then': form.then.data,
+            'expected': form.expected.data,
+            'actual': form.actual.data
         }
 
         # Clear form after submission (optional)
         form.title.data = ''
-        form.description.data = ''
+        form.given.data = ''
+        form.when.data = '' 
+        form.then.data = ''
+        form.expected.data = ''
+        form.actual.data = ''
 
     return render_template("raise_bug.html", form=form, bug_details=bug_details)
