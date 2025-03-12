@@ -6,7 +6,7 @@
 
 import re
 import logging
-import logger_config
+import azure_integration.logger_config
 
 log = logging.getLogger(__name__)
 

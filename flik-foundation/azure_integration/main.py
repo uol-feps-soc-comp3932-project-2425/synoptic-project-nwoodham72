@@ -4,9 +4,9 @@
     Runs the project to create user-defined tickets in Azure DevOps.
 """
 import logging
-import logger_config
-from config import PROJECT_NAME
-from client import create_work_item
+import azure_integration.logger_config
+from azure_integration.config import PROJECT_NAME
+from azure_integration.client import create_work_item
 
 log = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 # Create work item
 def main():
     project_name = PROJECT_NAME
-    title = '2025-02-11 12:00:00 [INFO] __main__: This is an INFO message.'
+    title = 'MVP-1 Integration Test'
     description = "Testing Description without any malicious content."
     priority = 4  # Priority range: 1 (highest) to 4.
     assignee = "nathanmw72@gmail.com"  # Must be valid in Azure DevOps.

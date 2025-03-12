@@ -5,12 +5,12 @@
 """
 
 import logging
-import logger_config
+import azure_integration.logger_config
 from azure.devops.connection import Connection
 from msrest.authentication import BasicAuthentication
-from config import ORGANISATION_URL, PERSONAL_ACCESS_TOKEN, ISSUE_TYPE
-from data_preparation import prepare_work_item_data
-from validation import validate_input
+from azure_integration.config import ORGANISATION_URL, PERSONAL_ACCESS_TOKEN, ISSUE_TYPE
+from azure_integration.data_preparation import prepare_work_item_data
+from azure_integration.validation import validate_input
 
 log = logging.getLogger(__name__)
 
