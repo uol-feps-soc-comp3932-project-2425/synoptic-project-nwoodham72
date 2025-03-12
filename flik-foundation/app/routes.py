@@ -38,35 +38,57 @@ def index():
 @main.route("/raise_bug", methods=["GET", "POST"])
 def raise_bug():
     form = RaiseBugForm()
-    if form.validate_on_submit():
-        # Extract form data
-        title = form.title.data
-        given = form.given.data
-        when = form.when.data
-        then = form.then.data
-        expected = form.expected.data
-        actual = form.actual.data
+    bug_details = None  # 1. Define up front
 
-        # Build a description string from the collected inputs
+    if form.validate_on_submit():
+        # 2. Populate it after successful validation
+        bug_details = {
+            'title': form.title.data,
+            'given': form.given.data,
+            'when': form.when.data,
+            'then': form.then.data,
+            'expected': form.expected.data,
+            'actual': form.actual.data
+        }
+
+        # Build the description string
         description = (
-            f"Actual Behaviour:\n{actual}\n\n"
-            f"Steps to Reproduce:\nGiven: {given}\nWhen: {when}\nThen: {then}\n\n"
-            f"Expected Behaviour:\n{expected}"
+            f"Actual Behaviour:\n{bug_details['actual']}\n\n"
+            f"Steps to Reproduce:\nGiven: {bug_details['given']}\nWhen: {bug_details['when']}\nThen: {bug_details['then']}\n\n"
+            f"Expected Behaviour:\n{bug_details['expected']}"
         )
 
-        # Set additional parameters (you might let these come from the form too)
-        priority = 4  # For example, a default priority
-        assignee = "nathanmw72@gmail.com"  # Example: a default assignee
-        tags = "bug, report"  # Example: default tags
+        priority = 4
+        assignee = "nathanmw72@gmail.com"
+        tags = "bug, report"
 
         try:
-            # Call the Azure DevOps function to create the work item
-            work_item = create_work_item(PROJECT_NAME, title, description, priority, assignee, tags)
+            work_item = create_work_item(
+                PROJECT_NAME,
+                bug_details['title'],
+                description,
+                priority,
+                assignee,
+                tags
+            )
             flash(f"Ticket created with ID: {work_item.id}", "success")
+
+            # Optionally clear form after success
+            form.title.data = ''
+            form.given.data = ''
+            form.when.data = ''
+            form.then.data = ''
+            form.expected.data = ''
+            form.actual.data = ''
+
         except Exception as e:
             flash(f"Failed to create ticket: {e}", "danger")
 
-        return redirect(url_for("main.raise_bug"))
-    
-    return render_template("raise_bug.html", form=form)
+        # If you want to stay on the same page (and show bug_details), DON'T redirect
+        # If you do redirect, you'll lose bug_details unless you store it in session or flash
+        # return redirect(url_for("main.raise_bug"))
+
+    # 3. Now bug_details is either None or a dict, but it always exists
+    return render_template("raise_bug.html", form=form, bug_details=bug_details)
+
 
