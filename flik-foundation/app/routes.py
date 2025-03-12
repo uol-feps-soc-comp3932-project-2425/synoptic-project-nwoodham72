@@ -40,13 +40,17 @@ def raise_bug():
 
         summary = extractive_summary(summary_data)
 
-        # Build the description string
+        # Send ticket to Azure in HTML format
         description = (
-            f"Summary:\n{summary}\n\n"
-            f"Actual Behaviour:\n{bug_details['actual']}\n\n"
-            f"Steps to Reproduce:\nGiven: {bug_details['given']}\nWhen: {bug_details['when']}\nThen: {bug_details['then']}\n\n"
-            f"Expected Behaviour:\n{bug_details['expected']}"
+            f"Summary:<br>{summary}<br><br>"
+            f"Actual Behaviour:<br>{bug_details['actual']}<br><br>"
+            f"Steps to Reproduce:<br>"
+            f"Given: {bug_details['given']}<br>"
+            f"When: {bug_details['when']}<br>"
+            f"Then: {bug_details['then']}<br><br>"
+            f"Expected Behaviour:<br>{bug_details['expected']}"
         )
+
 
         priority = 4
         assignee = "nathanmw72@gmail.com"
