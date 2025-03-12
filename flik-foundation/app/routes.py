@@ -31,4 +31,4 @@ def raise_bug():
         form.expected.data = ''
         form.actual.data = ''
 
-    return render_template("raise.html", form=form, bug_details=bug_details)
+    return render_template("raise_bug.html", form=form, bug_details=bug_details)

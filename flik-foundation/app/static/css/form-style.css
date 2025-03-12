@@ -1,37 +1,30 @@
-Center and widen the main content area
+/* Container for the entire form (wider & centered) */
 .form-container {
-    max-width: 800px;  /* Adjust to your liking */
-    margin: 0 auto;
-  }
-  
-  /* Container for the form steps */
-  .form-steps-container {
-    position: relative;
-    overflow: hidden;        /* Hides the second step until it's active */
-    min-height: 750px;       /* Ensures enough vertical space */
-    transition: height 0.5s ease;
-  }
-  
-  /* Each step is positioned absolutely on top of each other */
-  .form-step {
-    position: absolute;
-    width: 100%;
-    top: 0;
-    left: 0;
-    transition: transform 0.5s ease;
-  }
-  
-  /* Step states */
-  #step1.active {
-    transform: translateX(0);
-  }
-  #step1.inactive {
-    transform: translateX(-100%);
-  }
-  #step2 {
-    transform: translateX(100%);
-  }
-  #step2.active {
-    transform: translateX(0);
-  }
-  
+  max-width: 800px;      /* Adjust width as needed */
+  margin: 0 auto;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+/* This container clips overflow so only one step is visible */
+.form-steps-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* Inner container holding both steps side by side */
+.form-steps-inner {
+  display: flex;
+  transition: transform 0.5s ease;
+  width: 200%;           /* Total width for 2 steps */
+  box-sizing: border-box;
+  transform: translateX(0); /* Start at step 1 */
+}
+
+/* Each step takes 50% of the inner container (so 100% of visible container) */
+.form-step {
+  width: 50%;
+  padding: 1rem;
+  box-sizing: border-box;
+}
