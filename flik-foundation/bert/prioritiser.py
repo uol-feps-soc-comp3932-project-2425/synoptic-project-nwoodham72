@@ -1,16 +1,20 @@
-import nltk
-from summarizer import Summarizer
-nltk.download("punkt")
+from transformers import DistilBertTokenizer, DistilBertForSequenceClassification, pipeline
 
-""" Handles bug ticket summarisation using the Hugging Face DistilBERT model. """
+""" Handles bug ticket priority classification using the Hugging Face DistilBERT model. """
 
-# Load summariser model
-summariser = Summarizer(model="distilbert-base-uncased")
+# Load classification model
+classification_tokeniser = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
+classification_model = DistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased', num_labels=4)
 
-# Generate extractive summary of bug ticket
-def extractive_summary(description, ratio=0.3):  # :param text: The full bug description. :param ratio: Fraction of sentences to retain.
-    summary = summariser(description, ratio=ratio)
-    return summary
+# Create classifier pipeline
+classifier = pipeline('text-classification', model=classification_model, tokenizer=classification_tokeniser)
+
+# Predict priority of bug ticket
+def predict_priority(description):
+    priority = classifier(description)
+    priority_mapping = {"LABEL_0": ("Immediate", 1), "LABEL_1": ("High", 2), "LABEL_2": ("Medium", 3), "LABEL_3": ("Low", 4)}
+    priority_label, priority_level = priority_mapping[priority[0]['label']]
+    return priority_label, priority_level
 
 # # Ticket description
 # bug_description = """
@@ -34,6 +38,6 @@ def extractive_summary(description, ratio=0.3):  # :param text: The full bug des
 #     After refreshing, the skill is still missing. 
 # """
 
-# Generate and output summary
-# summary = extractive_summary(bug_description)
-# print("Summary:\n", summary)
+# Predict and output priority
+# priority, priority_number = predict_priority(bug_description)
+# print("Predicted priority:", priority, "(Priority level:", priority_number, ")")

@@ -3,6 +3,7 @@ from .forms import RaiseBugForm
 from azure_integration.client import create_work_item
 from azure_integration.config import PROJECT_NAME
 from bert.summariser import extractive_summary
+from bert.prioritiser import predict_priority
 
 main = Blueprint("main", __name__)
 
@@ -37,10 +38,12 @@ def raise_bug():
         )
 
         summary = extractive_summary(prep_summary_data)
+        priority_label, priority_level = predict_priority(prep_summary_data)
 
         # Send ticket to Azure in HTML format
         description = (
             f"Summary:<br>{summary}<br><br>"
+            f"Priority: {priority_label}<br><br>"
             f"Actual Behaviour:<br>{bug_details['actual']}<br><br>"
             f"Expected Behaviour:<br>{bug_details['expected']}<br><br>"
             f"Steps to Reproduce:<br>"
@@ -50,7 +53,6 @@ def raise_bug():
         )
 
 
-        priority = 4
         assignee = "nathanmw72@gmail.com"
         tags = "bug, report"
 
@@ -59,7 +61,7 @@ def raise_bug():
                 PROJECT_NAME,
                 bug_details['title'],
                 description,
-                priority,
+                priority_level,
                 assignee,
                 tags
             )
