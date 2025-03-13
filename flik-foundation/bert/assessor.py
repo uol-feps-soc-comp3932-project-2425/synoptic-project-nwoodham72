@@ -39,7 +39,7 @@ runbook_entries = [
 
 # Example bug report
 bug_report = (
-    "I am a developer user and I cannot update the skill of a developer. "
+    "I am a manager user and I cannot update the skill of a developer. "  # Manager > developer will return a higher accuracy, but the user could still send the ticket off 
     "I navigate to the developer's profile page and click the 'Edit' button. "
     "when I try to click on the add skill field, the field is greyed out and I cannot add any skills. "
 )
