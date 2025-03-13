@@ -27,28 +27,26 @@ def raise_bug():
         }
 
         # Generate extractive summary of bug ticket
-        prep_summary_s2r = (
-            bug_details['given'].strip() + ".\n" +  # Add full stops to end of each step
+        prep_summary_data = (
+            bug_details['title'].strip() + ".\n" +  # Add full stops to end of each step
+            bug_details['given'].strip() + ".\n" +  
             bug_details['when'].strip() + ".\n" +
-            bug_details['then'].strip() + ".\n"
-        )
-        prep_summary_behaviour = (
+            bug_details['then'].strip() + ".\n" +      
             bug_details['expected'].strip() + ".\n" +
             bug_details['actual'].strip() + ".\n"
         )
-        summary_data = prep_summary_s2r + prep_summary_behaviour
 
-        summary = extractive_summary(summary_data)
+        summary = extractive_summary(prep_summary_data)
 
         # Send ticket to Azure in HTML format
         description = (
             f"Summary:<br>{summary}<br><br>"
             f"Actual Behaviour:<br>{bug_details['actual']}<br><br>"
+            f"Expected Behaviour:<br>{bug_details['expected']}<br><br>"
             f"Steps to Reproduce:<br>"
             f"Given: {bug_details['given']}<br>"
             f"When: {bug_details['when']}<br>"
             f"Then: {bug_details['then']}<br><br>"
-            f"Expected Behaviour:<br>{bug_details['expected']}"
         )
 
 
