@@ -4,6 +4,7 @@ from azure_integration.client import create_work_item
 from azure_integration.config import PROJECT_NAME
 from bert.summariser import extractive_summary
 from bert.prioritiser import predict_priority
+from bert.assigner import assign_developer
 
 main = Blueprint("main", __name__)
 
@@ -52,8 +53,12 @@ def raise_bug():
             f"Then: {bug_details['then']}<br><br>"
         )
 
+        developers = {
+            "nathanmw72@gmail.com": {"front-end", "user accounts", "organisations"},
+            "sc21nw@leeds.ac.uk": {"back-end", "team members", "team member's skills"}
+        }
 
-        assignee = "nathanmw72@gmail.com"
+        assignee = assign_developer(developers, prep_summary_data)
         tags = "bug, report"
 
         try:
