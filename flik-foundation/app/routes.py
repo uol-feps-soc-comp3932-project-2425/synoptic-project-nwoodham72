@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
+from flask_login import login_required, current_user
 from .forms import RaiseBugForm
 from azure_integration.client import create_work_item
 from azure_integration.config import PROJECT_NAME
@@ -7,6 +8,19 @@ from bert.prioritiser import predict_priority
 from bert.assigner import assign_developer
 
 main = Blueprint("main", __name__)
+
+@main.route("/dashboard")
+@login_required
+def dashboard():
+    if current_user.role == "Manager":
+        return render_template("manager_dashboard.html")
+    elif current_user.role == "Developer":
+        return render_template("developer_dashboard.html")
+    elif current_user.role == "Client":
+        return render_template("client_dashboard.html")
+    else:
+        flash("Unauthorized access", "danger")
+        return redirect(url_for("main.index"))
 
 @main.route("/", methods=["GET"])
 def index():
