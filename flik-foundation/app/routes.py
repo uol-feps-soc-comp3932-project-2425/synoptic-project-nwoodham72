@@ -90,4 +90,3 @@ def raise_bug():
     # 3. Now bug_details is either None or a dict, but it always exists
     return render_template("raise_bug.html", form=form, bug_details=bug_details)
 
-
