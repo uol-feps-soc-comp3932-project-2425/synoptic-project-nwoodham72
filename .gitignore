@@ -4,3 +4,4 @@ instance/
 .env
 .flaskenv
 *.pyc
+flik-foundation/bert/models/fine_tuned_prioritiser
