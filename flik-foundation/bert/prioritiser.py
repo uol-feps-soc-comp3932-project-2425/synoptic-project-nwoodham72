@@ -1,10 +1,12 @@
 from transformers import DistilBertTokenizer, DistilBertForSequenceClassification, pipeline
 import torch
+import os
 
 """ Handles bug ticket priority classification using the fine-tuned DistilBERT model. """
 
 # Define the model directory
-MODEL_DIR = "./models/fine_tuned_prioritiser" 
+local_directory = os.path.dirname(__file__)
+MODEL_DIR = os.path.join(local_directory, "models/fine_tuned_prioritiser")
 
 # Load fine-tuned model and tokenizer
 classification_tokeniser = DistilBertTokenizer.from_pretrained(MODEL_DIR)
@@ -30,6 +32,6 @@ def predict_priority(description):
     return priority_label, priority_level
 
 # # Example usage
-# bug_description = "The login page crashes when submitting credentials."
+# bug_description = "The login page crashes when submitting valid credentials."
 # priority, priority_number = predict_priority(bug_description)
 # print("Predicted priority:", priority, "(Priority level:", priority_number, ")")
