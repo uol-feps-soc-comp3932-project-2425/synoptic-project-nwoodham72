@@ -5,3 +5,4 @@ instance/
 .flaskenv
 *.pyc
 flik-foundation/bert/models/fine_tuned_prioritiser
+flik-foundation/bert/trainers/results

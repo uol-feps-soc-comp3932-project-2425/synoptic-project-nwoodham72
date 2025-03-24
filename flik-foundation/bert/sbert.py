@@ -4,13 +4,17 @@ import torch
 # Load the SBERT model
 model = SentenceTransformer('multi-qa-MiniLM-L6-cos-v1')
 
-# Documentation snippets
+# Documentation
 documentation = [
-    "Organisations - Manager user can create, edit and delete organisations. All other users can view organisations and inspect their details."
+    """Lectureres can upload lectures via the 'Module' page."
+        "Lectureres can delete lectures, but they cannot update them. They need to reupload a new lecture if there is a mistake."
+        "Students and lectureres can view uploaded lectures."""
 ]
 
 # Bug ticket input
-bug_ticket = "I am a developer user and I am trying to change the name of an organisation because it has a typo. When I go to look at the organisation details, I cannot see an option to update the details of the organisation."
+bug_ticket = """I am a student user on the 'Module' page." 
+                "I am trying to upload a lecture to the 'Module' page, but when I try to upload a lecture I get a 403 error."
+                "I should have been able to add a new lecture and find it on the 'Module' page."""
 
 # Get embeddings for ticket and docs
 doc_embeddings = model.encode(documentation, convert_to_tensor=True)

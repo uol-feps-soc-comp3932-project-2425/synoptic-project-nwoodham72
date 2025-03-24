@@ -36,13 +36,20 @@ runbook_entries = [
             "Manager users can create new assessments, assign them to organisations, and track their completion. "
         )
     },
+    {
+        "title": "Lectures",
+        "content": (
+            "Lectureres can upload lectures via the 'Module' page."
+            "Lectureres can delete lectures, but they cannot update them. They need to reupload a new lecture if there is a mistake."
+        )
+    },
 ]
 
 # Example bug report
 bug_report = (
-    "I am a manager user and I cannot update the skill of a developer. "  # Manager > developer will return a higher accuracy, but the user could still send the ticket off 
-    "I navigate to the developer's profile page and click the 'Edit' button. "
-    "when I try to click on the add skill field, the field is greyed out and I cannot add any skills. "
+    "I am a lecturer user on the 'Module' page." 
+    "I am trying to upload a lecture to the 'Module' page, but when I try to upload a lecture I get a 403 error."
+    "I should have been able to add a new lecture and find it on the 'Module' page."
 )
 
 # Compute the embedding for the bug report once
@@ -65,7 +72,7 @@ for entry in runbook_entries:
     # Output the title and similarity score
     print("-" * 80)
     print(f"Title: {title}")
-    print(f"Cosine Similarity Score: {cosine_sim:.2f}")
+    print(f"Cosine Similarity Score: {cosine_sim:.4f}")
     
     # If the similarity exceeds the threshold, output the runbook section
     if cosine_sim >= threshold:
