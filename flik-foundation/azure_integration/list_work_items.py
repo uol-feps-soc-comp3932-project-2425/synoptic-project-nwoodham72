@@ -2,7 +2,7 @@ import requests
 import json
 
 # Fetch total number of work items
-def get_all_tickets(org, project, pat):
+def get_all_work_items(org, project, pat):
     query = {
         "query": "select [System.Id] from WorkItems where [System.BoardColumn] in ('To Do')"  # ('To do', 'Doing') - Track multiple columns
     }
@@ -27,9 +27,17 @@ def get_all_tickets(org, project, pat):
     return work_item_count
 
 # Fetch number of work items for a specific user 
-def get_user_tickets(org, project, pat, developer):
+def get_developer_workload(org, project, pat, developer, columns):
+
+    # Convert column(s) to list
+    if isinstance(columns, str):
+        columns = [columns]
+    
+    # Format columns
+    columns_list_str = ", ".join(f"'{col}'" for col in columns)
+
     query = {
-        "query": f"select [System.Id] from WorkItems where [System.BoardColumn] in ('Doing') and [System.AssignedTo] contains '{developer}'" 
+        "query": f"select [System.Id] from WorkItems where [System.BoardColumn] in ({columns_list_str}) and [System.AssignedTo] contains '{developer}'" 
     }
 
     query_url = f"https://dev.azure.com/{org}/{project}/_apis/wit/wiql?api-version=7.1"
@@ -52,7 +60,10 @@ if __name__ == "__main__":
     ORGANISATION = "comp3932-flik"
     PROJECT_NAME = "Flik"
     PERSONAL_ACCESS_TOKEN = "TmwkawvRYbz2weeboOdSmkHFAPh0oo8clMu9ZsNiGuSyLA6pN62mJQQJ99BCACAAAAAAAAAAAAASAZDO2xCF" 
+    DEVELOPER_EMAIL = "nathanmw72@gmail.com"
+    # DEVELOPER_EMAIL = "sc21nw@leeds.ac.uk"
+    COLUMNS = ["To Do", "Blocked"]
 
-    ticket_data = get_user_tickets(ORGANISATION, PROJECT_NAME, PERSONAL_ACCESS_TOKEN, 'nathanmw72@gmail.com')  # Pass in developer email
+    ticket_data = get_developer_workload(ORGANISATION, PROJECT_NAME, PERSONAL_ACCESS_TOKEN, DEVELOPER_EMAIL, COLUMNS) 
     work_items = ticket_data.get("workItems", [])
-    print(f"Total number of tickets: {len(work_items)}")
+    print(f"{len(work_items)} tickets for {DEVELOPER_EMAIL} in columns: {COLUMNS}")
