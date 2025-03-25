@@ -2,6 +2,7 @@ import pandas as pd
 import torch
 from datasets import Dataset
 from sklearn.preprocessing import MultiLabelBinarizer
+import os
 from transformers import (
     DistilBertTokenizer,
     DistilBertForSequenceClassification,
@@ -68,6 +69,16 @@ training_args = TrainingArguments(
     metric_for_best_model="eval_loss"
 )
 
+# Check for latest checkpoint to resume training
+checkpoint_dir = "./results"
+checkpoints = [d for d in os.listdir(checkpoint_dir) if d.startswith("checkpoint-")]
+if checkpoints:
+    latest_checkpoint = os.path.join(checkpoint_dir, sorted(checkpoints, key=lambda x: int(x.split('-')[-1]))[-1])
+    print(f"Resuming training from {latest_checkpoint}")
+else:
+    latest_checkpoint = None
+    print("No previous checkpoints found. Starting fresh.")
+
 trainer = Trainer(
     model=model,
     args=training_args,
@@ -77,7 +88,7 @@ trainer = Trainer(
 )
 
 # Train
-trainer.train()
+trainer.train(resume_from_checkpoint=latest_checkpoint)
 
 # Save final model and label mappings
 model.save_pretrained("./fine_tuned_assigner")
@@ -88,4 +99,4 @@ import json
 with open("label_names.json", "w") as f:
     json.dump(label_names.tolist(), f)
 
-print("✅ Model trained and saved!")
+print("Model trained and saved!")
