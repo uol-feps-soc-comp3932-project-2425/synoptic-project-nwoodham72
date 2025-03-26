@@ -29,7 +29,7 @@ label_mapping = {f"LABEL_{i}": name for i, name in enumerate(label_names)}
 
 # Fetch developers and skills
 developers = {
-    "nathanmw72@gmail.com": {"Login", "Feedback", "Sales"},
+    "nathanmw72@gmail.com": {"Login", "Feedback", "Sales", "Infrastructure"},
     "sc21nw@leeds.ac.uk": {"Login", "Feedback", "Sales"}
 }
 
@@ -70,24 +70,29 @@ def assign_developer(predicted_tags, developers):
     return best_assignees  # Return developer(s) with highest overlap of skills and bug themes
 
 # Filter best assignees to assigness with lowest workload and most skills
-def check_best_assignee_workload(organisation, project, pat, assignments):
+def check_best_assignee_workload_and_skills(organisation, project, pat, assignments):
     # Append best developers with lowest workload and most skills
     candidates = []
     for dev, matching_skills in assignments.items():
         assignee_workload = get_developer_workload(organisation, project, pat, dev, ["To Do"])
+        # Matching skills are already found 
+        # if workload is the same, then send to dev with the highest general skillset
+        developer_general_skill_count = len(developers.get(dev, [])) 
         print(dev, assignee_workload)
-        candidates.append((dev, assignee_workload))
-        # print(candidates)
+        print(dev, developer_general_skill_count)
+        candidates.append((dev, assignee_workload, developer_general_skill_count))
 
 
     if not candidates:
         return None
     
-    # Sort candidates by workload
-    candidates.sort(key=lambda x: (x[1]))
+    # Sort candidates by general skill count
+    candidates.sort(key=lambda x: (x[1], -x[2]))
     lowest_workload = candidates[0][1]
+    highest_general_skill_count = candidates[0][2]
 
-    best_candidates = [c for c in candidates if c[1] == lowest_workload]
+    # Filter candidates with lowest workload and highest general skillcount
+    best_candidates = [c for c in candidates if c[1] == lowest_workload and c[2] == highest_general_skill_count]
 
     # If multiple candidates have the same workload, randomly assign
     selected_candidate = random.choice(best_candidates) if len(best_candidates) > 1 else candidates[0]
@@ -159,15 +164,15 @@ if __name__ == '__main__':
     PERSONAL_ACCESS_TOKEN = "TmwkawvRYbz2weeboOdSmkHFAPh0oo8clMu9ZsNiGuSyLA6pN62mJQQJ99BCACAAAAAAAAAAAAASAZDO2xCF"
 
     for example in examples:
-        predicted_tags = tag_bug(example["text"], threshold=0.5)
+        predicted_tags = tag_bug(example["text"], threshold=0.6)
         best_assignments = assign_developer(predicted_tags, developers)  # Developers with the highest skill overlap with bug themes in ticket
         
         print(f"--- {example['title']} ---")
         print(f"Predicted Tags: {predicted_tags}")
         if best_assignments:
             if len(best_assignments) > 1:
-                candidate = check_best_assignee_workload(ORGANISATION, PROJECT_NAME, PERSONAL_ACCESS_TOKEN, best_assignments)
-                print(f"AssignedTo: {candidate}")
+                assigned_to = check_best_assignee_workload_and_skills(ORGANISATION, PROJECT_NAME, PERSONAL_ACCESS_TOKEN, best_assignments)
+                print(f"AssignedTo: {assigned_to}")
             print("Assigned Developer(s):")
             for dev, matching_skills in best_assignments.items():
                 print(f"  {dev} - Matching Skills: {list(matching_skills)}")
