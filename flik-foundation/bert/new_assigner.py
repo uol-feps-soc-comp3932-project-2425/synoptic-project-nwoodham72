@@ -29,7 +29,7 @@ label_mapping = {f"LABEL_{i}": name for i, name in enumerate(label_names)}
 
 # Fetch developers and skills
 developers = {
-    "nathanmw72@gmail.com": {"Login", "Feedback", "Sales", "Infrastructure"},
+    "nathanmw72@gmail.com": {"Information", "Feedback", "Sales", "Infrastructure", "IT"},
     "sc21nw@leeds.ac.uk": {"Login", "Feedback", "Sales"}
 }
 
@@ -70,7 +70,7 @@ def assign_developer(predicted_tags, developers):
     return best_assignees  # Return developer(s) with highest overlap of skills and bug themes
 
 # Filter best assignees to assigness with lowest workload and most skills
-def check_best_assignee_workload_and_skills(organisation, project, pat, assignments):
+def select_developer_by_workload_and_skills(organisation, project, pat, assignments):
     # Append best developers with lowest workload and most skills
     candidates = []
     for dev, matching_skills in assignments.items():
@@ -78,10 +78,9 @@ def check_best_assignee_workload_and_skills(organisation, project, pat, assignme
         # Matching skills are already found 
         # if workload is the same, then send to dev with the highest general skillset
         developer_general_skill_count = len(developers.get(dev, [])) 
-        print(dev, assignee_workload)
-        print(dev, developer_general_skill_count)
+        # print(dev, assignee_workload)
+        # print(dev, developer_general_skill_count)
         candidates.append((dev, assignee_workload, developer_general_skill_count))
-
 
     if not candidates:
         return None
@@ -97,11 +96,8 @@ def check_best_assignee_workload_and_skills(organisation, project, pat, assignme
     # If multiple candidates have the same workload, randomly assign
     selected_candidate = random.choice(best_candidates) if len(best_candidates) > 1 else candidates[0]
         
-        
-
     return selected_candidate[0]
 
-    
 
 # Example usage
 if __name__ == '__main__':
@@ -113,49 +109,30 @@ if __name__ == '__main__':
                 "and details on the available services. Looking forward to learning more "
                 "to help our business grow. Thank you, and I look forward to hearing from you soon."
             )
+        },
+        {
+            "title": "Data Analytics for Investment",
+            "text": (
+                "I am contacting you to request information on data analytics tools that "
+                "can be utilized with the Eclipse IDE for enhancing investment optimization. "
+                "I am seeking suggestions for tools that can aid in making data-driven decisions. "
+                "Particularly, I am interested in tools that can manage large datasets and offer "
+                "advanced analytics features. These tools should be compatible with the Eclipse IDE "
+                "and can smoothly integrate into my workflow. Key features I am interested in include "
+                "data visualization, predictive modeling, and machine learning capabilities. I would "
+                "greatly appreciate any recommendations or advice on how to begin with data analytics "
+                "for investment optimization using the Eclipse IDE."
+            )
+        },
+        {
+            "title": "Cannot log in",
+            "text": (
+                "I am a manager user on the login page. "
+                "I am trying to log in with valid credentials into the Student portal. "
+                "When I click login it says that my account is not recognised, and it seems that your reset password link is not working either."
+                "I also get a 403 error and the system crashes"
+            )
         }
-        # {
-        #     "title": "Data Analytics for Investment",
-        #     "text": (
-        #         "I am contacting you to request information on data analytics tools that "
-        #         "can be utilized with the Eclipse IDE for enhancing investment optimization. "
-        #         "I am seeking suggestions for tools that can aid in making data-driven decisions. "
-        #         "Particularly, I am interested in tools that can manage large datasets and offer "
-        #         "advanced analytics features. These tools should be compatible with the Eclipse IDE "
-        #         "and can smoothly integrate into my workflow. Key features I am interested in include "
-        #         "data visualization, predictive modeling, and machine learning capabilities. I would "
-        #         "greatly appreciate any recommendations or advice on how to begin with data analytics "
-        #         "for investment optimization using the Eclipse IDE."
-        #     )
-        # },
-        # {
-        #     "title": "Cannot update organisation name",
-        #     "text": (
-        #         "I am a manager user on the organisation's page. "
-        #         "I am trying to update the name of an organisation, but when I click on the 'Edit' button, "
-        #         "a 403 error message shows and I cannot update the name. "
-        #         "I want to be able to update the name since this organisation name has a typo."
-        #     )
-        # },
-        # {
-        #     "title": "Cannot create assessment",
-        #     "text": (
-        #         "I am a manager user on the assessment's page. "
-        #         "I am trying to create a new assessment using the 'Create Assessment' button. "
-        #         "I can then add a new assessment name and deadline, but when I click 'Save', "
-        #         "the screen sends me back to the assessment list page, and the assessment I just made is not there. "
-        #         "I was expecting a success message and for the new assessment to be available on the list screen."
-        #     )
-        # },
-        # {
-        #     "title": "Cannot log in",
-        #     "text": (
-        #         "I am a manager user on the login page. "
-        #         "I am trying to log in with valid credentials into the Student portal. "
-        #         "When I click login it says that my account is not recognised, and it seems that your reset password link is not working either."
-        #         "I also get a 403 error and the system crashes"
-        #     )
-        # }
     ]
 
     # Board and work item configuration
@@ -171,11 +148,17 @@ if __name__ == '__main__':
         print(f"Predicted Tags: {predicted_tags}")
         if best_assignments:
             if len(best_assignments) > 1:
-                assigned_to = check_best_assignee_workload_and_skills(ORGANISATION, PROJECT_NAME, PERSONAL_ACCESS_TOKEN, best_assignments)
+                assigned_to = select_developer_by_workload_and_skills(ORGANISATION, PROJECT_NAME, PERSONAL_ACCESS_TOKEN, best_assignments)
                 print(f"AssignedTo: {assigned_to}")
-            print("Assigned Developer(s):")
-            for dev, matching_skills in best_assignments.items():
-                print(f"  {dev} - Matching Skills: {list(matching_skills)}")
+            else:
+                for dev, matching_skills in best_assignments.items():
+                    print(f"AssignedTo: {dev}")
+                    # print(f"AssignedTo: {dev} - Matching Skills: {list(matching_skills)}")
+        # No developer matched on skill
         else:
-            print("No developer assigned.")
+            # Assign developer with lowest workload then largest no. of skills
+            all_devs = {dev: set() for dev in developers}
+            assigned_to = select_developer_by_workload_and_skills(ORGANISATION, PROJECT_NAME, PERSONAL_ACCESS_TOKEN, all_devs)
+            print(f"AssignedTo: {assigned_to}")
+            # print("no dev")
         print()
