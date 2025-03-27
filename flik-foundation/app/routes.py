@@ -6,7 +6,7 @@ from azure_integration.config import PROJECT_NAME, ORGANISATION_URL, ORGANISATIO
 from bert.summariser import extractive_summary
 from bert.prioritiser import predict_priority
 # from bert.assigner import assign_developer
-from bert.new_assigner import assign_developer
+from bert.assigner import assign_developer
 
 main = Blueprint("main", __name__)
 

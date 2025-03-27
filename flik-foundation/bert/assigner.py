@@ -1,91 +1,198 @@
-from transformers import DistilBertTokenizer, DistilBertForSequenceClassification, pipeline
+import os
+import json
+import random
+from transformers import (
+    DistilBertTokenizer,
+    DistilBertForSequenceClassification,
+    pipeline,
+)
+from bert.workload import get_developer_workload
 
-""" Handles developer assignment using the Hugging Face DistilBERT model. """
-
-# Todo: Implement workload
-
-# Load classification model
-classification_tokeniser = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
-classification_model = DistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased')
-
-# Create classifier pipeline
-classifier = pipeline('text-classification', model=classification_model, tokenizer=classification_tokeniser)
-
-# Azure DevOps developers
-# todo: Pull developers and skills from database 
-developers = {
-    "nathanmw72@gmail.com": {"front-end", "user accounts", "organisations"},
-    "sc21nw@leeds.ac.uk": {"back-end", "team members", "team member's skills"}
-}
-
-# Map DistilBERT classification labels to developer skills
-all_skills = set(skill for skillset in developers.values() for skill in skillset)
-label_to_skill_mapping = {f"LABEL_{i}": skill for i, skill in enumerate(all_skills)}
-
-# Assign developer
-def assign_developer(developers, description, threshold=0.5):
-    results = classifier(description)
-    
-    # Extract relevant skills from classification results
-    detected_labels = {result['label']: result['score'] for result in results if result['score'] > threshold}
-    
-    # Map detected labels dynamically to meaningful words from the description
-    detected_skills = set()
-    for label in detected_labels.keys():
-        words = description.split()  # Basic tokenization
-        for word in words:
-            if word.lower() in all_skills:
-                detected_skills.add(word.lower())
-
-    # Ensure detected skills are mapped correctly
-    relevant_skills = detected_skills if detected_skills else detected_labels.keys()
-
-    # Find the best matching developer
-    best_match = None
-    best_skill_overlap = 0
-    best_matching_skills = set()
-
-    for dev, skills in developers.items():
-        overlap = relevant_skills & skills
-        if len(overlap) > best_skill_overlap:
-            best_match = dev
-            best_skill_overlap = len(overlap)
-            best_matching_skills = overlap
-    
-    # If no skills match, assign the developer with the closest skill set
-    if best_match is None:
-        best_match = max(developers.keys(), key=lambda dev: len(developers[dev]))
-        best_matching_skills = set()
-    
-    # return best_match, developers[best_match], list(best_matching_skills)
-    return best_match
-
-
-## Ticket description
-bug_description = """
-    As a Manager User, when attempting to update a team member’s skills, I can type in a new skill, but clicking ‘Add Skill’ does not update the developer’s profile. There is no confirmation message, error message, or indication that the action has been processed. 
-    Steps to Reproduce (Given, When, Then Format) 
-    Given I am logged in as a Manager user. 
-    And I navigate to Team Management > Select a Team Member > Click Edit Skills. 
-    When I type a new skill into the input field. 
-    And I click the ‘Add Skill’ button. 
-    Then I expect the new skill to be added to the team member’s profile. 
-    And I expect to receive a confirmation message or visual feedback. 
-    But Instead, the skill is not added, and no feedback is provided. 
-    Expected Behaviour 
-    The newly added skill should appear in the developer’s Skills section. 
-    A confirmation message (e.g., "Skill successfully added") should be displayed. 
-    The change should persist after reloading the page. 
-    Actual Behaviour 
-    The skill is not added to the developer’s profile. 
-    No success or error message appears. 
-    The page does not update to reflect the change. 
-    After refreshing, the skill is still missing. 
+"""
+new_assigner.py: Allocate developers to bug ticket based on pre-defined labels in fine_tuned_assigner/bug_themes.json.
 """
 
-# Assign a developer
-assigned_developer, developer_skills, skills_required = assign_developer(developers, bug_description)
+# Load fine-tuned model
+local_directory = os.path.dirname(__file__)
+MODEL_DIR = os.path.join(local_directory, "models/fine_tuned_assigner")
 
-print(f"Assigned Developer: {assigned_developer}")
-print(f"Developer's Skills: {developer_skills}")
-print(f"Required Skills from Bug (Themes that match developer's skills): {skills_required}")
+# Load tokenizer
+tokeniser = DistilBertTokenizer.from_pretrained(MODEL_DIR)
+model = DistilBertForSequenceClassification.from_pretrained(MODEL_DIR)
+
+# Create classification pipeline
+classifier = pipeline(
+    "text-classification", model=model, tokenizer=tokeniser, top_k=None
+)  # top_k: Get highest matching themes
+
+# Load bug_themes.json
+label_names_file = os.path.join(
+    local_directory, "models/fine_tuned_assigner", "bug_themes.json"
+)
+with open(label_names_file, "r") as f:
+    label_names = json.load(f)
+
+# Map labels to human-readable format in bug_themes.json
+label_mapping = {f"LABEL_{i}": name for i, name in enumerate(label_names)}
+
+# Fetch developers and skills
+developers = {
+    "nathanmw72@gmail.com": {
+        "Information",
+        "Feedback",
+        "Sales",
+        "Infrastructure",
+        "IT",
+    },
+    "sc21nw@leeds.ac.uk": {"Login", "Feedback", "Sales"},
+}
+
+
+# Tag bug description with defined labels
+def tag_bug(text, threshold=0.7):
+    results = classifier(text)
+    if not results:
+        return []
+
+    # Score label likelihood with ticket
+    label_scores = results[0]
+    predicted_tags = []
+    for item in label_scores:
+        label = item["label"]
+        score = item["score"]
+        if score >= threshold:
+            # Convert model label to human-readable format
+            user_friendly_label = label_mapping.get(label, label)
+            predicted_tags.append(user_friendly_label)
+
+    return predicted_tags[:3]  # Return top 3 matching tags
+
+
+# Assign developer to bug based on bug themes and developer skillset
+def select_matching_developers(predicted_tags, developers):
+    best_overlap = 0
+    best_assignees = {}
+    predicted_tags_set = set(predicted_tags)
+
+    # Iterate through developer skills
+    for dev, skills in developers.items():
+        overlap = predicted_tags_set & skills  # Matching skills
+        if len(overlap) > best_overlap:
+            best_overlap = len(overlap)
+            best_assignees = {dev: overlap}  # Reset with current best
+        elif len(overlap) == best_overlap and best_overlap > 0:
+            best_assignees[dev] = overlap  # Add if equal to best_overlap
+
+    return best_assignees  # Return developer(s) with highest overlap of skills and bug themes
+
+
+# Filter best assignees to assigness with lowest workload and most skills
+def select_developer_by_workload_and_skills(organisation, project, pat, assignments):
+    # Append best developers with lowest workload and most skills
+    candidates = []
+    for dev, matching_skills in assignments.items():
+        assignee_workload = get_developer_workload(
+            organisation, project, pat, dev, ["To Do"]
+        )
+        # Matching skills are already found
+        developer_general_skill_count = len(developers.get(dev, []))
+        candidates.append((dev, assignee_workload, developer_general_skill_count))
+
+    if not candidates:
+        return None
+
+    # Sort candidates by general skill count
+    candidates.sort(key=lambda x: (x[1], -x[2]))
+    lowest_workload = candidates[0][1]
+    highest_general_skill_count = candidates[0][2]
+
+    # Filter candidates with lowest workload and highest general skillcount
+    best_candidates = [
+        c
+        for c in candidates
+        if c[1] == lowest_workload and c[2] == highest_general_skill_count
+    ]
+
+    # If multiple candidates have the same workload, randomly assign
+    selected_candidate = (
+        random.choice(best_candidates) if len(best_candidates) > 1 else candidates[0]
+    )
+
+    return selected_candidate[0]
+
+
+def assign_developer(
+    developers, bug_description, ORGANISATION, PROJECT_NAME, RETRIEVAL_ACCESS_TOKEN
+):
+    predicted_tags = tag_bug(bug_description, threshold=0.6)
+    best_assignments = select_matching_developers(
+        predicted_tags, developers
+    )  # Developers with the highest skill overlap with bug themes in ticket
+    assigned_to = None
+
+    # Check for matching developers
+    if best_assignments:
+        if len(best_assignments) > 1:
+            assigned_to = select_developer_by_workload_and_skills(
+                ORGANISATION, PROJECT_NAME, RETRIEVAL_ACCESS_TOKEN, best_assignments
+            )
+            return assigned_to, predicted_tags
+        else:
+            for dev, matching_skills in best_assignments.items():
+                return dev, predicted_tags
+    # No developer matched on skill
+    else:
+        # Assign developer with lowest workload then largest no. of skills
+        all_devs = {dev: set() for dev in developers}
+        assigned_to = select_developer_by_workload_and_skills(
+            ORGANISATION, PROJECT_NAME, RETRIEVAL_ACCESS_TOKEN, all_devs
+        )
+        return assigned_to, predicted_tags
+
+
+# # Example usage
+if __name__ == "__main__":
+    examples = [
+        {
+            "title": "Cannot log in",
+            "text": (
+                "I am a manager user on the login page. "
+                "I am trying to log in with valid credentials into the Student portal. "
+                "When I click login it says that my account is not recognised, and it seems that your reset password link is not working either."
+                "I also get a 403 error and the system crashes"
+            ),
+        }
+    ]
+
+    # Board and work item configuration
+    ORGANISATION = "comp3932-flik"
+    PROJECT_NAME = "Flik"
+    RETRIEVAL_ACCESS_TOKEN = "TmwkawvRYbz2weeboOdSmkHFAPh0oo8clMu9ZsNiGuSyLA6pN62mJQQJ99BCACAAAAAAAAAAAAASAZDO2xCF"
+
+    for example in examples:
+        predicted_tags = tag_bug(example["text"], threshold=0.6)
+        print(predicted_tags)
+        best_assignments = select_matching_developers(
+            predicted_tags, developers
+        )  # Developers with the highest skill overlap with bug themes in ticket
+
+        print(f"--- {example['title']} ---")
+        print(f"Predicted Tags: {predicted_tags}")
+        if best_assignments:
+            if len(best_assignments) > 1:
+                assigned_to = select_developer_by_workload_and_skills(
+                    ORGANISATION, PROJECT_NAME, RETRIEVAL_ACCESS_TOKEN, best_assignments
+                )
+                print(f"AssignedTo: {assigned_to}")
+            else:
+                for dev, matching_skills in best_assignments.items():
+                    print(f"AssignedTo: {dev}")
+        # No developer matched on skill
+        else:
+            # Assign developer with lowest workload then largest no. of skills
+            all_devs = {dev: set() for dev in developers}
+            assigned_to = select_developer_by_workload_and_skills(
+                ORGANISATION, PROJECT_NAME, RETRIEVAL_ACCESS_TOKEN, all_devs
+            )
+            print(f"AssignedTo: {assigned_to}")
+        print()
