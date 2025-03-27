@@ -1,10 +1,11 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
 from .forms import RaiseBugForm
 from azure_integration.client import create_work_item
-from azure_integration.config import PROJECT_NAME
+from azure_integration.config import PROJECT_NAME, ORGANISATION_URL, ORGANISATION, PERSONAL_ACCESS_TOKEN, RETRIEVAL_ACCESS_TOKEN
 from bert.summariser import extractive_summary
 from bert.prioritiser import predict_priority
-from bert.assigner import assign_developer
+# from bert.assigner import assign_developer
+from bert.new_assigner import assign_developer
 
 main = Blueprint("main", __name__)
 
@@ -53,13 +54,14 @@ def raise_bug():
             f"Then: {bug_details['then']}<br><br>"
         )
 
+        # Fetch developers and skills
         developers = {
-            "nathanmw72@gmail.com": {"front-end", "user accounts", "organisations"},
-            "sc21nw@leeds.ac.uk": {"back-end", "team members", "team member's skills"}
+            "nathanmw72@gmail.com": {"Information", "Feedback", "Sales", "Infrastructure", "IT"},
+            "sc21nw@leeds.ac.uk": {"Login", "Feedback", "Sales"}
         }
 
-        assignee = assign_developer(developers, prep_summary_data)
-        tags = "bug, report"
+        assigned_to, tags = assign_developer(developers, prep_summary_data, ORGANISATION, PROJECT_NAME, RETRIEVAL_ACCESS_TOKEN)
+        structured_tags = ", ".join(tags)
 
         try:
             work_item = create_work_item(
@@ -67,12 +69,12 @@ def raise_bug():
                 bug_details['title'],
                 description,
                 priority_level,
-                assignee,
-                tags
+                assigned_to,
+                structured_tags
             )
             flash(f"Ticket created with ID: {work_item.id}", "success")
 
-            # Optionally clear form after success
+            # Clear form after successful send
             form.title.data = ''
             form.given.data = ''
             form.when.data = ''
