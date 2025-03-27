@@ -1,6 +1,6 @@
-import nltk
 from summarizer import Summarizer
-nltk.download("punkt")
+# import nltk  # Import and download when running on new machine
+# nltk.download("punkt")
 
 """ Handles bug ticket summarisation using the Hugging Face DistilBERT model. """
 

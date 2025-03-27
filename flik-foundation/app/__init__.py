@@ -11,7 +11,7 @@ load_dotenv()
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
-login_manager.login_view = "auth.login"  # Redirects unauthorized users to login page
+login_manager.login_view = "auth.login"  # Redirects unauthorised users to login page
 login_manager.login_message_category = "info"
 
 def create_app():

@@ -26,10 +26,18 @@ def dashboard():
 def index():
     return redirect(url_for("main.raise_bug"))
 
+# List user accounts for testing
+@main.route("/users")
+def list_users():
+    from .models import User
+    users = User.query.all()
+    return "<br>".join([f"{u.id} | {u.email} | {u.role}" for u in users])
+
 @main.route("/raise_bug", methods=["GET", "POST"])
+@login_required
 def raise_bug():
     form = RaiseBugForm()
-    bug_details = None  # 1. Define up front
+    bug_details = None 
 
     if form.validate_on_submit():
         # 2. Populate it after successful validation
