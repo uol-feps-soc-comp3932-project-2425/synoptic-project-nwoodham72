@@ -151,44 +151,48 @@ def assign_developer(
 
 
 # # Example usage
-# if __name__ == '__main__':
-#     examples = [
-#         {
-#             "title": "Cannot log in",
-#             "text": (
-#                 "I am a manager user on the login page. "
-#                 "I am trying to log in with valid credentials into the Student portal. "
-#                 "When I click login it says that my account is not recognised, and it seems that your reset password link is not working either."
-#                 "I also get a 403 error and the system crashes"
-#             )
-#         }
-#     ]
+if __name__ == "__main__":
+    examples = [
+        {
+            "title": "Cannot log in",
+            "text": (
+                "I am a manager user on the login page. "
+                "I am trying to log in with valid credentials into the Student portal. "
+                "When I click login it says that my account is not recognised, and it seems that your reset password link is not working either."
+                "I also get a 403 error and the system crashes"
+            ),
+        }
+    ]
 
-#     # Board and work item configuration
-#     ORGANISATION = "comp3932-flik"
-#     PROJECT_NAME = "Flik"
-#     RETRIEVAL_ACCESS_TOKEN = "TmwkawvRYbz2weeboOdSmkHFAPh0oo8clMu9ZsNiGuSyLA6pN62mJQQJ99BCACAAAAAAAAAAAAASAZDO2xCF"
+    # Board and work item configuration
+    ORGANISATION = "comp3932-flik"
+    PROJECT_NAME = "Flik"
+    RETRIEVAL_ACCESS_TOKEN = "TmwkawvRYbz2weeboOdSmkHFAPh0oo8clMu9ZsNiGuSyLA6pN62mJQQJ99BCACAAAAAAAAAAAAASAZDO2xCF"
 
-#     for example in examples:
-#         predicted_tags = tag_bug(example["text"], threshold=0.6)
-#         print(predicted_tags)
-#         best_assignments = select_matching_developers(predicted_tags, developers)  # Developers with the highest skill overlap with bug themes in ticket
+    for example in examples:
+        predicted_tags = tag_bug(example["text"], threshold=0.6)
+        print(predicted_tags)
+        best_assignments = select_matching_developers(
+            predicted_tags, developers
+        )  # Developers with the highest skill overlap with bug themes in ticket
 
-#         print(f"--- {example['title']} ---")
-#         print(f"Predicted Tags: {predicted_tags}")
-#         if best_assignments:
-#             if len(best_assignments) > 1:
-#                 assigned_to = select_developer_by_workload_and_skills(ORGANISATION, PROJECT_NAME, RETRIEVAL_ACCESS_TOKEN, best_assignments)
-#                 print(f"AssignedTo: {assigned_to}")
-#             else:
-#                 for dev, matching_skills in best_assignments.items():
-#                     print(f"AssignedTo: {dev}")
-#                     # print(f"AssignedTo: {dev} - Matching Skills: {list(matching_skills)}")
-#         # No developer matched on skill
-#         else:
-#             # Assign developer with lowest workload then largest no. of skills
-#             all_devs = {dev: set() for dev in developers}
-#             assigned_to = select_developer_by_workload_and_skills(ORGANISATION, PROJECT_NAME, RETRIEVAL_ACCESS_TOKEN, all_devs)
-#             print(f"AssignedTo: {assigned_to}")
-#             # print("no dev")
-#         print()
+        print(f"--- {example['title']} ---")
+        print(f"Predicted Tags: {predicted_tags}")
+        if best_assignments:
+            if len(best_assignments) > 1:
+                assigned_to = select_developer_by_workload_and_skills(
+                    ORGANISATION, PROJECT_NAME, RETRIEVAL_ACCESS_TOKEN, best_assignments
+                )
+                print(f"AssignedTo: {assigned_to}")
+            else:
+                for dev, matching_skills in best_assignments.items():
+                    print(f"AssignedTo: {dev}")
+        # No developer matched on skill
+        else:
+            # Assign developer with lowest workload then largest no. of skills
+            all_devs = {dev: set() for dev in developers}
+            assigned_to = select_developer_by_workload_and_skills(
+                ORGANISATION, PROJECT_NAME, RETRIEVAL_ACCESS_TOKEN, all_devs
+            )
+            print(f"AssignedTo: {assigned_to}")
+        print()
