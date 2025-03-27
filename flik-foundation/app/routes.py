@@ -83,7 +83,7 @@ def raise_bug():
         }
 
         assigned_to, tags = assign_developer(developers, prep_summary_data, ORGANISATION, PROJECT_NAME, RETRIEVAL_ACCESS_TOKEN)
-        structured_tags = ", ".join(tags)
+        structured_tags = ", ".join(tags) if tags else "miscellaneous"
 
         try:
             work_item = create_work_item(
