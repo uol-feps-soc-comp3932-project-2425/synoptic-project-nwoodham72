@@ -1,17 +1,16 @@
 {% extends "base.html" %}
-
 {% block title %}Report Bug - Flik{% endblock %}
 
 {% block content %}
-    <h1 class="mb-3">Report a Bug</h1>
+    <h1 class="mb-3">Flik</h1>
     <p class="text-muted">Please provide details about the issue you encountered.</p>
 
     {% if bug_details %}
     <div class="alert alert-success shadow-sm">
         <h5 class="alert-heading">🎉 Bug Reported Successfully!</h5>
         <strong>Title:</strong> {{ bug_details.title }}<br>
-        <strong>Given:</strong> {{ bug_details.given }}<br>
-        <strong>When:</strong> {{ bug_details.when }}<br>
+        <strong>Role:</strong> {{ bug_details.given }}<br>
+        <strong>Page:</strong> {{ bug_details.when }}<br>
         <strong>Then:</strong> {{ bug_details.then }}<br>
         <strong>Expected:</strong> {{ bug_details.expected }}<br>
         <strong>Actual:</strong> {{ bug_details.actual }}
@@ -28,36 +27,47 @@
 
                         <!-- Step 1 -->
                         <div class="form-step" id="step1">
-                            <div class="mb-3">
-                                {{ form.title.label(class="form-label") }}
-                                {{ form.title(class="form-control", placeholder="Give your bug a title") }}
+                            <div class="form-floating mb-3">
+                                {{ form.title(class="form-control", placeholder="Bug Title") }}
+                                <label for="title">Give your bug a title</label>
                             </div>
-                            <div class="mb-3">
-                                {{ form.given.label(class="form-label") }}
-                                {{ form.given(class="form-control", placeholder="What is your role or where does this bug occur?", rows=4) }}
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating">
+                                        {{ form.role(class="form-select", placeholder="Select a user role...") }}
+                                        <label for="role">{{ form.role.label.text }}</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating">
+                                        {{ form.page(class="form-select", placeholder="What page are you on...?") }}
+                                        <label for="page">{{ form.page.label.text }}</label>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                {{ form.when.label(class="form-label") }}
-                                {{ form.when(class="form-control", placeholder="What are you trying to do?", rows=4) }}
+
+                            <div class="form-floating mb-3">
+                                {{ form.then(class="form-control", placeholder="What happened?", style="height: 100px;") }}
+                                <label for="then">Please describe the bug, what happened?</label>
                             </div>
-                            <div class="mb-3">
-                                {{ form.then.label(class="form-label") }}
-                                {{ form.then(class="form-control", placeholder="What happens?", rows=4) }}
-                            </div>
+
                             <div class="d-grid">
-                                <button type="button" class="btn btn-primary" onclick="nextStep()">Next</button>
+                                <button id="next-btn" type="button" class="btn btn-primary" onclick="nextStep()" disabled>
+                                    Next
+                                </button>
                             </div>
                         </div>
 
                         <!-- Step 2 -->
                         <div class="form-step" id="step2">
-                            <div class="mb-3">
-                                {{ form.expected.label(class="form-label") }}
-                                {{ form.expected(class="form-control", placeholder="What should have happened instead?", rows=4) }}
+                            <div class="form-floating mb-3">
+                                {{ form.expected(class="form-control", placeholder="What should have happened instead?", style="height: 100px;") }}
+                                <label for="expected">What should have happened?</label>
                             </div>
-                            <div class="mb-3">
-                                {{ form.actual.label(class="form-label") }}
-                                {{ form.actual(class="form-control", placeholder="What actually happened?", rows=4) }}
+                            <div class="form-floating mb-3">
+                                {{ form.actual(class="form-control", placeholder="What actually happened?", style="height: 100px;") }}
+                                <label for="actual">{{ form.actual.label.text }}</label>
                             </div>
                             <div class="d-flex justify-content-between">
                                 <button type="button" class="btn btn-secondary" onclick="prevStep()">Previous</button>
@@ -71,8 +81,33 @@
         </div>
     </div>
 
-    <!-- Multi-Step Form Navigation -->
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get references to form fields and the Next button
+            const titleInput = document.getElementById('title');
+            const roleInput = document.getElementById('role');
+            const pageInput = document.getElementById('page');
+            const thenTextArea = document.getElementById('then');
+            const nextButton = document.getElementById('next-btn');
+        
+            // Validation function
+            function validateInputs() {
+                const isTitleValid = titleInput.value.trim() !== '';
+                const isRoleValid = roleInput.value.trim() !== '';
+                const isPageValid = pageInput.value.trim() !== '';
+                const isThenValid = thenTextArea.value.trim() !== '';
+        
+                nextButton.disabled = !(isTitleValid && isRoleValid && isPageValid && isThenValid);
+            }
+        
+            [titleInput, roleInput, pageInput, thenTextArea].forEach(field => {
+                field.addEventListener('input', validateInputs);
+                field.addEventListener('change', validateInputs);
+            });
+        
+            validateInputs();
+        });
+
         function nextStep() {
             document.getElementById('formStepsInner').style.transform = 'translateX(-50%)';
         }

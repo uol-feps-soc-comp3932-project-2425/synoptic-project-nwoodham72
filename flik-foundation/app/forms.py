@@ -2,23 +2,60 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, PasswordField, SubmitField, SelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 
+
 class RaiseBugForm(FlaskForm):
-    title = StringField('Bug Title', validators=[DataRequired(), Length(max=150)])
-    given = TextAreaField('Given', validators=[DataRequired(), Length(min=10)])
-    when = TextAreaField('When', validators=[DataRequired(), Length(min=10)])
-    then = TextAreaField('Then', validators=[DataRequired(), Length(min=10)])
-    expected = TextAreaField('Expected Behaviour', validators=[DataRequired(), Length(min=10)])
-    actual = TextAreaField('Actual Behaviour', validators=[DataRequired(), Length(min=10)])
-    submit = SubmitField('Report Bug')
+    title = StringField("Bug Title", validators=[DataRequired(), Length(max=150)], render_kw={"id": "title"})
+    role = SelectField(
+        "User Role",
+        choices=[
+            ("", "Select a user role..."),
+            ("manager", "Manager"),
+            ("developer", "Developer"),
+            ("client", "Client"),
+        ],
+        validators=[DataRequired(message="Please select a user role")],
+        render_kw={"id": "role"},
+    )
+    page = SelectField(
+        "Page",
+        choices=[
+            ("", "What page are you on..."),
+            ("login", "Login"),
+            ("modules", "Modules"),
+            ("registration", "Student Registration"),
+        ],
+        validators=[DataRequired(message="Please select a page")],
+        render_kw={"id": "page"},
+    )
+    then = TextAreaField("Then", validators=[DataRequired(), Length(min=10)], render_kw={"id": "then"})
+    expected = TextAreaField(
+        "Expected Behaviour", validators=[DataRequired(), Length(min=10)], render_kw={"id": "expected"}
+    )
+    actual = TextAreaField(
+        "Actual Behaviour", validators=[DataRequired(), Length(min=10)], render_kw={"id": "actual"}
+    )
+    submit = SubmitField("Report Bug")
+
 
 class LoginForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email()])
     password = PasswordField("Password", validators=[DataRequired()])
     submit = SubmitField("Login")
 
+
 class RegisterForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email()])
     password = PasswordField("Password", validators=[DataRequired(), Length(min=6)])
-    confirm_password = PasswordField("Confirm Password", validators=[DataRequired(), EqualTo("password")])
-    role = SelectField("Role", choices=[("Manager", "Manager"), ("Developer", "Developer"), ("Client", "Client")], validators=[DataRequired()])
+    confirm_password = PasswordField(
+        "Confirm Password", validators=[DataRequired(), EqualTo("password")]
+    )
+    role = SelectField(
+        "Role",
+        choices=[
+            ("Manager", "Manager"),
+            ("Developer", "Developer"),
+            ("Client", "Client"),
+        ],
+        validators=[DataRequired()],
+    )
     submit = SubmitField("Register")
