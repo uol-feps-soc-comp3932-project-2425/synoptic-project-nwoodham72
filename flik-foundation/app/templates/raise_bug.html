@@ -2,117 +2,164 @@
 {% block title %}Report Bug - Flik{% endblock %}
 
 {% block content %}
-    <h1 class="mb-3">Flik</h1>
-    <p class="text-muted">Please provide details about the issue you encountered.</p>
+  <h1 class="mb-3">Report a Bug</h1>
+  <p class="text-muted">Please provide details about the issue you encountered.</p>
 
-    {% if bug_details %}
-    <div class="alert alert-success shadow-sm">
-        <h5 class="alert-heading">🎉 Bug Reported Successfully!</h5>
-        <strong>Title:</strong> {{ bug_details.title }}<br>
-        <strong>Role:</strong> {{ bug_details.given }}<br>
-        <strong>Page:</strong> {{ bug_details.when }}<br>
-        <strong>Then:</strong> {{ bug_details.then }}<br>
-        <strong>Expected:</strong> {{ bug_details.expected }}<br>
-        <strong>Actual:</strong> {{ bug_details.actual }}
+  {% if bug_details %}
+  <div class="alert alert-success shadow-sm">
+      <h5 class="alert-heading">🎉 Bug Reported Successfully!</h5>
+      <strong>Title:</strong> {{ bug_details.title }}<br>
+      <strong>Role:</strong> {{ bug_details.given }}<br>
+      <strong>Page:</strong> {{ bug_details.when }}<br>
+      <strong>Then:</strong> {{ bug_details.then }}<br>
+      <strong>Expected:</strong> {{ bug_details.expected }}<br>
+      <strong>Actual:</strong> {{ bug_details.actual }}
+  </div>
+  {% endif %}
+
+  <div class="card shadow-sm border-0 rounded-3">
+    <div class="card-body">
+      <form method="POST" novalidate>
+        {{ form.hidden_tag() }}
+        <!-- Multi-Step Form Container -->
+        <div class="form-steps-container">
+          <div class="form-steps-inner" id="formStepsInner">
+
+            <!-- Step 1 -->
+            <div class="form-step" id="step1">
+              <!-- Title with floating label and validation feedback -->
+              <div class="form-floating mb-3">
+                {{ form.title(class="form-control", placeholder="Bug Title") }}
+                <label for="title">Please give your bug a title</label>
+                <div class="invalid-feedback">
+                  Title must be at least 30 characters.
+                </div>
+              </div>
+
+              <div class="row">
+                <!-- Role select with floating label -->
+                <div class="col-md-6 mb-3">
+                  <div class="form-floating">
+                    {{ form.role(class="form-select") }}
+                    <label for="role">{{ form.role.label.text }}</label>
+                    <div class="invalid-feedback">
+                      Please select a user role.
+                    </div>
+                  </div>
+                </div>
+                <!-- Page select with floating label -->
+                <div class="col-md-6 mb-3">
+                  <div class="form-floating">
+                    {{ form.page(class="form-select", placeholder="What page are you on...?") }}
+                    <label for="page">{{ form.page.label.text }}</label>
+                    <div class="invalid-feedback">
+                      Please select a page.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Then textarea with floating label and validation feedback -->
+              <div class="form-floating mb-3">
+                {{ form.then(class="form-control", placeholder="What happened?", style="height: 100px;") }}
+                <label for="then">Describe the issue, what happened?</label>
+                <div class="invalid-feedback">
+                  Description must be at least 30 characters.
+                </div>
+              </div>
+
+              <div class="d-grid">
+                <!-- Note: The button is always enabled so that errors show on click -->
+                <button id="next-btn" type="button" class="btn btn-primary" onclick="validateStep1()">
+                  Next
+                </button>
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="form-step" id="step2">
+              <div class="form-floating mb-3">
+                {{ form.expected(class="form-control", placeholder="What should have happened instead?", style="height: 100px;") }}
+                <label for="expected">{{ form.expected.label.text }}</label>
+              </div>
+              <div class="form-floating mb-3">
+                {{ form.actual(class="form-control", placeholder="What actually happened?", style="height: 100px;") }}
+                <label for="actual">{{ form.actual.label.text }}</label>
+              </div>
+              <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary" onclick="prevStep()">Previous</button>
+                <button type="submit" class="btn btn-primary">Submit Bug</button>
+              </div>
+            </div>
+
+          </div> <!-- /.form-steps-inner -->
+        </div> <!-- /.form-steps-container -->
+      </form>
     </div>
-    {% endif %}
+  </div>
 
-    <div class="card shadow-sm border-0 rounded-3">
-        <div class="card-body">
-            <form method="POST">
-                {{ form.hidden_tag() }}
-                <!-- Multi-Step Form Container -->
-                <div class="form-steps-container">
-                    <div class="form-steps-inner" id="formStepsInner">
+  <script>
+    // Validate step 1 on Next button click
+    function validateStep1() {
+      // Retrieve elements
+      const titleInput = document.getElementById('title');
+      const roleInput = document.getElementById('role');
+      const pageInput = document.getElementById('page');
+      const thenTextArea = document.getElementById('then');
+      let valid = true;
 
-                        <!-- Step 1 -->
-                        <div class="form-step" id="step1">
-                            <div class="form-floating mb-3">
-                                {{ form.title(class="form-control", placeholder="Bug Title") }}
-                                <label for="title">Give your bug a title</label>
-                            </div>
+      // Validate Title (minimum 30 characters)
+      if (titleInput.value.trim().length < 30) {
+        titleInput.classList.add('is-invalid');
+        titleInput.classList.remove('is-valid');
+        valid = false;
+      } else {
+        titleInput.classList.remove('is-invalid');
+        titleInput.classList.add('is-valid');
+      }
 
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <div class="form-floating">
-                                        {{ form.role(class="form-select", placeholder="Select a user role...") }}
-                                        <label for="role">{{ form.role.label.text }}</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="form-floating">
-                                        {{ form.page(class="form-select", placeholder="What page are you on...?") }}
-                                        <label for="page">{{ form.page.label.text }}</label>
-                                    </div>
-                                </div>
-                            </div>
+      // Validate Role selection (must not be empty)
+      if (roleInput.value.trim() === '') {
+        roleInput.classList.add('is-invalid');
+        roleInput.classList.remove('is-valid');
+        valid = false;
+      } else {
+        roleInput.classList.remove('is-invalid');
+        roleInput.classList.add('is-valid');
+      }
 
-                            <div class="form-floating mb-3">
-                                {{ form.then(class="form-control", placeholder="What happened?", style="height: 100px;") }}
-                                <label for="then">Please describe the bug, what happened?</label>
-                            </div>
+      // Validate Page selection (must not be empty)
+      if (pageInput.value.trim() === '') {
+        pageInput.classList.add('is-invalid');
+        pageInput.classList.remove('is-valid');
+        valid = false;
+      } else {
+        pageInput.classList.remove('is-invalid');
+        pageInput.classList.add('is-valid');
+      }
 
-                            <div class="d-grid">
-                                <button id="next-btn" type="button" class="btn btn-primary" onclick="nextStep()" disabled>
-                                    Next
-                                </button>
-                            </div>
-                        </div>
+      // Validate Then textarea (minimum 30 characters)
+      if (thenTextArea.value.trim().length < 30) {
+        thenTextArea.classList.add('is-invalid');
+        thenTextArea.classList.remove('is-valid');
+        valid = false;
+      } else {
+        thenTextArea.classList.remove('is-invalid');
+        thenTextArea.classList.add('is-valid');
+      }
 
-                        <!-- Step 2 -->
-                        <div class="form-step" id="step2">
-                            <div class="form-floating mb-3">
-                                {{ form.expected(class="form-control", placeholder="What should have happened instead?", style="height: 100px;") }}
-                                <label for="expected">What should have happened?</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                {{ form.actual(class="form-control", placeholder="What actually happened?", style="height: 100px;") }}
-                                <label for="actual">{{ form.actual.label.text }}</label>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <button type="button" class="btn btn-secondary" onclick="prevStep()">Previous</button>
-                                <button type="submit" class="btn btn-primary">Submit Bug</button>
-                            </div>
-                        </div>
+      // If all validations pass, proceed to the next step
+      if (valid) {
+        nextStep();
+      }
+    }
 
-                    </div> <!-- /.form-steps-inner -->
-                </div> <!-- /.form-steps-container -->
-            </form>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Get references to form fields and the Next button
-            const titleInput = document.getElementById('title');
-            const roleInput = document.getElementById('role');
-            const pageInput = document.getElementById('page');
-            const thenTextArea = document.getElementById('then');
-            const nextButton = document.getElementById('next-btn');
-        
-            // Validation function
-            function validateInputs() {
-                const isTitleValid = titleInput.value.trim() !== '';
-                const isRoleValid = roleInput.value.trim() !== '';
-                const isPageValid = pageInput.value.trim() !== '';
-                const isThenValid = thenTextArea.value.trim() !== '';
-        
-                nextButton.disabled = !(isTitleValid && isRoleValid && isPageValid && isThenValid);
-            }
-        
-            [titleInput, roleInput, pageInput, thenTextArea].forEach(field => {
-                field.addEventListener('input', validateInputs);
-                field.addEventListener('change', validateInputs);
-            });
-        
-            validateInputs();
-        });
-
-        function nextStep() {
-            document.getElementById('formStepsInner').style.transform = 'translateX(-50%)';
-        }
-        function prevStep() {
-            document.getElementById('formStepsInner').style.transform = 'translateX(0)';
-        }
-    </script>
+    // Transition to next step (by shifting the form container)
+    function nextStep() {
+      document.getElementById('formStepsInner').style.transform = 'translateX(-50%)';
+    }
+    function prevStep() {
+      document.getElementById('formStepsInner').style.transform = 'translateX(0)';
+    }
+  </script>
 {% endblock %}
