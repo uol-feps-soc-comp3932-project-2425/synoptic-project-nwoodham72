@@ -32,7 +32,7 @@
                 {{ form.title(class="form-control", placeholder="Bug Title") }}
                 <label for="title">Please give your bug a title</label>
                 <div class="invalid-feedback">
-                  Title must be at least 30 characters.
+                  Title must be at least 10 characters.
                 </div>
               </div>
 
@@ -61,12 +61,18 @@
 
               <!-- Then textarea with floating label and validation feedback -->
               <div class="form-floating mb-3">
-                {{ form.then(class="form-control", placeholder="What happened?", style="height: 100px;") }}
+                {{ form.then(class="form-control", aria_describedby="description-helpblock", placeholder="description", value="When I try to log in with valid credentials, I get a 403 error and I cannot get into my account", style="height: 100px;") }}
                 <label for="then">Describe the issue, what happened?</label>
+                <div id="description-helpblock" class="form-text">
+                  Your description should be at least 100 characters long. Please describe what you are trying to do, what happens, and any error messages. See an example bug ticket <a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">here</a>.
+                </div>
                 <div class="invalid-feedback">
                   Description must be at least 30 characters.
                 </div>
               </div>
+              
+              
+              
 
               <div class="d-grid">
                 <!-- Note: The button is always enabled so that errors show on click -->
@@ -98,6 +104,36 @@
     </div>
   </div>
 
+  <!-- Modal for Example Bug Ticket -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Example Bug Ticket</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Bug Title: </strong>Cannot log into platform after updating password</p>
+          <p><strong>Description: </strong>I have reset the password on my account. When I try to log into the platform with valid credentials, the page freezes and I get a 403 error saying I do not have permission to log in.</p>
+          <p><strong>What should have happened instead: </strong>I should have been able to log in and access my dashboard.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tooltips for example bug ticket -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+      });
+    });
+  </script>
+
   <script>
     // Validate step 1 on Next button click
     function validateStep1() {
@@ -109,7 +145,7 @@
       let valid = true;
 
       // Validate Title (minimum 30 characters)
-      if (titleInput.value.trim().length < 30) {
+      if (titleInput.value.trim().length < 10) {
         titleInput.classList.add('is-invalid');
         titleInput.classList.remove('is-valid');
         valid = false;
@@ -139,7 +175,7 @@
       }
 
       // Validate Then textarea (minimum 30 characters)
-      if (thenTextArea.value.trim().length < 30) {
+      if (thenTextArea.value.trim().length < 100) {
         thenTextArea.classList.add('is-invalid');
         thenTextArea.classList.remove('is-valid');
         valid = false;
