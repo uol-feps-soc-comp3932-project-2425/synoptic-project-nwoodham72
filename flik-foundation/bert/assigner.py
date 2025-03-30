@@ -161,7 +161,21 @@ if __name__ == "__main__":
                 "When I click login it says that my account is not recognised, and it seems that your reset password link is not working either."
                 "I also get a 403 error and the system crashes"
             ),
-        }
+        },
+        {
+             "title": "Data Analytics for Investment",
+             "text": (
+                 "I am contacting you to request information on data analytics tools that "
+                 "can be utilized with the Eclipse IDE for enhancing investment optimization. "
+                 "I am seeking suggestions for tools that can aid in making data-driven decisions. "
+                 "Particularly, I am interested in tools that can manage large datasets and offer "
+                 "advanced analytics features. These tools should be compatible with the Eclipse IDE "
+                 "and can smoothly integrate into my workflow. Key features I am interested in include "
+                 "data visualization, predictive modeling, and machine learning capabilities. I would "
+                 "greatly appreciate any recommendations or advice on how to begin with data analytics "
+                 "for investment optimization using the Eclipse IDE."
+             )
+         },
     ]
 
     # Board and work item configuration
