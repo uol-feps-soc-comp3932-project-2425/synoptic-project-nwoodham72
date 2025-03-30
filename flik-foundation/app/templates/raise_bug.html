@@ -39,13 +39,13 @@
   <p class="text-muted">Please provide details about the issue you encountered.</p>
 
   {% if bug_details %}
-  <div class="alert alert-success shadow-sm">
-      <h5 class="alert-heading">🎉 Bug Reported Successfully!</h5>
-      <strong>Title:</strong> {{ bug_details.title }}<br>
-      <strong>Role:</strong> {{ bug_details.role }}<br>
-      <strong>Page:</strong> {{ bug_details.page }}<br>
-      <strong>Description:</strong> {{ bug_details.description }}<br>
-      <strong>Expected Behaviour:</strong> {{ bug_details.expected }}
+  <div class="alert alert-success shadow-sm text-center">
+    <img src="/static/images/bug.png" alt="Flik Logo" class="img-fluid mb-2" style="max-width: 50px;"> <!-- Bootstrap 5.2 images (https://icons.getbootstrap.com/) -->
+    <h5 class="alert-heading">It's a bug!</h5>
+    <p>
+      Your bug has been sent to the development team to be resolved. Thank you for taking the time to report this bug through Flik.
+      Please note that the development team may reach out to you for further details if required.
+    </p>
   </div>
   {% endif %}
 
