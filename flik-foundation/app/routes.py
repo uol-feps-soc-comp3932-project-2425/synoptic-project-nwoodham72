@@ -44,21 +44,19 @@ def raise_bug():
         # 2. Populate it after successful validation
         bug_details = {
             'title': form.title.data,
-            'given': form.given.data,
-            'when': form.when.data,
-            'then': form.then.data,
+            'role': form.role.data,
+            'page': form.page.data,
+            'description': form.description.data,
             'expected': form.expected.data,
-            'actual': form.actual.data
         }
 
         # Generate extractive summary of bug ticket
         prep_summary_data = (
             bug_details['title'].strip() + ".\n" +  # Add full stops to end of each step
-            bug_details['given'].strip() + ".\n" +  
-            bug_details['when'].strip() + ".\n" +
-            bug_details['then'].strip() + ".\n" +      
-            bug_details['expected'].strip() + ".\n" +
-            bug_details['actual'].strip() + ".\n"
+            "I am a " + bug_details['role'].strip() + "user.\n" +  
+            "I am on the " + bug_details['page'].strip() + "page.\n" +
+            bug_details['description'].strip() + ".\n" +      
+            bug_details['expected'].strip() + ".\n" 
         )
 
         summary = extractive_summary(prep_summary_data)
@@ -68,12 +66,10 @@ def raise_bug():
         description = (
             f"Summary:<br>{summary}<br><br>"
             f"Priority: {priority_label}<br><br>"
-            f"Actual Behaviour:<br>{bug_details['actual']}<br><br>"
+            f"--Steps to Reproduce--<br>"
+            f"Background:<br>I am a {bug_details['role']} user and I am on the {bug_details['page']} page.<br><br>"
+            f"Problem Description:<br>{bug_details['description']}<br><br>"
             f"Expected Behaviour:<br>{bug_details['expected']}<br><br>"
-            f"Steps to Reproduce:<br>"
-            f"Given: {bug_details['given']}<br>"
-            f"When: {bug_details['when']}<br>"
-            f"Then: {bug_details['then']}<br><br>"
         )
 
         # Fetch developers and skills
@@ -98,11 +94,10 @@ def raise_bug():
 
             # Clear form after successful send
             form.title.data = ''
-            form.given.data = ''
-            form.when.data = ''
-            form.then.data = ''
+            form.role.data = ''
+            form.page.data = ''
+            form.description.data = ''
             form.expected.data = ''
-            form.actual.data = ''
 
         except Exception as e:
             flash(f"Failed to create ticket: {e}", "danger")

@@ -27,12 +27,9 @@ class RaiseBugForm(FlaskForm):
         validators=[DataRequired(message="Please select a page")],
         render_kw={"id": "page"},
     )
-    then = TextAreaField("Then", validators=[DataRequired(), Length(min=10)], render_kw={"id": "then"})
+    description = TextAreaField("Description", validators=[DataRequired(), Length(min=10)], render_kw={"id": "description"})
     expected = TextAreaField(
         "Expected Behaviour", validators=[DataRequired(), Length(min=10)], render_kw={"id": "expected"}
-    )
-    actual = TextAreaField(
-        "Actual Behaviour", validators=[DataRequired(), Length(min=10)], render_kw={"id": "actual"}
     )
     submit = SubmitField("Report Bug")
 

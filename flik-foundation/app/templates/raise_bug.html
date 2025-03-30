@@ -2,6 +2,39 @@
 {% block title %}Report Bug - Flik{% endblock %}
 
 {% block content %}
+  <!-- Field styling -->
+  <style>
+    .is-warning {
+      border-color: #ffc107 !important;
+      box-shadow: 0 0 0 0.25rem rgba(255,193,7,0.25);
+    }
+    /* Remove focus outline from all inputs */
+    #title:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    #role:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    #page:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    #description:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    #expected:focus{
+      outline: none;
+      box-shadow: none;
+    }
+  </style>
+
   <h1 class="mb-3">Report a Bug</h1>
   <p class="text-muted">Please provide details about the issue you encountered.</p>
 
@@ -9,11 +42,10 @@
   <div class="alert alert-success shadow-sm">
       <h5 class="alert-heading">🎉 Bug Reported Successfully!</h5>
       <strong>Title:</strong> {{ bug_details.title }}<br>
-      <strong>Role:</strong> {{ bug_details.given }}<br>
-      <strong>Page:</strong> {{ bug_details.when }}<br>
-      <strong>Then:</strong> {{ bug_details.then }}<br>
-      <strong>Expected:</strong> {{ bug_details.expected }}<br>
-      <strong>Actual:</strong> {{ bug_details.actual }}
+      <strong>Role:</strong> {{ bug_details.role }}<br>
+      <strong>Page:</strong> {{ bug_details.page }}<br>
+      <strong>Description:</strong> {{ bug_details.description }}<br>
+      <strong>Expected Behaviour:</strong> {{ bug_details.expected }}
   </div>
   {% endif %}
 
@@ -31,6 +63,9 @@
               <div class="form-floating mb-3">
                 {{ form.title(class="form-control", placeholder="Bug Title") }}
                 <label for="title">Please give your bug a title</label>
+                <div id="description-helpblock" class="form-text">
+                  Your title must be at least 10 characters.
+                </div>
                 <div class="invalid-feedback">
                   Title must be at least 10 characters.
                 </div>
@@ -59,23 +94,19 @@
                 </div>
               </div>
 
-              <!-- Then textarea with floating label and validation feedback -->
+              <!-- Description -->
               <div class="form-floating mb-3">
-                {{ form.then(class="form-control", aria_describedby="description-helpblock", placeholder="description", value="When I try to log in with valid credentials, I get a 403 error and I cannot get into my account", style="height: 100px;") }}
-                <label for="then">Describe the issue, what happened?</label>
+                {{ form.description(class="form-control", placeholder="Describe the issue, what happened?", aria_describedby="description-helpblock", style="height: 100px;") }}
+                <label for="description">Describe the issue, what happened?</label>
                 <div id="description-helpblock" class="form-text">
-                  Your description should be at least 100 characters long. Please describe what you are trying to do, what happens, and any error messages. See an example bug ticket <a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">here</a>.
+                  Please describe what you are trying to do. What happens, and what error messages do you encounter? (Minimum 100 characters). See an example bug ticket <a href="#" data-bs-toggle="modal" data-bs-target="#step1-modal">here</a>.
                 </div>
                 <div class="invalid-feedback">
                   Description must be at least 30 characters.
                 </div>
               </div>
-              
-              
-              
 
               <div class="d-grid">
-                <!-- Note: The button is always enabled so that errors show on click -->
                 <button id="next-btn" type="button" class="btn btn-primary" onclick="validateStep1()">
                   Next
                 </button>
@@ -85,16 +116,18 @@
             <!-- Step 2 -->
             <div class="form-step" id="step2">
               <div class="form-floating mb-3">
-                {{ form.expected(class="form-control", placeholder="What should have happened instead?", style="height: 100px;") }}
-                <label for="expected">{{ form.expected.label.text }}</label>
-              </div>
-              <div class="form-floating mb-3">
-                {{ form.actual(class="form-control", placeholder="What actually happened?", style="height: 100px;") }}
-                <label for="actual">{{ form.actual.label.text }}</label>
+                {{ form.expected(class="form-control", placeholder="What should have happened instead?", aria_describedby="expected-helpblock", style="height: 100px;") }}
+                <label for="expected">What did you expect to happen instead?</label>
+                <div id="expected-helpblock" class="form-text">
+                  Please describe what you expected to happen, or what you thought your role should have been able to do. (Minimum 30 characters). See an example bug ticket <a href="#" data-bs-toggle="modal" data-bs-target="#step2-modal">here</a>.
+                </div>
+                <div class="invalid-feedback">
+                  Expected behaviour must be at least 30 characters.
+                </div>
               </div>
               <div class="d-flex justify-content-between">
                 <button type="button" class="btn btn-secondary" onclick="prevStep()">Previous</button>
-                <button type="submit" class="btn btn-primary">Submit Bug</button>
+                <button type="submit" id="submit-btn" class="btn btn-primary" disabled>Submit Bug</button>
               </div>
             </div>
 
@@ -105,17 +138,17 @@
   </div>
 
   <!-- Modal for Example Bug Ticket -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="step1-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Example Bug Ticket</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Example</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <p><strong>Bug Title: </strong>Cannot log into platform after updating password</p>
-          <p><strong>Description: </strong>I have reset the password on my account. When I try to log into the platform with valid credentials, the page freezes and I get a 403 error saying I do not have permission to log in.</p>
-          <p><strong>What should have happened instead: </strong>I should have been able to log in and access my dashboard.</p>
+          <p><strong>Description: </strong>I am trying to log in with valid credentials into the Student portal. When I click login it says that my account is not recognised, and it seems that your reset password link is not working either. I also get a 403 error and the system crashes.</p>
+          <p><strong>What should have happened instead? (next page): </strong>I should have been able to log in and access my dashboard.</p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -124,27 +157,138 @@
     </div>
   </div>
 
-  <!-- Tooltips for example bug ticket -->
+  <!-- Step 2 modal -->
+  <div class="modal fade" id="step2-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Example</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Bug Title (previous page): </strong>Cannot log into platform after updating password</p>
+          <p><strong>Description (previous page): </strong>I have reset the password on my account. When I try to log into the platform with valid credentials, the page freezes and I get a 403 error saying I do not have permission to log in.</p>
+          <p><strong>What should have happened instead?: </strong>I should have been able to log in and access my dashboard.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Event Listeners and Formatting -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-      var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
+      const titleInput = document.getElementById('title');
+      const descInput = document.getElementById('description');
+      const roleSelect = document.getElementById('role');
+      const pageSelect = document.getElementById('page');
+      const expected_input = document.getElementById('expected');
+
+      // Title field formatting
+      titleInput.addEventListener('input', function(e) {
+        const value = e.target.value.trim();
+        if (value.length > 0 && value.length < 10) {
+          e.target.classList.remove('is-invalid', 'is-valid');
+          e.target.classList.add('is-warning');
+        } else if (value.length >= 10) {
+          e.target.classList.remove('is-invalid', 'is-warning');
+          e.target.classList.add('is-valid');
+        } else {
+          e.target.classList.remove('is-invalid', 'is-warning', 'is-valid');
+        }
       });
+      // On blur, if title is too short, mark it red
+      titleInput.addEventListener('blur', function(e) {
+        const value = e.target.value.trim();
+        if (value.length > 0 && value.length < 10) {
+          e.target.classList.remove('is-warning');
+          e.target.classList.add('is-invalid');
+        }
+      });
+
+      // Description field formatting
+      descInput.addEventListener('input', function(e) {
+        const value = e.target.value.trim();
+        if (value.length > 0 && value.length < 100) {
+          e.target.classList.remove('is-invalid', 'is-valid');
+          e.target.classList.add('is-warning');
+        } else if (value.length >= 100) {
+          e.target.classList.remove('is-invalid', 'is-warning');
+          e.target.classList.add('is-valid');
+        } else {
+          e.target.classList.remove('is-invalid', 'is-warning', 'is-valid');
+        }
+      });
+      // On blur, if description is too short, mark it red
+      descInput.addEventListener('blur', function(e) {
+        const value = e.target.value.trim();
+        if (value.length > 0 && value.length < 100) {
+          e.target.classList.remove('is-warning');
+          e.target.classList.add('is-invalid');
+        }
+      });
+
+      // Role select formatting
+      roleSelect.addEventListener('change', function(e) {
+        const value = e.target.value.trim();
+        if (value !== '') {
+          e.target.classList.remove('is-invalid');
+          e.target.classList.add('is-valid');
+        } else {
+          e.target.classList.remove('is-valid');
+          e.target.classList.add('is-invalid');
+        }
+      });
+
+      // Page select formatting
+      pageSelect.addEventListener('change', function(e) {
+        const value = e.target.value.trim();
+        if (value !== '') {
+          e.target.classList.remove('is-invalid');
+          e.target.classList.add('is-valid');
+        } else {
+          e.target.classList.remove('is-valid');
+          e.target.classList.add('is-invalid');
+        }
+      });
+
+      // Expected field formatting
+      expected_input.addEventListener('input', function(e) {
+        const value = e.target.value.trim();
+        if (value.length > 0 && value.length < 30) {
+          e.target.classList.remove('is-invalid', 'is-valid');
+          e.target.classList.add('is-warning');
+        } else if (value.length >= 10) {
+          e.target.classList.remove('is-invalid', 'is-warning');
+          e.target.classList.add('is-valid');
+        } else {
+          e.target.classList.remove('is-invalid', 'is-warning', 'is-valid');
+        }
+      });
+      // On blur, if expected field is too short, mark it red
+      expected_input.addEventListener('blur', function(e) {
+        const value = e.target.value.trim();
+        if (value.length > 0 && value.length < 30) {
+          e.target.classList.remove('is-warning');
+          e.target.classList.add('is-invalid');
+        }
+      });
+  
     });
   </script>
 
+  <!-- Validation for Step 1 on Next button click -->
   <script>
-    // Validate step 1 on Next button click
     function validateStep1() {
-      // Retrieve elements
       const titleInput = document.getElementById('title');
       const roleInput = document.getElementById('role');
       const pageInput = document.getElementById('page');
-      const thenTextArea = document.getElementById('then');
+      const descInput = document.getElementById('description');
       let valid = true;
 
-      // Validate Title (minimum 30 characters)
+      // Validate Title (min 10 characters)
       if (titleInput.value.trim().length < 10) {
         titleInput.classList.add('is-invalid');
         titleInput.classList.remove('is-valid');
@@ -154,7 +298,7 @@
         titleInput.classList.add('is-valid');
       }
 
-      // Validate Role selection (must not be empty)
+      // Validate Role (must not be empty)
       if (roleInput.value.trim() === '') {
         roleInput.classList.add('is-invalid');
         roleInput.classList.remove('is-valid');
@@ -164,7 +308,7 @@
         roleInput.classList.add('is-valid');
       }
 
-      // Validate Page selection (must not be empty)
+      // Validate Page (must not be empty)
       if (pageInput.value.trim() === '') {
         pageInput.classList.add('is-invalid');
         pageInput.classList.remove('is-valid');
@@ -174,23 +318,21 @@
         pageInput.classList.add('is-valid');
       }
 
-      // Validate Then textarea (minimum 30 characters)
-      if (thenTextArea.value.trim().length < 100) {
-        thenTextArea.classList.add('is-invalid');
-        thenTextArea.classList.remove('is-valid');
+      // Validate Description (min 100 characters)
+      if (descInput.value.trim().length < 100) {
+        descInput.classList.add('is-invalid');
+        descInput.classList.remove('is-valid');
         valid = false;
       } else {
-        thenTextArea.classList.remove('is-invalid');
-        thenTextArea.classList.add('is-valid');
+        descInput.classList.remove('is-invalid');
+        descInput.classList.add('is-valid');
       }
 
-      // If all validations pass, proceed to the next step
       if (valid) {
         nextStep();
       }
     }
 
-    // Transition to next step (by shifting the form container)
     function nextStep() {
       document.getElementById('formStepsInner').style.transform = 'translateX(-50%)';
     }
@@ -198,4 +340,24 @@
       document.getElementById('formStepsInner').style.transform = 'translateX(0)';
     }
   </script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const expectedInput = document.getElementById('expected');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    expectedInput.addEventListener('input', function(e) {
+      const value = e.target.value.trim();
+      if(value.length >= 30) {
+         submitBtn.disabled = false;
+         expectedInput.classList.remove('is-warning', 'is-invalid');
+         expectedInput.classList.add('is-valid');
+      } else {
+         submitBtn.disabled = true;
+         expectedInput.classList.remove('is-valid');
+         expectedInput.classList.add('is-warning');
+      }
+    });
+  });
+</script>
 {% endblock %}
