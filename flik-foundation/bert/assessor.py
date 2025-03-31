@@ -78,7 +78,8 @@ def assess_documentation(bug_description, bug_description_role):
                 matches.append({
                     "title": entry["title"],
                     "permitted_roles": entry["permitted_roles"],
-                    "action": cleaned_entry
+                    "action": cleaned_entry,
+                    "sim_score": round(cosine_sim, 2)
                 })
     # Return documentation matches
     if matches:

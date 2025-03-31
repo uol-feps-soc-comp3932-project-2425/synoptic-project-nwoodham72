@@ -39,11 +39,14 @@ def list_users():
 def raise_bug():
     form = RaiseBugForm()
     bug_details = None 
+    additional_comments = None
+    matching_docs = None
+    tags = []
 
     if form.validate_on_submit():
         # Check for additional comments from documentation match modal
         additional_comments = request.form.get('additional_comments', '').strip()
-
+    
         # Get form details
         bug_details = {
             'title': form.title.data,
@@ -70,8 +73,8 @@ def raise_bug():
         # Generate extractive summary of bug ticket
         prep_summary_data = (
             bug_details['title'].strip() + ".\n" +  # Add full stops to end of each step
-            "I am a " + bug_details['role'].strip() + "user.\n" +  
-            "I am on the " + bug_details['page'].strip() + "page.\n" +
+            f"I am a " + bug_details['role'].strip() + "user.\n" +  
+            f"I am on the " + bug_details['page'].strip() + "page.\n" +
             bug_details['description'].strip() + ".\n" +      
             bug_details['expected'].strip() + ".\n" 
         )
@@ -91,7 +94,7 @@ def raise_bug():
 
         # Append additional comments on documentation match modal
         if additional_comments:
-            description += f"User's Additional Comments:<br>{additional_comments}<br><br>"
+            description += f"This bug flagged a documentation issue. The author provided additional comments:<br>{additional_comments}<br><br>"
 
         # Fetch developers and skills
         developers = {
@@ -100,7 +103,9 @@ def raise_bug():
         }
 
         assigned_to, tags = assign_developer(developers, prep_summary_data, ORGANISATION, PROJECT_NAME, RETRIEVAL_ACCESS_TOKEN)
-        structured_tags = ", ".join(tags) if tags else "miscellaneous"
+        if additional_comments: tags.append("Documentation Misalignment") 
+        structured_tags = ", ".join(tags) if tags else "Miscellaneous"
+
 
         try:
             work_item = create_work_item(
