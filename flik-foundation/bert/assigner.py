@@ -154,7 +154,7 @@ def assign_developer(
 if __name__ == "__main__":
     examples = [
         {
-            "title": "Cannot log in",
+            "title": "Cannot log in",  # Expected tags: Login
             "text": (
                 "I am a manager user on the login page. "
                 "I am trying to log in with valid credentials into the Student portal. "
@@ -163,7 +163,7 @@ if __name__ == "__main__":
             ),
         },
         {
-             "title": "Data Analytics for Investment",
+             "title": "Data Analytics for Investment",  # Expected tags: Product, Technical
              "text": (
                  "I am contacting you to request information on data analytics tools that "
                  "can be utilized with the Eclipse IDE for enhancing investment optimization. "
