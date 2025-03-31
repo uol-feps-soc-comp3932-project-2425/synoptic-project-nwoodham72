@@ -2,34 +2,12 @@
 {% block title %}Report Bug - Flik{% endblock %}
 
 {% block content %}
-  <!-- Field styling -->
   <style>
     .is-warning {
       border-color: #ffc107 !important;
       box-shadow: 0 0 0 0.25rem rgba(255,193,7,0.25);
     }
-    /* Remove focus outline from all inputs */
-    #title:focus {
-      outline: none;
-      box-shadow: none;
-    }
-
-    #role:focus {
-      outline: none;
-      box-shadow: none;
-    }
-
-    #page:focus {
-      outline: none;
-      box-shadow: none;
-    }
-
-    #description:focus {
-      outline: none;
-      box-shadow: none;
-    }
-
-    #expected:focus{
+    #title:focus, #role:focus, #page:focus, #description:focus, #expected:focus {
       outline: none;
       box-shadow: none;
     }
@@ -38,35 +16,32 @@
   <h1 class="mb-3">Report a Bug</h1>
   <p class="text-muted">Please provide details about the issue you encountered.</p>
 
-  <!-- Display matching documentation -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+          {{ message|safe }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
   {% if matching_docs %}
     <div class="alert alert-warning shadow-sm">
       <h5 class="alert-heading">We're not quite sure that's a bug...</h5>
-      <h6>Your bug report was similar to the provider's documentation. Please check your role and the permitted actions below to see if it resolves your issue.</h3>
+      <h6>Your bug report was similar to the provider's documentation. Please check your role and the permitted actions below to see if it resolves your issue.</h6>
       <hr>
       {% for doc in matching_docs %}
         <p>
           <strong><em>{{ doc.title }}</em></strong><br>
-          Permitted Roles: <i>{{ doc.permitted_roles | join(', ') }}</i><br>  <!-- Format roles -->
+          Permitted Roles: <i>{{ doc.permitted_roles | join(', ') }}</i><br>
           Action: <i>{{ doc.action }}</i>
         </p>
         <hr>
       {% endfor %}
       <p>
         <a href="#" data-bs-toggle="modal" data-bs-target="#documentation-modal">Still feel as if your bug hasn't been resolved?</a>
-      </p>
-    </div>
-  
-  {% endif %}
-
-  <!-- Check form details were sent -->
-  {% if bug_details %}
-    <div class="alert alert-success shadow-sm text-center">
-      <img src="/static/images/bug.png" alt="Flik Logo" class="img-fluid mb-2" style="max-width: 50px;"> <!-- Bootstrap 5.2 images (https://icons.getbootstrap.com/) -->
-      <h5 class="alert-heading">It's a bug!</h5>
-      <p>
-        Your bug has been sent to the development team to be resolved. Thank you for taking the time to report this bug through Flik.
-        Please note that the development team may reach out to you for further details if required.
       </p>
     </div>
   {% endif %}
