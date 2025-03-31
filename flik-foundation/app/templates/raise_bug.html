@@ -7,7 +7,7 @@
       border-color: #ffc107 !important;
       box-shadow: 0 0 0 0.25rem rgba(255,193,7,0.25);
     }
-    #title:focus, #role:focus, #page:focus, #description:focus, #expected:focus {
+    #title:focus, #role:focus, #page:focus, #description:focus, #expected:focus, #additionalComments:focus {
       outline: none;
       box-shadow: none;
     }
@@ -146,12 +146,18 @@
         <div class="modal-body">
           <p>If the documentation didn’t resolve your issue, you can still submit this bug report.</p>
           <div class="form-floating mb-3">
-            <textarea class="form-control" id="additionalComments" name="additional_comments" placeholder="Explain why the documentation doesn't help..." style="height: 120px;"></textarea>
+            <textarea class="form-control" id="additionalComments" name="additional_comments" placeholder="Explain why the documentation doesn't help..." aria_describedby="additional_comments-helpblock" style="height: 120px;"></textarea>
             <label for="additionalComments">Additional Comments</label>
+            <div id="additional_comments-helpblock" class="form-text">
+              Minimum 30 characters.
+            </div>
+            <div class="invalid-feedback">
+              Your additional comments must be at least 30 characters.
+            </div>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary" onclick="submitWithExtra()">Submit Bug</button>
+          <button type="submit" id="override-btn" class="btn btn-primary" onclick="submitWithExtra()" disabled>Submit Bug</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         </div>
       </div>
@@ -222,6 +228,8 @@
       const roleSelect = document.getElementById('role');
       const pageSelect = document.getElementById('page');
       const expected_input = document.getElementById('expected');
+      const additional_input = document.getElementById('additionalComments');
+
 
       // Title field formatting
       titleInput.addEventListener('input', function(e) {
@@ -306,6 +314,28 @@
       });
       // On blur, if expected field is too short, mark it red
       expected_input.addEventListener('blur', function(e) {
+        const value = e.target.value.trim();
+        if (value.length > 0 && value.length < 30) {
+          e.target.classList.remove('is-warning');
+          e.target.classList.add('is-invalid');
+        }
+      });
+
+      // Additional field formatting
+      additional_input.addEventListener('input', function(e) {
+        const value = e.target.value.trim();
+        if (value.length > 0 && value.length < 30) {
+          e.target.classList.remove('is-invalid', 'is-valid');
+          e.target.classList.add('is-warning');
+        } else if (value.length >= 10) {
+          e.target.classList.remove('is-invalid', 'is-warning');
+          e.target.classList.add('is-valid');
+        } else {
+          e.target.classList.remove('is-invalid', 'is-warning', 'is-valid');
+        }
+      });
+      // On blur, if expected field is too short, mark it red
+      additional_input.addEventListener('blur', function(e) {
         const value = e.target.value.trim();
         if (value.length > 0 && value.length < 30) {
           e.target.classList.remove('is-warning');
@@ -397,4 +427,25 @@
     });
   });
 </script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const additional_input = document.getElementById('additionalComments');
+    const submitBtn = document.getElementById('override-btn');
+    
+    additional_input.addEventListener('input', function(e) {
+      const value = e.target.value.trim();
+      if(value.length >= 30) {
+         submitBtn.disabled = false;
+         additional_input.classList.remove('is-warning', 'is-invalid');
+         additional_input.classList.add('is-valid');
+      } else {
+         submitBtn.disabled = true;
+         additional_input.classList.remove('is-valid');
+         additional_input.classList.add('is-warning');
+      }
+    });
+  });
+</script>
+
 {% endblock %}
