@@ -38,6 +38,7 @@
   <h1 class="mb-3">Report a Bug</h1>
   <p class="text-muted">Please provide details about the issue you encountered.</p>
 
+  <!-- Display matching documentation -->
   {% if matching_docs %}
     <div class="alert alert-warning shadow-sm">
       <h5 class="alert-heading">We're not quite sure that's a bug...</h5>
@@ -52,13 +53,13 @@
         <hr>
       {% endfor %}
       <p>
-        Still feel as if your bug hasn't been resolved?
+        <a href="#" data-bs-toggle="modal" data-bs-target="#documentation-modal">Still feel as if your bug hasn't been resolved?</a>
       </p>
     </div>
   
   {% endif %}
 
-
+  <!-- Check form details were sent -->
   {% if bug_details %}
     <div class="alert alert-success shadow-sm text-center">
       <img src="/static/images/bug.png" alt="Flik Logo" class="img-fluid mb-2" style="max-width: 50px;"> <!-- Bootstrap 5.2 images (https://icons.getbootstrap.com/) -->
@@ -158,6 +159,30 @@
     </div>
   </div>
 
+  <!-- Modals -->
+  <!-- Modal for Matching Documentation -->
+  <div class="modal fade" id="documentation-modal" tabindex="-1" aria-labelledby="docModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="docModalLabel">Still think it's a bug?</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>If the documentation didn’t resolve your issue, you can still submit this bug report.</p>
+          <div class="form-floating mb-3">
+            <textarea class="form-control" id="additionalComments" name="additional_comments" placeholder="Explain why the documentation doesn't help..." style="height: 120px;"></textarea>
+            <label for="additionalComments">Additional Comments</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" onclick="submitWithExtra()">Submit Bug</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>  
+
   <!-- Modal for Example Bug Ticket -->
   <div class="modal fade" id="step1-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -197,6 +222,22 @@
       </div>
     </div>
   </div>
+
+  <!-- JS -->
+
+  <!-- Pass additional input to DevOps -->
+  <script>
+    function submitWithExtra() {
+      const comment = document.getElementById('additionalComments').value.trim();
+      const hiddenInput = document.createElement('input');
+      hiddenInput.type = 'hidden';
+      hiddenInput.name = 'additional_comments';
+      hiddenInput.value = comment;
+      document.querySelector('form').appendChild(hiddenInput);
+      document.querySelector('form').submit();
+    }
+  </script>
+  
 
   <!-- Event Listeners and Formatting -->
   <script>

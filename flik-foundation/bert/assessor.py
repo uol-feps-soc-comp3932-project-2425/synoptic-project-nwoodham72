@@ -87,22 +87,22 @@ def assess_documentation(bug_description, bug_description_role):
     # No match found
     return False, None
 
-# Example usage
-if __name__ == "__main__":
-    # bug_description = """
-    # I am a client user on the modules page.
-    # I am trying to update the name of a module. I can update other details such as the cover image, but when I go to update the name and click save, I get a message saying the 'name is not valid'.
-    # I should have been able to update the name of the module.    
-    # """
-    # bug_description_role = "manager"
-    bug_description = """
-    I am a client user on the login page.
-    I am trying to update my password via the 'Forgot password' button on the login page. When I click on the link it says that the page does not exist.
-    The reset password page should be available. 
-    """
-    bug_description_role = "client"
+# # Example usage
+# if __name__ == "__main__":
+#     # bug_description = """
+#     # I am a client user on the modules page.
+#     # I am trying to update the name of a module. I can update other details such as the cover image, but when I go to update the name and click save, I get a message saying the 'name is not valid'.
+#     # I should have been able to update the name of the module.    
+#     # """
+#     # bug_description_role = "manager"
+#     bug_description = """
+#     I am a client user on the login page.
+#     I am trying to update my password via the 'Forgot password' button on the login page. When I click on the link it says that the page does not exist.
+#     The reset password page should be available. 
+#     """
+#     bug_description_role = "client"
     
-    assess_documentation(bug_description, bug_description_role)
+#     assess_documentation(bug_description, bug_description_role)
 
                 
 
