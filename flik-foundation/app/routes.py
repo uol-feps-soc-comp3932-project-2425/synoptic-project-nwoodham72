@@ -5,8 +5,8 @@ from azure_integration.client import create_work_item
 from azure_integration.config import PROJECT_NAME, ORGANISATION_URL, ORGANISATION, PERSONAL_ACCESS_TOKEN, RETRIEVAL_ACCESS_TOKEN
 from bert.summariser import extractive_summary
 from bert.prioritiser import predict_priority
-# from bert.assigner import assign_developer
 from bert.assigner import assign_developer
+from bert.assessor import assess_documentation
 
 main = Blueprint("main", __name__)
 
@@ -20,7 +20,7 @@ def dashboard():
     elif current_user.role == "Client":
         return render_template("client_dashboard.html")
     else:
-        flash("Unauthorized access", "danger")
+        flash("Unauthorised access", "danger")
         return redirect(url_for("main.index"))
 
 @main.route("/", methods=["GET"])
@@ -41,7 +41,6 @@ def raise_bug():
     bug_details = None 
 
     if form.validate_on_submit():
-        # 2. Populate it after successful validation
         bug_details = {
             'title': form.title.data,
             'role': form.role.data,
@@ -49,6 +48,21 @@ def raise_bug():
             'description': form.description.data,
             'expected': form.expected.data,
         }
+
+        # Generate documentation similarity
+        prep_documentation_comparison = (
+            "I am a " + bug_details['role'].strip() + "user.\n" +  
+            "I am on the " + bug_details['page'].strip() + "page.\n" +
+            bug_details['description'].strip() + ".\n" +      
+            bug_details['expected'].strip() + ".\n" 
+        )
+
+        # todo: call assessor function
+        match, matching_doc = assess_documentation(prep_documentation_comparison, bug_details['role'].strip())
+        if match and matching_doc:
+            permitted_roles = ", ".join(matching_doc["permitted_roles"])  # Format roles
+            return render_template("raise_bug.html", form=form, bug_details=None, matching_doc=matching_doc, permitted_roles=permitted_roles)  # Display matching documentation
+        
 
         # Generate extractive summary of bug ticket
         prep_summary_data = (

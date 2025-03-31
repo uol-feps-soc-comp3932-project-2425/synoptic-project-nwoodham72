@@ -38,15 +38,28 @@
   <h1 class="mb-3">Report a Bug</h1>
   <p class="text-muted">Please provide details about the issue you encountered.</p>
 
+  {% if matching_doc %}
+    <div class="alert alert-warning shadow-sm">
+      <h5 class="alert-heading">We're not quite sure that's a bug...</h5>
+      <h6>Your bug report was similar to the provider's documentation. Please check your role and documentation below to see if it resolves your issue.</h3><br><br>
+      <p>
+        <strong><em>{{ matching_doc.title }}</strong></em>
+        Permitted Roles: <i>{{ permitted_roles }}</i>
+        Action: <i>{{ matching_doc.action }}</i>
+      </p>
+    </div>
+  {% endif %}
+
+
   {% if bug_details %}
-  <div class="alert alert-success shadow-sm text-center">
-    <img src="/static/images/bug.png" alt="Flik Logo" class="img-fluid mb-2" style="max-width: 50px;"> <!-- Bootstrap 5.2 images (https://icons.getbootstrap.com/) -->
-    <h5 class="alert-heading">It's a bug!</h5>
-    <p>
-      Your bug has been sent to the development team to be resolved. Thank you for taking the time to report this bug through Flik.
-      Please note that the development team may reach out to you for further details if required.
-    </p>
-  </div>
+    <div class="alert alert-success shadow-sm text-center">
+      <img src="/static/images/bug.png" alt="Flik Logo" class="img-fluid mb-2" style="max-width: 50px;"> <!-- Bootstrap 5.2 images (https://icons.getbootstrap.com/) -->
+      <h5 class="alert-heading">It's a bug!</h5>
+      <p>
+        Your bug has been sent to the development team to be resolved. Thank you for taking the time to report this bug through Flik.
+        Please note that the development team may reach out to you for further details if required.
+      </p>
+    </div>
   {% endif %}
 
   <div class="card shadow-sm border-0 rounded-3">
