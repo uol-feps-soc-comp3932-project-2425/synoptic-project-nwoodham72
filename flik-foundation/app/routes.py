@@ -51,17 +51,15 @@ def raise_bug():
 
         # Generate documentation similarity
         prep_documentation_comparison = (
-            "I am a " + bug_details['role'].strip() + "user.\n" +  
-            "I am on the " + bug_details['page'].strip() + "page.\n" +
+            "I am a " + bug_details['role'].strip() + "user on the " + bug_details['page'].strip() + "page.\n" +
             bug_details['description'].strip() + ".\n" +      
             bug_details['expected'].strip() + ".\n" 
         )
 
         # todo: call assessor function
-        match, matching_doc = assess_documentation(prep_documentation_comparison, bug_details['role'].strip())
-        if match and matching_doc:
-            permitted_roles = ", ".join(matching_doc["permitted_roles"])  # Format roles
-            return render_template("raise_bug.html", form=form, bug_details=None, matching_doc=matching_doc, permitted_roles=permitted_roles)  # Display matching documentation
+        match, matching_docs = assess_documentation(prep_documentation_comparison, bug_details['role'].strip())
+        if match and matching_docs:
+            return render_template("raise_bug.html", form=form, bug_details=None, matching_docs=matching_docs)  # Display matching documentation
         
 
         # Generate extractive summary of bug ticket
@@ -81,7 +79,7 @@ def raise_bug():
             f"Summary:<br>{summary}<br><br>"
             f"Priority: {priority_label}<br><br>"
             f"--Steps to Reproduce--<br>"
-            f"Background:<br>I am a {bug_details['role']} user and I am on the {bug_details['page']} page.<br><br>"
+            f"Background:<br>I am a {bug_details['role']} user on the {bug_details['page']} page.<br><br>"
             f"Problem Description:<br>{bug_details['description']}<br><br>"
             f"Expected Behaviour:<br>{bug_details['expected']}<br><br>"
         )

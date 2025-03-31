@@ -38,16 +38,24 @@
   <h1 class="mb-3">Report a Bug</h1>
   <p class="text-muted">Please provide details about the issue you encountered.</p>
 
-  {% if matching_doc %}
+  {% if matching_docs %}
     <div class="alert alert-warning shadow-sm">
       <h5 class="alert-heading">We're not quite sure that's a bug...</h5>
-      <h6>Your bug report was similar to the provider's documentation. Please check your role and documentation below to see if it resolves your issue.</h3><br><br>
+      <h6>Your bug report was similar to the provider's documentation. Please check your role and the permitted actions below to see if it resolves your issue.</h3>
+      <hr>
+      {% for doc in matching_docs %}
+        <p>
+          <strong><em>{{ doc.title }}</em></strong><br>
+          Permitted Roles: <i>{{ doc.permitted_roles | join(', ') }}</i><br>  <!-- Format roles -->
+          Action: <i>{{ doc.action }}</i>
+        </p>
+        <hr>
+      {% endfor %}
       <p>
-        <strong><em>{{ matching_doc.title }}</strong></em>
-        Permitted Roles: <i>{{ permitted_roles }}</i>
-        Action: <i>{{ matching_doc.action }}</i>
+        Still feel as if your bug hasn't been resolved?
       </p>
     </div>
+  
   {% endif %}
 
 

@@ -14,6 +14,9 @@ def assess_documentation(bug_description, bug_description_role):
     # Similarity threshold 
     threshold = 0.6
 
+    # Store matching entries
+    matches = []
+
     # Get documentation
     documentation = [
         {
@@ -32,8 +35,7 @@ def assess_documentation(bug_description, bug_description_role):
             "permitted_roles": ["manager", "developer"],
             "not_permitted_roles": ["client"],
             "action": (
-                "I am a manager/developer user. "
-                "I am on the login page. "
+                "I am a manager/developer user on the login page. "
                 "Any user can reset their password through the 'Forgot your Password?' button on the login page. "
                 "After accessing the link, the user is prompted to enter their email, where a new password reset link will be sent. "
                 "A user can open the link in the sent email to reset their password. "
@@ -44,8 +46,7 @@ def assess_documentation(bug_description, bug_description_role):
             "permitted_roles": ["manager", "developer"],
             "not_permitted_roles": ["client"],
             "action": (
-                "I am a manager/developer user. "
-                "I am on the login page. "
+                "I am a manager/developer user on the login page. "
                 "Any user can reset their password through the 'Change password' button on the account page. "
                 "After accessing the link, the user is prompted to enter their email, where a new password reset link will be sent. "
                 "A user can open the link in the sent email to reset their password. "
@@ -64,45 +65,44 @@ def assess_documentation(bug_description, bug_description_role):
         # Assess similarity between bug description and documentation entry 
         cosine_sim = util.pytorch_cos_sim(action_embedding, bug_description_embedding).item()
 
-        print(f"Title: {title}")
-        print(f"Cosine Similarity Score: {cosine_sim:.4f}")
+        print(f"Title: {title} - Cosine Similarity Score: {cosine_sim:.4f}")
 
         # Check similarity
         if cosine_sim >= threshold:
             print("Documentation and bug description match")
             # Check if role is permitted
-            if bug_description_role.lower() in [r.lower() for r in entry["permitted_roles"]]:
-                print("permitted role - likely a bug")
-                return False, None  # Successful bug, no need to send documentation snippet to routes.py
-            # Role is not permitted to perform action
-            else:
+            if bug_description_role.lower() not in [r.lower() for r in entry["permitted_roles"]]:                
                 print("role is not permitted - likely a documentation error")
                 # Clean entry
-                cleaned_entry = re.sub(r"^I am a .*? page\.\s*", "", entry["action"])  # Remove first 2 sentences
-                return True, {
+                cleaned_entry = re.sub(r"^I am a .*? page\.\s*", "", entry["action"])  # Remove "I am a <user> user on the <page> page sentence"
+                matches.append({
                     "title": entry["title"],
                     "permitted_roles": entry["permitted_roles"],
                     "action": cleaned_entry
-                }
+                })
+    # Return documentation matches
+    if matches:
+        return True, matches
+
     # No match found
     return False, None
 
-# # Example usage
-# if __name__ == "__main__":
-#     # bug_description = """
-#     # I am a client user on the modules page.
-#     # I am trying to update the name of a module. I can update other details such as the cover image, but when I go to update the name and click save, I get a message saying the 'name is not valid'.
-#     # I should have been able to update the name of the module.    
-#     # """
-#     # bug_description_role = "manager"
-#     bug_description = """
-#     I am a client user on the login page.
-#     I am trying to update my password via the 'Forgot password' button on the login page. When I click on the link it says that the page does not exist.
-#     The reset password page should be available. 
-#     """
-#     bug_description_role = "client"
+# Example usage
+if __name__ == "__main__":
+    # bug_description = """
+    # I am a client user on the modules page.
+    # I am trying to update the name of a module. I can update other details such as the cover image, but when I go to update the name and click save, I get a message saying the 'name is not valid'.
+    # I should have been able to update the name of the module.    
+    # """
+    # bug_description_role = "manager"
+    bug_description = """
+    I am a client user on the login page.
+    I am trying to update my password via the 'Forgot password' button on the login page. When I click on the link it says that the page does not exist.
+    The reset password page should be available. 
+    """
+    bug_description_role = "client"
     
-#     assess_documentation(bug_description, bug_description_role)
+    assess_documentation(bug_description, bug_description_role)
 
                 
 
