@@ -145,6 +145,11 @@ def raise_bug():
     matching_docs = None
     tags = []
 
+    # Fetch database values and set form fields
+    application_roles = ApplicationRole.query.order_by(ApplicationRole.name).all() 
+
+    form.role.choices = [("", "Select a role...")] + [(r.name, r.name) for r in application_roles]
+
     if form.validate_on_submit():
         # Check for additional comments from documentation match modal
         additional_comments = request.form.get("additional_comments", "").strip()

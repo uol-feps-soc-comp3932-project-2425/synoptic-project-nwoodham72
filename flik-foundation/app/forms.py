@@ -2,19 +2,10 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, PasswordField, SubmitField, SelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 
-
+""" forms.py: Define flask forms and field criteria """
 class RaiseBugForm(FlaskForm):
     title = StringField("Bug Title", validators=[DataRequired(), Length(max=150)], render_kw={"id": "title"})
-    role = SelectField(
-        "User Role",
-        choices=[
-            ("", "Select a user role..."),
-            ("developer", "Developer"),
-            ("client", "Client"),
-        ],
-        validators=[DataRequired(message="Please select a user role")],
-        render_kw={"id": "role"},
-    )
+    role = SelectField("User Role", choices=[], validators=[DataRequired()], render_kw={"id": "role"})
     page = SelectField(
         "Page",
         choices=[
@@ -45,12 +36,5 @@ class RegisterForm(FlaskForm):
     confirm_password = PasswordField(
         "Confirm Password", validators=[DataRequired(), EqualTo("password")]
     )
-    role = SelectField(
-        "Role",
-        choices=[
-            ("Developer", "Developer"),
-            ("Client", "Client"),
-        ],
-        validators=[DataRequired()],
-    )
+    role = SelectField("Flik Role", choices=[], validators=[DataRequired()], render_kw={"id": "role"})
     submit = SubmitField("Register")

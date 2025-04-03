@@ -34,6 +34,11 @@ def logout():
 @auth.route("/register", methods=["GET", "POST"])
 def register():
     form = RegisterForm()
+
+    # Fetch database roles and set form
+    application_roles = FlikRole.query.order_by(FlikRole.name).all() 
+    form.role.choices = [("", "Select a role...")] + [(r.name, r.name) for r in application_roles]
+
     if form.validate_on_submit():
         # Check selected role 
         selected_role = FlikRole.query.filter_by(name=form.role.data).first()
