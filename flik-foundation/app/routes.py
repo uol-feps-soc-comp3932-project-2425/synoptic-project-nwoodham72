@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, abort
 from flask_login import login_required, current_user
 from .forms import RaiseBugForm
 from azure_integration.client import create_work_item
@@ -16,6 +16,11 @@ from bert.assessor import assess_documentation
 from .models import FlikUser, Skill, db
 
 main = Blueprint("main", __name__)
+
+# Redirect 40e (permission) erros to 403.html
+@main.errorhandler(403)
+def forbidden(e):
+    return render_template("403.html"), 403
 
 
 @main.route("/dashboard")
@@ -44,21 +49,33 @@ def list_users():
     return "<br>".join([f"{u.id} | {u.email} | {u.role}" for u in users])
 
 
-""" Developer teamsheet to update skills """
+# Developer teamsheet to update skills
 @main.route("/teamsheet", methods=["GET", "POST"])
 @login_required
 def teamsheet():
-    if request.method == "POST":
-        user_id = request.form.get("user_id")
-        selected_skills = request.form.getlist("skills")
+    # Allow only Flik 'developers'
+    if current_user.role.lower() != "developer":
+        abort(403)
 
+    # Update skills
+    if request.method == "POST":
+        user_id = int(request.form.get("user_id"))
+
+        # Block updating other developer's profiles
+        if current_user.id != user_id:
+            abort(403)
+
+        selected_skills = request.form.getlist("skills")
         user = FlikUser.query.get(user_id)
         user.skills = Skill.query.filter(Skill.id.in_(selected_skills)).all()
         db.session.commit()
+        flash("Your skills were successfully updated!", "success")
 
         return redirect(url_for("main.teamsheet"))
 
     developers = FlikUser.query.filter_by(role="Developer").all()
+    # Put current user profile at the top 
+    developers.sort(key=lambda d: d.id != current_user.id)
     skills = Skill.query.order_by(Skill.name).all()
     return render_template("teamsheet.html", developers=developers, skills=skills)
 

@@ -21,8 +21,13 @@
                 <ul class="navbar-nav me-auto">
                     {% if current_user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.raise_bug') }}">Report Bug</a>
+                            <a class="nav-link" href="{{ url_for('main.raise_bug') }}">Report a Bug</a>
                         </li>
+                        {% if current_user.role.lower() == "developer" %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.teamsheet') }}">Teamsheet</a>
+                            </li>
+                        {% endif %}
                     {% endif %}
                 </ul>
                 <ul class="navbar-nav">
@@ -46,8 +51,19 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
+    <!-- New page content -->
     <div class="container py-5 form-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+                {{ message|safe }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
         {% block content %}{% endblock %}
     </div>
 
