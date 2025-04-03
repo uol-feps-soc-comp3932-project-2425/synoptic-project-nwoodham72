@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Flik - Teamsheet{% endblock %}
+
+{% block content %}
+<h2>Developer Teamsheet</h2>
+<p class="text-muted">Update your skills to ensure you get the right tickets.</p>
+
+<div class="list-group">
+    {% for dev in developers %}
+        <a class="list-group-item list-group-item-action"
+           data-bs-toggle="offcanvas"
+           href="#offcanvas{{ dev.id }}"
+           role="button"
+           aria-controls="offcanvas{{ dev.id }}">
+            {{ dev.email }}
+        </a>
+
+        <!-- Offcanvas Panel -->
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas{{ dev.id }}" aria-labelledby="offcanvasLabel{{ dev.id }}">
+            <div class="offcanvas-header">
+                <h5 id="offcanvasLabel{{ dev.id }}">Skills for {{ dev.email }}</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <form method="POST">
+                    <input type="hidden" name="user_id" value="{{ dev.id }}">
+                    <input type="text" class="form-control mb-3" placeholder="Search skills..." onkeyup="filterSkills(this, '{{ dev.id }}')">
+
+                    <div class="skill-list">
+                        {% for skill in skills %}
+                            <div class="form-check skill-item skill-{{ dev.id }}">
+                                <input class="form-check-input" type="checkbox" name="skills" value="{{ skill.id }}"
+                                    {% if skill in dev.skills %} checked {% endif %}>
+                                <label class="form-check-label">{{ skill.name }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="text-end mt-3">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<style>
+    .skill-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+</style>
+
+<script>
+    function filterSkills(input, devId) {
+        const filter = input.value.toLowerCase();
+        const skills = document.querySelectorAll('.skill-' + devId);
+        skills.forEach(skill => {
+            const label = skill.textContent.toLowerCase();
+            skill.style.display = label.includes(filter) ? '' : 'none';
+        });
+    }
+</script>
+{% endblock %}

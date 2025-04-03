@@ -13,6 +13,7 @@ from bert.summariser import extractive_summary
 from bert.prioritiser import predict_priority
 from bert.assigner import assign_developer
 from bert.assessor import assess_documentation
+from .models import FlikUser, Skill, db
 
 main = Blueprint("main", __name__)
 
@@ -43,6 +44,25 @@ def list_users():
 
     users = User.query.all()
     return "<br>".join([f"{u.id} | {u.email} | {u.role}" for u in users])
+
+
+""" Developer teamsheet to update skills """
+@main.route("/teamsheet", methods=["GET", "POST"])
+@login_required
+def teamsheet():
+    if request.method == "POST":
+        user_id = request.form.get("user_id")
+        selected_skills = request.form.getlist("skills")
+
+        user = FlikUser.query.get(user_id)
+        user.skills = Skill.query.filter(Skill.id.in_(selected_skills)).all()
+        db.session.commit()
+
+        return redirect(url_for("teamsheet"))
+
+    developers = FlikUser.query.filter_by(role="Developer").all()
+    skills = Skill.query.order_by(Skill.name).all()
+    return render_template("teamsheet.html", developers=developers, skills=skills)
 
 
 @main.route("/raise_bug", methods=["GET", "POST"])

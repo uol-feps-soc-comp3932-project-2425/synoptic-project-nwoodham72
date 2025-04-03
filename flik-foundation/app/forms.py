@@ -9,7 +9,6 @@ class RaiseBugForm(FlaskForm):
         "User Role",
         choices=[
             ("", "Select a user role..."),
-            ("manager", "Manager"),
             ("developer", "Developer"),
             ("client", "Client"),
         ],

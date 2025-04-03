@@ -30,11 +30,11 @@ def create_app():
     admin.init_app(app)
     babel.init_app(app)
 
-    from .models import User  # Import User model here
+    from .models import FlikUser
 
     @login_manager.user_loader
     def load_user(user_id):
-        return User.query.get(int(user_id)) 
+        return FlikUser.query.get(int(user_id)) 
 
     from .routes import main
     from .auth import auth
