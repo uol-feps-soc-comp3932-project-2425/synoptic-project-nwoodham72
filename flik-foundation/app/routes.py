@@ -136,7 +136,7 @@ def raise_bug():
         # Generate extractive summary of bug ticket
         prep_summary_data = (
             bug_details["title"].strip()
-            + ".\n"  # Add full stops to end of each step
+            + ".\n"  
             + f"I am a "
             + bug_details["role"].strip()
             + "user.\n"
@@ -152,7 +152,7 @@ def raise_bug():
         summary = extractive_summary(prep_summary_data)
         priority_label, priority_level = predict_priority(prep_summary_data)
 
-        # Send ticket to Azure in HTML format
+        # Send ticket to Azure in html format
         description = (
             f"Summary:<br>{summary}<br><br>"
             f"Priority: {priority_label}<br><br>"
@@ -162,7 +162,7 @@ def raise_bug():
             f"Expected Behaviour:<br>{bug_details['expected']}<br><br>"
         )
 
-        # Append additional comments on documentation match modal
+        # Append additional comments from documentation match modal
         if additional_comments:
             description += f"This bug flagged a documentation issue. The author provided additional comments:<br>{additional_comments}<br><br>"
 
