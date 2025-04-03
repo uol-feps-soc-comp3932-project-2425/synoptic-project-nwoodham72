@@ -4,6 +4,7 @@ from flask_login import current_user
 
 """ utils.py: Helper functions and decorators """
 
+# Restrict user roles to a route
 def roles_required(*role_names):
     def decorator(f):
         @wraps(f)

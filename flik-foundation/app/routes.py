@@ -13,12 +13,12 @@ from bert.summariser import extractive_summary
 from bert.prioritiser import predict_priority
 from bert.assigner import assign_developer
 from bert.assessor import assess_documentation
-from .models import FlikUser, Skill, db
+from .models import FlikUser, Skill, ApplicationRole, db
 from .utils import roles_required
 
 main = Blueprint("main", __name__)
 
-# Redirect 40e (permission) erros to 403.html
+# Redirect 403 (permission) errors to 403.html
 @main.errorhandler(403)
 def forbidden(e):
     return render_template("403.html"), 403
@@ -49,8 +49,8 @@ def list_users():
     users = FlikUser.query.all()
     return "<br>".join([f"{u.id} | {u.email} | {u.role}" for u in users])
 
+""" Flik Configuration"""
 
-# Developer teamsheet
 @main.route("/teamsheet", methods=["GET", "POST"])
 @login_required
 @roles_required("Developer")
@@ -77,12 +77,64 @@ def teamsheet():
 
         return redirect(url_for("main.teamsheet"))
 
+    # Display developers
     developers = FlikUser.query.filter_by(role="Developer").all()
-    # Put current user profile at the top 
-    developers.sort(key=lambda d: d.id != current_user.id)
+    developers.sort(key=lambda d: d.id != current_user.id)  # Display current user first
     skills = Skill.query.order_by(Skill.name).all()
     return render_template("teamsheet.html", developers=developers, skills=skills)
 
+""" Application Configuration"""
+
+@main.route("/documentation", methods=["GET", "POST"])
+@login_required
+@roles_required("Developer")
+def documentation():
+    # Update roles
+    if request.method == "POST":
+        app_role_name = request.form.get("role_name")
+        if app_role_name:
+            existing = ApplicationRole.query.filter_by(name=app_role_name).first()
+            if not existing:
+                db.session.add(ApplicationRole(name=app_role_name))
+                db.session.commit()
+                flash(f"'{app_role_name}' added to available roles", "success")
+            else:
+                flash(f"Cannot add '{app_role_name}', the role already exists.", "warning")
+        return redirect(url_for("main.documentation"))
+    
+    # Display application roles
+    application_roles = ApplicationRole.query.order_by(ApplicationRole.name).all()
+    return render_template("documentation.html", application_roles=application_roles)
+
+@main.route("/update-role/<int:application_role_id>", methods=["POST"])
+@login_required
+@roles_required("Developer")
+def update_application_role(application_role_id):
+    new_name = request.form.get("new_name")
+    app_role = ApplicationRole.query.get_or_404(application_role_id)
+
+    if new_name and new_name != app_role.name:
+        existing = ApplicationRole.query.filter_by(name=new_name).first()
+        if existing:
+            flash(f"{new_name} already exists.", "warning")
+        else:
+            app_role.name = new_name
+            db.session.commit()
+            flash("Role updated successfully.", "success")
+
+    return redirect(url_for("main.documentation"))
+
+@main.route("/delete-role/<int:application_role_id>", methods=["POST"])
+@login_required
+@roles_required("Developer")
+def delete_application_role(application_role_id):
+    app_role = ApplicationRole.query.get_or_404(application_role_id)
+    db.session.delete(app_role)
+    db.session.commit()
+    flash(f"Role '{app_role.name}' deleted.", "success")
+    return redirect(url_for("main.documentation"))
+
+""" Raise bug flow """
 
 @main.route("/raise_bug", methods=["GET", "POST"])
 @login_required

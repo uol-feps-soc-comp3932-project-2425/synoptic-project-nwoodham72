@@ -27,13 +27,16 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('main.teamsheet') }}">Teamsheet</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.documentation') }}">Documentation</a>
+                            </li>
                         {% endif %}
                     {% endif %}
                 </ul>
                 <ul class="navbar-nav">
                     {% if current_user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Logged in as: {{ current_user.email }}</a>
+                            <a class="nav-link" href="#">{{ current_user.email }}</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link btn btn-danger text-white" href="{{ url_for('auth.logout') }}">Logout</a>
