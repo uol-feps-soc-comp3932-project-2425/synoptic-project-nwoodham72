@@ -23,18 +23,18 @@ def forbidden(e):
     return render_template("403.html"), 403
 
 
-@main.route("/dashboard")
-@login_required
-def dashboard():
-    if current_user.role == "Manager":
-        return render_template("manager_dashboard.html")
-    elif current_user.role == "Developer":
-        return render_template("developer_dashboard.html")
-    elif current_user.role == "Client":
-        return render_template("client_dashboard.html")
-    else:
-        flash("Unauthorised access", "danger")
-        return redirect(url_for("main.index"))
+# @main.route("/dashboard")
+# @login_required
+# def dashboard():
+#     if current_user.role == "Manager":
+#         return render_template("manager_dashboard.html")
+#     elif current_user.role == "Developer":
+#         return render_template("developer_dashboard.html")
+#     elif current_user.role == "Client":
+#         return render_template("client_dashboard.html")
+#     else:
+#         flash("Unauthorised access", "danger")
+#         return redirect(url_for("main.index"))
 
 
 @main.route("/", methods=["GET"])
