@@ -16,7 +16,7 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user)
-            flash("Login successful!", "success")
+            flash("Login successful!", "info")
             return redirect(url_for("main.index"))
         else:
             flash("Login failed. Check your credentials.", "danger")
@@ -37,7 +37,7 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash("Account created! You can now log in.", "success")
+        # flash("Account created! You can now log in.", "info")
         return redirect(url_for("auth.login"))
 
     return render_template("register.html", form=form)
