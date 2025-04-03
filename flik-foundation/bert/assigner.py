@@ -9,7 +9,7 @@ from transformers import (
 from bert.workload import get_developer_workload
 
 """
-new_assigner.py: Allocate developers to bug ticket based on pre-defined labels in fine_tuned_assigner/bug_themes.json.
+assigner.py: Allocate developers to bug ticket based on pre-defined labels in fine_tuned_assigner/bug_themes.json.
 """
 
 # Load fine-tuned model
@@ -101,7 +101,7 @@ def select_developer_by_workload_and_skills(organisation, project, pat, assignme
     if not candidates:
         return None
 
-    # Sort candidates by general skill count
+    # Sort candidates by workload first, then general skill count
     candidates.sort(key=lambda x: (x[1], -x[2]))
     lowest_workload = candidates[0][1]
     highest_general_skill_count = candidates[0][2]
@@ -113,7 +113,7 @@ def select_developer_by_workload_and_skills(organisation, project, pat, assignme
         if c[1] == lowest_workload and c[2] == highest_general_skill_count
     ]
 
-    # If multiple candidates have the same workload, randomly assign
+    # If multiple candidates have the same workload and skillcount, randomly assign
     selected_candidate = (
         random.choice(best_candidates) if len(best_candidates) > 1 else candidates[0]
     )
