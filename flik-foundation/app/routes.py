@@ -113,20 +113,21 @@ def raise_bug():
                 + "page.\n"
                 + bug_details["description"].strip()
                 + ".\n"
-                + bug_details["expected"].strip()
-                + ".\n"
+                # + bug_details["expected"].strip()  # Include in comparison?
+                # + ".\n"
             )
             # Return matching documentation
             match, matching_docs = assess_documentation(
                 prep_documentation_comparison, bug_details["role"].strip()
             )
+            # Display matching documentation
             if match and matching_docs:
                 return render_template(
                     "raise_bug.html",
                     form=form,
                     bug_details=None,
                     matching_docs=matching_docs,
-                )  # Display matching documentation
+                ) 
 
         # Generate extractive summary of bug ticket
         prep_summary_data = (

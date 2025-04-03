@@ -24,9 +24,7 @@ def assess_documentation(bug_description, bug_description_role):
             "permitted_roles": ["manager"],
             "not_permitted_roles": ["developer", "client"],
             "action": (
-                "I am a manager user. "
-                "I am on the modules page. "
-                "I can access the details of a module on the modules page. "
+                "I am a manager user on the modules page. "
                 "I can update the details of a module on the modules page, including the name, year running and cover picture. "
             )
         },
