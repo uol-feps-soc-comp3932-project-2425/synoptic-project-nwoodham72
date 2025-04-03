@@ -48,7 +48,6 @@ class RegisterForm(FlaskForm):
     role = SelectField(
         "Role",
         choices=[
-            ("Manager", "Manager"),
             ("Developer", "Developer"),
             ("Client", "Client"),
         ],

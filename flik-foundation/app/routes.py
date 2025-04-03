@@ -40,9 +40,7 @@ def index():
 # List user accounts for testing
 @main.route("/users")
 def list_users():
-    from .models import User
-
-    users = User.query.all()
+    users = FlikUser.query.all()
     return "<br>".join([f"{u.id} | {u.email} | {u.role}" for u in users])
 
 
@@ -58,7 +56,7 @@ def teamsheet():
         user.skills = Skill.query.filter(Skill.id.in_(selected_skills)).all()
         db.session.commit()
 
-        return redirect(url_for("teamsheet"))
+        return redirect(url_for("main.teamsheet"))
 
     developers = FlikUser.query.filter_by(role="Developer").all()
     skills = Skill.query.order_by(Skill.name).all()
@@ -146,20 +144,7 @@ def raise_bug():
         if additional_comments:
             description += f"This bug flagged a documentation issue. The author provided additional comments:<br>{additional_comments}<br><br>"
 
-        # Fetch developers and skills
-        developers = {
-            "nathanmw72@gmail.com": {
-                "Information",
-                "Feedback",
-                "Sales",
-                "Infrastructure",
-                "IT",
-            },
-            "sc21nw@leeds.ac.uk": {"Login", "Feedback", "Sales"},
-        }
-
         assigned_to, tags = assign_developer(
-            developers,
             prep_summary_data,
             ORGANISATION,
             PROJECT_NAME,

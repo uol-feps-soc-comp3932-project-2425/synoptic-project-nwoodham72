@@ -7,10 +7,9 @@ from transformers import (
     pipeline,
 )
 from bert.workload import get_developer_workload
+from app.models import FlikUser
 
-"""
-assigner.py: Allocate developers to bug ticket based on pre-defined labels in fine_tuned_assigner/bug_themes.json.
-"""
+""" assigner.py: Allocate developers to bug ticket based on pre-defined labels in fine_tuned_assigner/bug_themes.json. """
 
 # Load fine-tuned model
 local_directory = os.path.dirname(__file__)
@@ -35,18 +34,6 @@ with open(label_names_file, "r") as f:
 # Map labels to human-readable format in bug_themes.json
 label_mapping = {f"LABEL_{i}": name for i, name in enumerate(label_names)}
 
-# Fetch developers and skills
-developers = {
-    "nathanmw72@gmail.com": {
-        "Information",
-        "Feedback",
-        "Sales",
-        "Infrastructure",
-        "IT",
-    },
-    "sc21nw@leeds.ac.uk": {"Login", "Feedback", "Sales"},
-}
-
 
 # Tag bug description with defined labels
 def tag_bug(text, threshold=0.7):
@@ -66,6 +53,17 @@ def tag_bug(text, threshold=0.7):
             predicted_tags.append(user_friendly_label)
 
     return predicted_tags[:3]  # Return top 3 matching tags
+
+
+# Fetch developers and their assigned skills from the FlikUser table
+def get_developers():
+    developers = {}
+    # Fetch Flik 'Developers'
+    flik_devs = FlikUser.query.filter_by(role="Developer").all()
+    for dev in flik_devs:
+        developers[dev.email] = {s.name for s in dev.skills}
+
+    return developers
 
 
 # Assign developer to bug based on bug themes and developer skillset
@@ -95,7 +93,7 @@ def select_developer_by_workload_and_skills(organisation, project, pat, assignme
             organisation, project, pat, dev, ["To Do"]
         )
         # Matching skills are already found
-        developer_general_skill_count = len(developers.get(dev, []))
+        developer_general_skill_count = len(assignments.get(dev, []))
         candidates.append((dev, assignee_workload, developer_general_skill_count))
 
     if not candidates:
@@ -121,14 +119,21 @@ def select_developer_by_workload_and_skills(organisation, project, pat, assignme
     return selected_candidate[0]
 
 
+# Assign developer to bug ticket
 def assign_developer(
-    developers, bug_description, ORGANISATION, PROJECT_NAME, RETRIEVAL_ACCESS_TOKEN
+    bug_description, ORGANISATION, PROJECT_NAME, RETRIEVAL_ACCESS_TOKEN
 ):
-    predicted_tags = tag_bug(bug_description, threshold=0.6)
-    best_assignments = select_matching_developers(
-        predicted_tags, developers
-    )  # Developers with the highest skill overlap with bug themes in ticket
     assigned_to = None
+
+    predicted_tags = tag_bug(bug_description, threshold=0.6)
+    developers = get_developers()
+
+    # No developers
+    if not developers:
+        return None, predicted_tags
+
+    # Developers with the highest skill overlap with bug themes in ticket
+    best_assignments = select_matching_developers(predicted_tags, developers)
 
     # Check for matching developers
     if best_assignments:
@@ -150,7 +155,7 @@ def assign_developer(
         return assigned_to, predicted_tags
 
 
-# # Example usage
+# Example usage
 if __name__ == "__main__":
     examples = [
         {
@@ -163,31 +168,41 @@ if __name__ == "__main__":
             ),
         },
         {
-             "title": "Data Analytics for Investment",  # Expected tags: Product, Technical
-             "text": (
-                 "I am contacting you to request information on data analytics tools that "
-                 "can be utilized with the Eclipse IDE for enhancing investment optimization. "
-                 "I am seeking suggestions for tools that can aid in making data-driven decisions. "
-                 "Particularly, I am interested in tools that can manage large datasets and offer "
-                 "advanced analytics features. These tools should be compatible with the Eclipse IDE "
-                 "and can smoothly integrate into my workflow. Key features I am interested in include "
-                 "data visualization, predictive modeling, and machine learning capabilities. I would "
-                 "greatly appreciate any recommendations or advice on how to begin with data analytics "
-                 "for investment optimization using the Eclipse IDE."
-             )
-         },
+            "title": "Data Analytics for Investment",  # Expected tags: Product, Technical
+            "text": (
+                "I am contacting you to request information on data analytics tools that "
+                "can be utilized with the Eclipse IDE for enhancing investment optimization. "
+                "I am seeking suggestions for tools that can aid in making data-driven decisions. "
+                "Particularly, I am interested in tools that can manage large datasets and offer "
+                "advanced analytics features. These tools should be compatible with the Eclipse IDE "
+                "and can smoothly integrate into my workflow. Key features I am interested in include "
+                "data visualization, predictive modeling, and machine learning capabilities. I would "
+                "greatly appreciate any recommendations or advice on how to begin with data analytics "
+                "for investment optimization using the Eclipse IDE."
+            ),
+        },
     ]
 
     # Board and work item configuration
     ORGANISATION = "comp3932-flik"
     PROJECT_NAME = "Flik"
     RETRIEVAL_ACCESS_TOKEN = "TmwkawvRYbz2weeboOdSmkHFAPh0oo8clMu9ZsNiGuSyLA6pN62mJQQJ99BCACAAAAAAAAAAAAASAZDO2xCF"
+    DEVELOPERS = {
+        "nathanmw72@gmail.com": {
+            "Information",
+            "Feedback",
+            "Sales",
+            "Infrastructure",
+            "IT",
+        },
+        "sc21nw@leeds.ac.uk": {"Login", "Feedback", "Sales"},
+    }
 
     for example in examples:
         predicted_tags = tag_bug(example["text"], threshold=0.6)
         print(predicted_tags)
         best_assignments = select_matching_developers(
-            predicted_tags, developers
+            predicted_tags, DEVELOPERS
         )  # Developers with the highest skill overlap with bug themes in ticket
 
         print(f"--- {example['title']} ---")
@@ -204,7 +219,7 @@ if __name__ == "__main__":
         # No developer matched on skill
         else:
             # Assign developer with lowest workload then largest no. of skills
-            all_devs = {dev: set() for dev in developers}
+            all_devs = {dev: set() for dev in DEVELOPERS}
             assigned_to = select_developer_by_workload_and_skills(
                 ORGANISATION, PROJECT_NAME, RETRIEVAL_ACCESS_TOKEN, all_devs
             )
