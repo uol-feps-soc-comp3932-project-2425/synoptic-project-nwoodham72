@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session
 from flask_login import login_user, logout_user, login_required, current_user
-from .models import FlikUser
+from .models import FlikUser, FlikRole
 from .forms import LoginForm, RegisterForm
 from . import db
 
@@ -35,7 +35,15 @@ def logout():
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
+        # Check selected role 
+        selected_role = FlikRole.query.filter_by(name=form.role.data).first()
+        if not selected_role:
+            flash("Selected role does not exist.", "danger")
+            return redirect(url_for("auth.register"))
+        
+        # Create user
         user = FlikUser(email=form.email.data, role=form.role.data)
+        user.roles.append(selected_role)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()

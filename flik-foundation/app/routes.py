@@ -14,6 +14,7 @@ from bert.prioritiser import predict_priority
 from bert.assigner import assign_developer
 from bert.assessor import assess_documentation
 from .models import FlikUser, Skill, db
+from .utils import roles_required
 
 main = Blueprint("main", __name__)
 
@@ -49,14 +50,11 @@ def list_users():
     return "<br>".join([f"{u.id} | {u.email} | {u.role}" for u in users])
 
 
-# Developer teamsheet to update skills
+# Developer teamsheet
 @main.route("/teamsheet", methods=["GET", "POST"])
 @login_required
+@roles_required("Developer")
 def teamsheet():
-    # Allow only Flik 'developers'
-    if current_user.role.lower() != "developer":
-        abort(403)
-
     # Update skills
     if request.method == "POST":
         user_id = int(request.form.get("user_id"))
