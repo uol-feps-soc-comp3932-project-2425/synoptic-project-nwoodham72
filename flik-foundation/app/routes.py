@@ -65,9 +65,15 @@ def teamsheet():
 
         selected_skills = request.form.getlist("skills")
         user = FlikUser.query.get(user_id)
-        user.skills = Skill.query.filter(Skill.id.in_(selected_skills)).all()
-        db.session.commit()
-        flash("Your skills were successfully updated!", "success")
+        new_skills = Skill.query.filter(Skill.id.in_(selected_skills)).all()
+
+        # Compare new and current skills
+        if set(user.skills) != set(new_skills):
+            user.skills = new_skills
+            db.session.commit()
+            flash("Your skills were successfully updated!", "success")
+        else:
+            flash("No changes made to your skills", "info")
 
         return redirect(url_for("main.teamsheet"))
 
