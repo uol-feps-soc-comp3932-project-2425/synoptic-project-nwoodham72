@@ -38,99 +38,95 @@
   {% endif %}
 
   <!-- Display form -->
-  {% if application_roles %}
-    <div class="card shadow-sm border-0 rounded-3">
-      <div class="card-body">
-        <form method="POST" novalidate>
-          {{ form.hidden_tag() }}
-          <!-- Multi-Step Form Container -->
-          <div class="form-steps-container">
-            <div class="form-steps-inner" id="formStepsInner">
 
-              <!-- Step 1 -->
-              <div class="form-step" id="step1">
-                <!-- Title with floating label and validation feedback -->
-                <div class="form-floating mb-3">
-                  {{ form.title(class="form-control", placeholder="Bug Title") }}
-                  <label for="title">Please give your bug a title</label>
-                  <div id="description-helpblock" class="form-text">
-                    Your title must be at least 10 characters.
-                  </div>
-                  <div class="invalid-feedback">
-                    Title must be at least 10 characters.
-                  </div>
+  <div class="card shadow-sm border-0 rounded-3">
+    <div class="card-body">
+      <form method="POST" novalidate>
+        {{ form.hidden_tag() }}
+        <!-- Multi-Step Form Container -->
+        <div class="form-steps-container">
+          <div class="form-steps-inner" id="formStepsInner">
+
+            <!-- Step 1 -->
+            <div class="form-step" id="step1">
+              <!-- Title with floating label and validation feedback -->
+              <div class="form-floating mb-3">
+                {{ form.title(class="form-control", placeholder="Bug Title") }}
+                <label for="title">Please give your bug a title</label>
+                <div id="description-helpblock" class="form-text">
+                  Your title must be at least 10 characters.
                 </div>
-
-                <div class="row">
-                  <!-- Role select with floating label -->
-                  <div class="col-md-6 mb-3">
-                    <div class="form-floating">
-                      {{ form.role(class="form-select") }}
-                      <label for="role">{{ form.role.label.text }}</label>
-                      <div class="invalid-feedback">
-                        Please select a user role.
-                      </div>
-                    </div>
-                  </div>
-                  <!-- Page select with floating label -->
-                  <div class="col-md-6 mb-3">
-                    <div class="form-floating">
-                      {{ form.page(class="form-select", placeholder="What page are you on...?") }}
-                      <label for="page">{{ form.page.label.text }}</label>
-                      <div class="invalid-feedback">
-                        Please select a page.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Description -->
-                <div class="form-floating mb-3">
-                  {{ form.description(class="form-control", placeholder="Describe the issue, what happened?", aria_describedby="description-helpblock", style="height: 130px;") }}
-                  <label for="description">Describe the issue, what happened?</label>
-                  <div id="description-helpblock" class="form-text">
-                    Please describe what you are trying to do. What happens, and what error messages do you encounter? (Minimum 100 characters). See an example bug ticket <a href="#" data-bs-toggle="modal" data-bs-target="#step1-modal">here</a>.
-                  </div>
-                  <div class="invalid-feedback">
-                    Description must be at least 30 characters.
-                  </div>
-                </div>
-
-                <div class="d-grid">
-                  <button id="next-btn" type="button" class="btn btn-primary" onclick="validateStep1()">
-                    Next
-                  </button>
+                <div class="invalid-feedback">
+                  Title must be at least 10 characters.
                 </div>
               </div>
 
-              <!-- Step 2 -->
-              <div class="form-step" id="step2">
-                <div class="form-floating mb-3">
-                  {{ form.expected(class="form-control", placeholder="What should have happened instead?", aria_describedby="expected-helpblock", style="height: 100px;") }}
-                  <label for="expected">What did you expect to happen instead?</label>
-                  <div id="expected-helpblock" class="form-text">
-                    Please describe what you expected to happen or see, or what you thought your role should have been able to do. (Minimum 30 characters). See an example bug ticket <a href="#" data-bs-toggle="modal" data-bs-target="#step2-modal">here</a>.
-                  </div>
-                  <div class="invalid-feedback">
-                    Expected behaviour must be at least 30 characters.
+              <div class="row">
+                <!-- Role select with floating label -->
+                <div class="col-md-6 mb-3">
+                  <div class="form-floating">
+                    {{ form.role(class="form-select") }}
+                    <label for="role">{{ form.role.label.text }}</label>
+                    <div class="invalid-feedback">
+                      Please select a user role.
+                    </div>
                   </div>
                 </div>
-                <div class="d-flex justify-content-between">
-                  <button type="button" class="btn btn-secondary" onclick="prevStep()">Previous</button>
-                  <button type="submit" id="submit-btn" class="btn btn-primary" disabled>Submit Bug</button>
+                <!-- Page select with floating label -->
+                <div class="col-md-6 mb-3">
+                  <div class="form-floating">
+                    {{ form.page(class="form-select", placeholder="What page are you on...?") }}
+                    <label for="page">{{ form.page.label.text }}</label>
+                    <div class="invalid-feedback">
+                      Please select a page.
+                    </div>
+                  </div>
                 </div>
               </div>
 
-            </div> <!-- /.form-steps-inner -->
-          </div> <!-- /.form-steps-container -->
-        </form>
-      </div>
+              <!-- Description -->
+              <div class="form-floating mb-3">
+                {{ form.description(class="form-control", placeholder="Describe the issue, what happened?", aria_describedby="description-helpblock", style="height: 130px;") }}
+                <label for="description">Describe the issue, what happened?</label>
+                <div id="description-helpblock" class="form-text">
+                  Please describe what you are trying to do. What happens, and what error messages do you encounter? (Minimum 100 characters). See an example bug ticket <a href="#" data-bs-toggle="modal" data-bs-target="#step1-modal">here</a>.
+                </div>
+                <div class="invalid-feedback">
+                  Description must be at least 30 characters.
+                </div>
+              </div>
+
+              <div class="d-grid">
+                <button id="next-btn" type="button" class="btn btn-primary" onclick="validateStep1()">
+                  Next
+                </button>
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="form-step" id="step2">
+              <div class="form-floating mb-3">
+                {{ form.expected(class="form-control", placeholder="What should have happened instead?", aria_describedby="expected-helpblock", style="height: 100px;") }}
+                <label for="expected">What did you expect to happen instead?</label>
+                <div id="expected-helpblock" class="form-text">
+                  Please describe what you expected to happen or see, or what you thought your role should have been able to do. (Minimum 30 characters). See an example bug ticket <a href="#" data-bs-toggle="modal" data-bs-target="#step2-modal">here</a>.
+                </div>
+                <div class="invalid-feedback">
+                  Expected behaviour must be at least 30 characters.
+                </div>
+              </div>
+              <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary" onclick="prevStep()">Previous</button>
+                <button type="submit" id="submit-btn" class="btn btn-primary" disabled>Submit Bug</button>
+              </div>
+            </div>
+
+          </div> <!-- /.form-steps-inner -->
+        </div> <!-- /.form-steps-container -->
+      </form>
     </div>
-  {% else %}
-    <p class="text-muted"><i>The ability to submit bugs to development team will become available once at least one role has been defined.</i></p> 
-  {% endif %}
-
-
+  </div>
+  
   <!-- Modals -->
   <!-- Modal for Matching Documentation -->
   <div class="modal fade" id="documentation-modal" tabindex="-1" aria-labelledby="docModalLabel" aria-hidden="true">
