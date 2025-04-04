@@ -290,4 +290,4 @@ def raise_bug():
         except Exception as e:
             flash(f"Failed to create ticket: {e}", "danger")
 
-    return render_template("raise_bug.html", form=form, bug_details=bug_details)
+    return render_template("raise_bug.html", form=form, bug_details=bug_details, application_roles=application_roles)
