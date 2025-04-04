@@ -3,7 +3,7 @@ from flask_login import UserMixin
 
 """ models.py: Define database and relationships """
 
-# Association tables for many-to-many relationships
+""" Association tables for many-to-many relationships """
 flik_user_roles = db.Table(
     "flik_user_roles",
     db.Column("user_id", db.Integer, db.ForeignKey("flik_user.id")),
@@ -17,7 +17,7 @@ flik_user_skill = db.Table(
 )
 
 
-# Models
+""" Models """
 class FlikRole(db.Model):
     __tablename__ = "flik_role"
     id = db.Column(db.Integer, primary_key=True)

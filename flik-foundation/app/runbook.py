@@ -40,6 +40,9 @@ def documentation():
     )
 
 
+""" Application Role Management """
+
+
 @runbook.route("/add-role", methods=["POST"])
 @login_required
 @roles_required("Developer")
@@ -54,9 +57,6 @@ def add_application_role():
         else:
             flash(f"Cannot add '{app_role_name}', the role already exists.", "warning")
     return redirect(url_for("runbook.documentation"))
-
-
-""" Application Role Management """
 
 
 @runbook.route("/update-role/<int:application_role_id>", methods=["POST"])
@@ -106,3 +106,22 @@ def add_application_page():
         else:
             flash(f"Page '{page_name}' already exists.", "warning")
     return redirect(url_for("runbook.documentation"))
+
+@runbook.route("/update-page/<int:application_page_id>", methods=["POST"])
+@login_required
+@roles_required("Developer")
+def update_application_page(application_page_id):
+    new_name = request.form.get("new_name")
+    app_page = ApplicationPage.query.get_or_404(application_page_id)
+
+    if new_name and new_name != app_page.name:
+        existing = ApplicationPage.query.filter_by(name=new_name).first()
+        if existing:
+            flash(f"{new_name} already exists.", "warning")
+        else:
+            app_page.name = new_name
+            db.session.commit()
+            flash("Page updated successfully.", "success")
+
+    return redirect(url_for("runbook.documentation"))
+

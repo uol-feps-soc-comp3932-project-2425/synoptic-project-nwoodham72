@@ -62,9 +62,12 @@
 {% if application_pages %}
     <h5>Existing Pages:</h5>
     <ul class="list-group">
-        {% for page in application_pages %}
+        {% for application_page in application_pages %}
             <li class="list-group-item d-flex justify-content-between align-items-center">
-                {{ page.name }}
+                <form class="d-flex flex-grow-1" method="POST" action="{{ url_for('runbook.update_application_page', application_page_id=application_page.id) }}">
+                    <input name="new_name" class="form-control me-2" value="{{ application_page.name }}" required>
+                    <button class="btn btn-outline-primary" type="submit">Update</button>
+                </form>
                 
             </li>
         {% endfor %}
