@@ -11,41 +11,38 @@ def forbidden(e):
     return render_template("403.html"), 403
 
 
-""" Documentation Configuration"""
-
-# Documentation page view 
+""" Page Overview """
 @runbook.route("/documentation", methods=["GET", "POST"])
 @login_required
 @roles_required("Developer")
 def documentation():
-
-    # roles = ApplicationRole.query.filter_by(ApplicationRole.name).all()
-    # pages = ApplicationPage.query.filter_by(ApplicationPage.name).all()
-
-    # Add roles
-    if request.method == "POST":
-        app_role_name = request.form.get("role_name")
-        if app_role_name:
-            existing = ApplicationRole.query.filter_by(name=app_role_name).first()
-            if not existing:
-                db.session.add(ApplicationRole(name=app_role_name))
-                db.session.commit()
-                flash(f"'{app_role_name}' added to available roles", "success")
-            else:
-                flash(f"Cannot add '{app_role_name}', the role already exists.", "warning")
-        return redirect(url_for("runbook.documentation"))
-    
-    # Display application roles
     application_roles = ApplicationRole.query.order_by(ApplicationRole.name).all()
     if not application_roles:
         flash("You must define at least one role before users can submit bug reports.", "warning")
     
     application_pages = ApplicationPage.query.order_by(ApplicationPage.name).all()
+    if not application_pages:
+        flash("You must define at least one page before users can submit bug reports.", "warning")
 
-
-    # print(roles)
-    # print(pages)
     return render_template("documentation.html", application_roles=application_roles, application_pages=application_pages)
+
+@runbook.route("/add-role", methods=["POST"])
+@login_required
+@roles_required("Developer")
+def add_application_role():
+    app_role_name = request.form.get("role_name")
+    if app_role_name:
+        existing = ApplicationRole.query.filter_by(name=app_role_name).first()
+        if not existing:
+            db.session.add(ApplicationRole(name=app_role_name))
+            db.session.commit()
+            flash(f"'{app_role_name}' added to available roles", "success")
+        else:
+            flash(f"Cannot add '{app_role_name}', the role already exists.", "warning")
+    return redirect(url_for("runbook.documentation"))
+
+
+""" Application Role Management """
 
 
 @runbook.route("/update-role/<int:application_role_id>", methods=["POST"])
@@ -75,6 +72,8 @@ def delete_application_role(application_role_id):
     db.session.commit()
     flash(f"Role '{app_role.name}' deleted.", "success")
     return redirect(url_for("runbook.documentation"))
+
+""" Application Page Management """
 
 @runbook.route("/add-page", methods=["POST"])
 @login_required
