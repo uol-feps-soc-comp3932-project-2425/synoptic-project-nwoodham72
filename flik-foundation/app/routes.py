@@ -96,10 +96,19 @@ def raise_bug():
 
     # Fetch database values and set form fields
     application_roles = ApplicationRole.query.order_by(ApplicationRole.name).all() 
+    application_pages = ApplicationPage.query.order_by(ApplicationPage.name).all() 
     form.role.choices = [("", "Select a role...")] + [(r.name, r.name) for r in application_roles]
+    form.page.choices = [("", "Select a page...")] + [(r.name, r.name) for r in application_pages]
+
+    # Check for database entries
+    if not application_roles and not application_pages:
+        flash("No application roles or pages available. You will not be able to submit a ticket until the development team have added at least one user role and page.", "danger")
 
     if not application_roles:
-        flash("No application roles available. Please contact the development team to add roles.", "danger")
+        flash("No application roles available. You will not be able to submit a ticket until the development team have added at least one user role.", "danger")
+    
+    if not application_pages:
+        flash("No application pages available. You will not be able to submit a ticket until the development team have added at least one page.", "danger")
 
     if form.validate_on_submit():
         # Check for additional comments from documentation match modal

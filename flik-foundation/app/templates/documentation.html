@@ -3,15 +3,18 @@
 
 {% block content %}
 <h2 class="mb-4">Manage your Documentation</h2>
-<p class="text-muted">You must have at least one role defined to allow users to report bugs.</p>
+<p class="text-muted">You must have at least one role and page defined to allow users to report bugs.</p>
 
 <!-- ------------------------- -->
 <!-- Add New Role -->
 <!-- ------------------------- -->
-<form method="POST" class="mb-4">
+<h4>Application Roles</h4>
+<p class="text-muted">These roles are used when users report bugs (e.g. Lecturer, Student, etc.).</p>
+
+<form method="POST" action="{{ url_for('runbook.add_application_role') }}" class="mb-4">
     <div class="input-group">
         <input type="text" name="role_name" class="form-control" placeholder="Enter new role name" required>
-        <button class="btn btn-primary" type="submit">Add Role</button>
+        <button class="btn btn-success" type="submit">Add Role</button>
     </div>
 </form>
 
@@ -44,7 +47,7 @@
 <!-- Add New Page -->
 <!-- ------------------------- -->
 <h4>Application Pages</h4>
-<p class="text-muted">These pages are used when users report bugs (e.g. Dashboard, Settings, etc.).</p>
+<p class="text-muted">These pages are used when users report bugs (e.g. Login, Dashboard, etc.).</p>
 
 <form method="POST" action="{{ url_for('runbook.add_application_page') }}" class="mb-4">
     <div class="input-group">

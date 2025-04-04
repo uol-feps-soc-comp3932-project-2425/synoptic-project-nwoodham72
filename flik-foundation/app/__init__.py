@@ -43,6 +43,6 @@ def create_app():
 
     app.register_blueprint(main)
     app.register_blueprint(auth, url_prefix="/auth")
-    app.register_blueprint(runbook, url_prefix="/documentation")
+    app.register_blueprint(runbook)
 
     return app

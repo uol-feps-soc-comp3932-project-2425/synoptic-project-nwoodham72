@@ -5,6 +5,7 @@ from .utils import roles_required
 
 runbook = Blueprint("runbook", __name__)
 
+
 # Redirect 403 (permission) errors to 403.html
 @runbook.errorhandler(403)
 def forbidden(e):
@@ -12,19 +13,32 @@ def forbidden(e):
 
 
 """ Page Overview """
+
+
 @runbook.route("/documentation", methods=["GET", "POST"])
 @login_required
 @roles_required("Developer")
 def documentation():
     application_roles = ApplicationRole.query.order_by(ApplicationRole.name).all()
     if not application_roles:
-        flash("You must define at least one role before users can submit bug reports.", "warning")
-    
+        flash(
+            "You must define at least one role before users can submit bug reports.",
+            "warning",
+        )
+
     application_pages = ApplicationPage.query.order_by(ApplicationPage.name).all()
     if not application_pages:
-        flash("You must define at least one page before users can submit bug reports.", "warning")
+        flash(
+            "You must define at least one page before users can submit bug reports.",
+            "warning",
+        )
 
-    return render_template("documentation.html", application_roles=application_roles, application_pages=application_pages)
+    return render_template(
+        "documentation.html",
+        application_roles=application_roles,
+        application_pages=application_pages,
+    )
+
 
 @runbook.route("/add-role", methods=["POST"])
 @login_required
@@ -63,6 +77,7 @@ def update_application_role(application_role_id):
 
     return redirect(url_for("runbook.documentation"))
 
+
 @runbook.route("/delete-role/<int:application_role_id>", methods=["POST"])
 @login_required
 @roles_required("Developer")
@@ -73,7 +88,9 @@ def delete_application_role(application_role_id):
     flash(f"Role '{app_role.name}' deleted.", "success")
     return redirect(url_for("runbook.documentation"))
 
+
 """ Application Page Management """
+
 
 @runbook.route("/add-page", methods=["POST"])
 @login_required
