@@ -38,9 +38,11 @@ def create_app():
 
     from .routes import main
     from .auth import auth
+    from .runbook import runbook
     from . import admin_views
 
     app.register_blueprint(main)
     app.register_blueprint(auth, url_prefix="/auth")
+    app.register_blueprint(runbook, url_prefix="/documentation")
 
     return app
