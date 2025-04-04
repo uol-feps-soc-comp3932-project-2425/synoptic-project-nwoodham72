@@ -102,9 +102,9 @@ def add_application_page():
         if not existing:
             db.session.add(ApplicationPage(name=page_name))
             db.session.commit()
-            flash(f"Page '{page_name}' added successfully.", "success")
+            flash(f"Page '{page_name}' added to available pages.", "success")
         else:
-            flash(f"Page '{page_name}' already exists.", "warning")
+            flash(f"Cannot add '{page_name}', the page already exists.", "warning")
     return redirect(url_for("runbook.documentation"))
 
 @runbook.route("/update-page/<int:application_page_id>", methods=["POST"])
@@ -125,3 +125,12 @@ def update_application_page(application_page_id):
 
     return redirect(url_for("runbook.documentation"))
 
+@runbook.route("/delete-page/<int:application_page_id>", methods=["POST"])
+@login_required
+@roles_required("Developer")
+def delete_application_page(application_page_id):
+    app_page = ApplicationPage.query.get_or_404(application_page_id)
+    db.session.delete(app_page)
+    db.session.commit()
+    flash(f"Page '{app_page.name}' deleted.", "success")
+    return redirect(url_for("runbook.documentation"))

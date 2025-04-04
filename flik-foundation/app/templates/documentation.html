@@ -68,6 +68,10 @@
                     <input name="new_name" class="form-control me-2" value="{{ application_page.name }}" required>
                     <button class="btn btn-outline-primary" type="submit">Update</button>
                 </form>
+
+                <form method="POST" action="{{ url_for('runbook.delete_application_page', application_page_id=application_page.id) }}" class="ms-2">
+                    <button class="btn btn-outline-danger" onclick="return confirm('Delete this page?')" type="submit">Delete</button>
+                </form>
                 
             </li>
         {% endfor %}
