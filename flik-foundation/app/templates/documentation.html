@@ -5,6 +5,9 @@
 <h2 class="mb-4">Manage your Documentation</h2>
 <p class="text-muted">You must have at least one role defined to allow users to report bugs.</p>
 
+<!-- ------------------------- -->
+<!-- Add New Role -->
+<!-- ------------------------- -->
 <form method="POST" class="mb-4">
     <div class="input-group">
         <input type="text" name="role_name" class="form-control" placeholder="Enter new role name" required>
@@ -12,24 +15,59 @@
     </div>
 </form>
 
+<!-- ------------------------- -->
+<!-- List Roles -->
+<!-- ------------------------- -->
 {% if application_roles %}
     <h5>Existing Roles:</h5>
-    <ul class="list-group"></ul>
+    <ul class="list-group">
         {% for application_role in application_roles %}
             <li class="list-group-item d-flex justify-content-between align-items-center">
                 <form class="d-flex flex-grow-1" method="POST" action="{{ url_for('runbook.update_application_role', application_role_id=application_role.id) }}">
                     <input name="new_name" class="form-control me-2" value="{{ application_role.name }}" required>
-                    <button class="btn btn btn-outline-primary" type="submit">Update</button>
+                    <button class="btn btn-outline-primary" type="submit">Update</button>
                 </form>
 
                 <form method="POST" action="{{ url_for('runbook.delete_application_role', application_role_id=application_role.id) }}" class="ms-2">
-                    <button class="btn btn btn-outline-danger" onclick="return confirm('Delete this role?')" type="submit">Delete</button>
+                    <button class="btn btn-outline-danger" onclick="return confirm('Delete this role?')" type="submit">Delete</button>
                 </form>
-            </li><br>
+            </li>
         {% endfor %}
     </ul>
 {% else %}
     <p class="text-muted"><i>No roles defined.</i></p>
+{% endif %}
+
+<hr class="my-5">
+
+<!-- ------------------------- -->
+<!-- Add New Page -->
+<!-- ------------------------- -->
+<h4>Application Pages</h4>
+<p class="text-muted">These pages are used when users report bugs (e.g. Dashboard, Settings, etc.).</p>
+
+<form method="POST" action="{{ url_for('runbook.add_application_page') }}" class="mb-4">
+    <div class="input-group">
+        <input type="text" name="page_name" class="form-control" placeholder="Enter new page name" required>
+        <button class="btn btn-success" type="submit">Add Page</button>
+    </div>
+</form>
+
+<!-- ------------------------- -->
+<!-- List Pages -->
+<!-- ------------------------- -->
+{% if application_pages %}
+    <h5>Existing Pages:</h5>
+    <ul class="list-group">
+        {% for page in application_pages %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ page.name }}
+                
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p class="text-muted"><i>No pages defined.</i></p>
 {% endif %}
 
 {% endblock %}

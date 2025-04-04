@@ -11,13 +11,18 @@ def forbidden(e):
     return render_template("403.html"), 403
 
 
-""" Application Configuration"""
+""" Documentation Configuration"""
 
+# Documentation page view 
 @runbook.route("/documentation", methods=["GET", "POST"])
 @login_required
 @roles_required("Developer")
 def documentation():
-    # Update roles
+
+    # roles = ApplicationRole.query.filter_by(ApplicationRole.name).all()
+    # pages = ApplicationPage.query.filter_by(ApplicationPage.name).all()
+
+    # Add roles
     if request.method == "POST":
         app_role_name = request.form.get("role_name")
         if app_role_name:
@@ -34,10 +39,13 @@ def documentation():
     application_roles = ApplicationRole.query.order_by(ApplicationRole.name).all()
     if not application_roles:
         flash("You must define at least one role before users can submit bug reports.", "warning")
+    
+    application_pages = ApplicationPage.query.order_by(ApplicationPage.name).all()
 
-    return render_template("documentation.html", application_roles=application_roles)
 
-
+    # print(roles)
+    # print(pages)
+    return render_template("documentation.html", application_roles=application_roles, application_pages=application_pages)
 
 
 @runbook.route("/update-role/<int:application_role_id>", methods=["POST"])
@@ -66,4 +74,19 @@ def delete_application_role(application_role_id):
     db.session.delete(app_role)
     db.session.commit()
     flash(f"Role '{app_role.name}' deleted.", "success")
+    return redirect(url_for("runbook.documentation"))
+
+@runbook.route("/add-page", methods=["POST"])
+@login_required
+@roles_required("Developer")
+def add_application_page():
+    page_name = request.form.get("page_name")
+    if page_name:
+        existing = ApplicationPage.query.filter_by(name=page_name).first()
+        if not existing:
+            db.session.add(ApplicationPage(name=page_name))
+            db.session.commit()
+            flash(f"Page '{page_name}' added successfully.", "success")
+        else:
+            flash(f"Page '{page_name}' already exists.", "warning")
     return redirect(url_for("runbook.documentation"))
