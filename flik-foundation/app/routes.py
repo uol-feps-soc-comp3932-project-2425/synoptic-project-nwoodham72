@@ -104,6 +104,9 @@ def documentation():
     
     # Display application roles
     application_roles = ApplicationRole.query.order_by(ApplicationRole.name).all()
+    if not application_roles:
+        flash("You must define at least one role before users can submit bug reports.", "warning")
+
     return render_template("documentation.html", application_roles=application_roles)
 
 @main.route("/update-role/<int:application_role_id>", methods=["POST"])
@@ -147,8 +150,10 @@ def raise_bug():
 
     # Fetch database values and set form fields
     application_roles = ApplicationRole.query.order_by(ApplicationRole.name).all() 
-
     form.role.choices = [("", "Select a role...")] + [(r.name, r.name) for r in application_roles]
+
+    if not application_roles:
+        flash("No application roles available. Please contact the development team to add roles.", "danger")
 
     if form.validate_on_submit():
         # Check for additional comments from documentation match modal
