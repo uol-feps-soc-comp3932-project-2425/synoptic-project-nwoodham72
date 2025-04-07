@@ -128,7 +128,7 @@ def assign_developer(
     predicted_tags = tag_bug(bug_description, threshold=0.6)
     developers = get_developers()
 
-    # No developers
+    # Leave unassigned if no developers
     if not developers:
         return None, predicted_tags
 
