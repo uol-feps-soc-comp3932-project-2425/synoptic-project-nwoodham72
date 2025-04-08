@@ -15,7 +15,6 @@ from bert.assigner import assign_developer
 from bert.assessor import assess_documentation
 from .models import FlikUser, Skill, ApplicationRole, ApplicationPage, db
 from .utils import roles_required
-import json
 
 main = Blueprint("main", __name__)
 
