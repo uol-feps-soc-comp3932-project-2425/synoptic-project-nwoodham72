@@ -97,9 +97,7 @@ def raise_bug():
     # Fetch database values and set form fields
     application_roles = ApplicationRole.query.order_by(ApplicationRole.name).all() 
     application_pages = ApplicationPage.query.order_by(ApplicationPage.name).all() 
-    # form.role.choices = [("", "Select a role...")] + [(r.name, r.name) for r in application_roles]
-    # form.page.choices = [("", "Select a page...")] + [(r.name, r.name) for r in application_pages]
-
+    
     # Check for database entries
     if current_user.role == "Client":
         if not application_roles and not application_pages:
@@ -139,9 +137,9 @@ def raise_bug():
             # Generate documentation similarity
             prep_documentation_comparison = (
                 "I am a "
-                + bug_details["role"].strip()
+                + bug_details["role"].name
                 + "user on the "
-                + bug_details["page"].strip()
+                + bug_details["page"].name
                 + "page.\n"
                 + bug_details["description"].strip()
                 + ".\n"
@@ -150,7 +148,7 @@ def raise_bug():
             )
             # Return matching documentation
             match, matching_docs = assess_documentation(
-                prep_documentation_comparison, bug_details["role"].strip()
+                prep_documentation_comparison, bug_details["role"].name
             )
             # Display matching documentation
             if match and matching_docs:
@@ -166,10 +164,10 @@ def raise_bug():
             bug_details["title"].strip()
             + ".\n"  
             + f"I am a "
-            + bug_details["role"].strip()
+            + bug_details["role"].name
             + "user.\n"
             + f"I am on the "
-            + bug_details["page"].strip()
+            + bug_details["page"].name
             + "page.\n"
             + bug_details["description"].strip()
             + ".\n"
@@ -248,8 +246,8 @@ def raise_bug():
 
             # Clear form after successful send
             form.title.data = ""
-            form.role.data = ""
-            form.page.data = ""
+            form.role.data = None
+            form.page.data = None
             form.description.data = ""
             form.expected.data = ""
 

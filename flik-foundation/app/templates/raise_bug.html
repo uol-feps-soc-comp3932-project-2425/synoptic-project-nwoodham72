@@ -62,24 +62,41 @@
               <div class="row">
                 <!-- Role select with floating label -->
                 <div class="col-md-6 mb-3">
-                  <div class="form-floating">
-                    {{ form.role(class="form-select") }}
-                    <label for="role">{{ form.role.label.text }}</label>
+                  <div class="form-floating mb-3">
+                    {{ form.role(class="form-select", id="role") }}
+                    <label for="role">Role</label>
+                
+                    <!-- Server-side WTForms error -->
+                    {% if form.role.errors %}
+                      <div class="invalid-feedback d-block">{{ form.role.errors[0] }}</div>
+                    {% endif %}
+                
+                    <!-- Client-side feedback always shown if JS adds .is-invalid -->
                     <div class="invalid-feedback">
-                      Please select a user role.
+                      Please select a valid role.
                     </div>
                   </div>
                 </div>
+                
+              
                 <!-- Page select with floating label -->
                 <div class="col-md-6 mb-3">
-                  <div class="form-floating">
-                    {{ form.page(class="form-select", placeholder="What page are you on...?") }}
-                    <label for="page">{{ form.page.label.text }}</label>
+                  <div class="form-floating mb-3">
+                    {{ form.page(class="form-select", id="page") }}
+                    <label for="page">Page</label>
+                
+                    <!-- Server-side WTForms error -->
+                    {% if form.page.errors %}
+                      <div class="invalid-feedback d-block">{{ form.page.errors[0] }}</div>
+                    {% endif %}
+                
+                    <!-- Client-side feedback always shown if JS adds .is-invalid -->
                     <div class="invalid-feedback">
-                      Please select a page.
+                      Please select a valid page.
                     </div>
                   </div>
                 </div>
+                
               </div>
 
               <!-- Description -->
@@ -357,7 +374,7 @@
       }
 
       // Validate Role (must not be empty)
-      if (roleInput.value.trim() === '') {
+      if (!roleInput.value || roleInput.value === "" || roleInput.value === "None") {
         roleInput.classList.add('is-invalid');
         roleInput.classList.remove('is-valid');
         valid = false;
@@ -367,7 +384,7 @@
       }
 
       // Validate Page (must not be empty)
-      if (pageInput.value.trim() === '') {
+      if (!pageInput.value || pageInput.value === "" || pageInput.value === "None") {
         pageInput.classList.add('is-invalid');
         pageInput.classList.remove('is-valid');
         valid = false;
@@ -438,5 +455,211 @@
     });
   });
 </script>
+
+<!-- Remove green tick when leavig the form for select fields -->
+<script>
+  document.querySelectorAll('.form-select').forEach(select => {
+    select.addEventListener('change', () => {
+      if (!select.value) {
+        select.classList.remove('is-valid');
+      }
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const stage1 = document.getElementById("stage-1");
+    const nextBtn = document.getElementById("nextBtn");
+
+    // Add fields
+    const titleInput = document.getElementById("title");
+    const roleSelect = document.getElementById("role");
+    const pageSelect = document.getElementById("page");
+    const descInput = document.getElementById("description");
+
+    function isValidText(input, minLen) {
+      return input.value.trim().length >= minLen;
+    }
+
+    function isValidSelect(select) {
+      return select.value !== "";
+    }
+
+    function validateStage1() {
+      let valid = true;
+
+      if (!isValidText(titleInput, 10)) {
+        titleInput.classList.add("is-invalid");
+        valid = false;
+      } else {
+        titleInput.classList.remove("is-invalid");
+        titleInput.classList.add("is-valid");
+      }
+
+      if (!isValidSelect(roleSelect)) {
+        roleSelect.classList.add("is-invalid");
+        roleSelect.classList.remove("is-valid");
+        valid = false;
+      } else {
+        roleSelect.classList.remove("is-invalid");
+        roleSelect.classList.add("is-valid");
+      }
+
+      if (!isValidSelect(pageSelect)) {
+        pageSelect.classList.add("is-invalid");
+        pageSelect.classList.remove("is-valid");
+        valid = false;
+      } else {
+        pageSelect.classList.remove("is-invalid");
+        pageSelect.classList.add("is-valid");
+      }
+
+      if (!isValidText(descInput, 100)) {
+        descInput.classList.add("is-invalid");
+        valid = false;
+      } else {
+        descInput.classList.remove("is-invalid");
+        descInput.classList.add("is-valid");
+      }
+
+      return valid;
+    }
+
+    nextBtn.addEventListener("click", (e) => {
+      if (!validateStage1()) {
+        e.preventDefault(); // stop form from moving to next stage
+        e.stopPropagation();
+      } else {
+        // let the form move to stage 2
+      }
+    });
+  });
+</script>
+
+<script>
+  roleSelect.addEventListener("change", () => {
+    if (!isValidSelect(roleSelect)) {
+      roleSelect.classList.add("is-invalid");
+      roleSelect.classList.remove("is-valid");
+    } else {
+      roleSelect.classList.remove("is-invalid");
+      roleSelect.classList.add("is-valid");
+    }
+  });
+  
+    pageSelect.addEventListener("change", () => {
+    if (!isValidSelect(pageSelect)) {
+      pageSelect.classList.add("is-invalid");
+      pageSelect.classList.remove("is-valid");
+    } else {
+      pageSelect.classList.remove("is-invalid");
+      pageSelect.classList.add("is-valid");
+    }
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const selects = document.querySelectorAll(".form-select");
+
+    selects.forEach(select => {
+      select.addEventListener("change", () => {
+        // Remove the placeholder option after user makes a valid selection
+        const placeholder = select.querySelector("option[value='']");
+        if (placeholder && select.value !== "") {
+          placeholder.remove();
+        }
+      });
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const selects = document.querySelectorAll(".form-select");
+
+    selects.forEach(select => {
+      select.addEventListener("change", () => {
+        const placeholder = select.querySelector("option[value='']");
+        if (placeholder && select.value !== "") {
+          placeholder.remove();  // Removes the placeholder once a real option is selected
+        }
+      });
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const roleSelect = document.getElementById("role");
+    const pageSelect = document.getElementById("page");
+
+    // Function to validate select fields
+    function validateSelect(select) {
+      // Check if the value is empty or the placeholder option
+      if (!select.value || select.value === "" || select.selectedIndex === 0) {
+        select.classList.remove("is-valid");
+        select.classList.add("is-invalid");
+        return false;
+      } else {
+        select.classList.remove("is-invalid");
+        select.classList.add("is-valid");
+        return true;
+      }
+    }
+
+    // Add change event listeners to both select fields
+    roleSelect.addEventListener("change", function() {
+      validateSelect(roleSelect);
+    });
+
+    pageSelect.addEventListener("change", function() {
+      validateSelect(pageSelect);
+    });
+
+    // Update the validateStep1 function to use our new validation
+    const originalValidateStep1 = validateStep1;
+    window.validateStep1 = function() {
+      const titleInput = document.getElementById('title');
+      const descInput = document.getElementById('description');
+      let valid = true;
+
+      // Validate Title (min 10 characters)
+      if (titleInput.value.trim().length < 10) {
+        titleInput.classList.add('is-invalid');
+        titleInput.classList.remove('is-valid');
+        valid = false;
+      } else {
+        titleInput.classList.remove('is-invalid');
+        titleInput.classList.add('is-valid');
+      }
+
+      // Validate Role and Page using our new validation function
+      if (!validateSelect(roleSelect)) {
+        valid = false;
+      }
+      
+      if (!validateSelect(pageSelect)) {
+        valid = false;
+      }
+
+      // Validate Description (min 100 characters)
+      if (descInput.value.trim().length < 100) {
+        descInput.classList.add('is-invalid');
+        descInput.classList.remove('is-valid');
+        valid = false;
+      } else {
+        descInput.classList.remove('is-invalid');
+        descInput.classList.add('is-valid');
+      }
+
+      if (valid) {
+        nextStep();
+      }
+    };
+  });
+</script>
+
 
 {% endblock %}
