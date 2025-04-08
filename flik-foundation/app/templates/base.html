@@ -28,7 +28,7 @@
                                 <a class="nav-link" href="{{ url_for('main.teamsheet') }}">Teamsheet</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('main.documentation') }}">Documentation</a>
+                                <a class="nav-link" href="{{ url_for('runbook.documentation') }}">Documentation</a>
                             </li>
                         {% endif %}
                     {% endif %}
@@ -54,12 +54,12 @@
         </div>
     </nav>
 
-    <!-- New page content -->
+    <!-- Page content -->
     <div class="container py-5 form-container">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                <div class="alert alert-{{ category }} {% if category not in ['danger', 'warning'] %}alert-dismissible fade show{% endif %} mt-3 shadow-sm" role="alert">
+                <div class="alert alert-{{ category }} {% if category not in ['danger'] %}alert-dismissible fade show{% endif %} mt-3 shadow-sm" role="alert">
                     {{ message|safe }}
                     {% if category not in ['danger', 'warning'] %}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>

@@ -13,7 +13,7 @@ from bert.summariser import extractive_summary
 from bert.prioritiser import predict_priority
 from bert.assigner import assign_developer
 from bert.assessor import assess_documentation
-from .models import FlikUser, Skill, ApplicationRole, db
+from .models import FlikUser, Skill, ApplicationRole, ApplicationPage, db
 from .utils import roles_required
 import json
 
@@ -84,61 +84,7 @@ def teamsheet():
     skills = Skill.query.order_by(Skill.name).all()
     return render_template("teamsheet.html", developers=developers, skills=skills)
 
-""" Application Configuration"""
-
-@main.route("/documentation", methods=["GET", "POST"])
-@login_required
-@roles_required("Developer")
-def documentation():
-    # Update roles
-    if request.method == "POST":
-        app_role_name = request.form.get("role_name")
-        if app_role_name:
-            existing = ApplicationRole.query.filter_by(name=app_role_name).first()
-            if not existing:
-                db.session.add(ApplicationRole(name=app_role_name))
-                db.session.commit()
-                flash(f"'{app_role_name}' added to available roles", "success")
-            else:
-                flash(f"Cannot add '{app_role_name}', the role already exists.", "warning")
-        return redirect(url_for("main.documentation"))
-    
-    # Display application roles
-    application_roles = ApplicationRole.query.order_by(ApplicationRole.name).all()
-    if not application_roles:
-        flash("You must define at least one role before users can submit bug reports.", "warning")
-
-    return render_template("documentation.html", application_roles=application_roles)
-
-@main.route("/update-role/<int:application_role_id>", methods=["POST"])
-@login_required
-@roles_required("Developer")
-def update_application_role(application_role_id):
-    new_name = request.form.get("new_name")
-    app_role = ApplicationRole.query.get_or_404(application_role_id)
-
-    if new_name and new_name != app_role.name:
-        existing = ApplicationRole.query.filter_by(name=new_name).first()
-        if existing:
-            flash(f"{new_name} already exists.", "warning")
-        else:
-            app_role.name = new_name
-            db.session.commit()
-            flash("Role updated successfully.", "success")
-
-    return redirect(url_for("main.documentation"))
-
-@main.route("/delete-role/<int:application_role_id>", methods=["POST"])
-@login_required
-@roles_required("Developer")
-def delete_application_role(application_role_id):
-    app_role = ApplicationRole.query.get_or_404(application_role_id)
-    db.session.delete(app_role)
-    db.session.commit()
-    flash(f"Role '{app_role.name}' deleted.", "success")
-    return redirect(url_for("main.documentation"))
-
-""" Raise bug flow """
+""" Raise bug workflow """
 
 @main.route("/raise_bug", methods=["GET", "POST"])
 @login_required
@@ -151,10 +97,30 @@ def raise_bug():
 
     # Fetch database values and set form fields
     application_roles = ApplicationRole.query.order_by(ApplicationRole.name).all() 
+    application_pages = ApplicationPage.query.order_by(ApplicationPage.name).all() 
     form.role.choices = [("", "Select a role...")] + [(r.name, r.name) for r in application_roles]
+    form.page.choices = [("", "Select a page...")] + [(r.name, r.name) for r in application_pages]
 
-    if not application_roles:
-        flash("No application roles available. Please contact the development team to add roles.", "danger")
+    # Check for database entries
+    if current_user.role == "Client":
+        if not application_roles and not application_pages:
+            flash("No application roles or pages available. You will not be able to submit a ticket until the development team have added at least one user role and page.", "danger")
+
+        if not application_roles:
+            flash("No application roles available. You will not be able to submit a ticket until the development team have added at least one user role.", "danger")
+        
+        if not application_pages:
+            flash("No application pages available. You will not be able to submit a ticket until the development team have added at least one page.", "danger")
+    # Developer view
+    else:
+        if not application_roles and not application_pages:
+            flash("No application roles or pages available. Please define an application page and role in the 'Documentation' tab.", "danger")
+
+        if not application_roles:
+            flash("No application roles available. Please define an application role in the 'Documentation' tab.", "danger")
+        
+        if not application_pages:
+            flash("No application pages available. YPlease define an application page in the 'Documentation' tab.", "danger")
 
     if form.validate_on_submit():
         # Check for additional comments from documentation match modal
