@@ -35,6 +35,7 @@ def roles_required(*role_names):
         return wrapped
     return decorator
 
+# Run raise_bug without Flask for testing
 def create_ticket_scheduled(bug):
     summary_input = (
         f"{bug['title']}.\n"
@@ -57,15 +58,13 @@ def create_ticket_scheduled(bug):
 
     match_found, _ = assess_documentation(prep_documentation_comparison, bug["role"].strip())
 
-
     summary = extractive_summary(summary_input)
     priority_label, priority_level = predict_priority(summary_input)
     priority_level = int(priority_level)
     assignee, tags = assign_developer(summary_input, ORGANISATION, PROJECT_NAME, RETRIEVAL_ACCESS_TOKEN)
 
-    # Add doc tag
-    # doc_tag = "Matches Documentation" if match_found else "Documentation Misalignment"
-    # tags.append(doc_tag)
+    doc_tag = "Matches Documentation" if match_found else "Documentation Misalignment"
+    tags.append(doc_tag)
 
     structured_tags = ", ".join(tags)
     description = (
