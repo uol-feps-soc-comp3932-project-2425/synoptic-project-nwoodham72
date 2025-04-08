@@ -97,8 +97,8 @@ def raise_bug():
     # Fetch database values and set form fields
     application_roles = ApplicationRole.query.order_by(ApplicationRole.name).all() 
     application_pages = ApplicationPage.query.order_by(ApplicationPage.name).all() 
-    form.role.choices = [("", "Select a role...")] + [(r.name, r.name) for r in application_roles]
-    form.page.choices = [("", "Select a page...")] + [(r.name, r.name) for r in application_pages]
+    # form.role.choices = [("", "Select a role...")] + [(r.name, r.name) for r in application_roles]
+    # form.page.choices = [("", "Select a page...")] + [(r.name, r.name) for r in application_pages]
 
     # Check for database entries
     if current_user.role == "Client":

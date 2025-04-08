@@ -35,24 +35,20 @@ def logout():
 def register():
     form = RegisterForm()
 
-    # Fetch database roles and set form
-    application_roles = FlikRole.query.order_by(FlikRole.name).all() 
-    form.role.choices = [("", "Select a role...")] + [(r.name, r.name) for r in application_roles]
-
     if form.validate_on_submit():
-        # Check selected role 
-        selected_role = FlikRole.query.filter_by(name=form.role.data).first()
+        # Check selected role
+        selected_role = form.role.data  
         if not selected_role:
-            flash("Selected role does not exist.", "danger")
+            flash("Please select a role.", "danger")
             return redirect(url_for("auth.register"))
-        
-        # Create user
-        user = FlikUser(email=form.email.data, role=form.role.data)
+
+        # Create user account
+        user = FlikUser(email=form.email.data, role=selected_role.name)
         user.roles.append(selected_role)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        # flash("Account created! You can now log in.", "info")
         return redirect(url_for("auth.login"))
+
 
     return render_template("register.html", form=form)
