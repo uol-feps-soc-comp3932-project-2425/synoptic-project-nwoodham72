@@ -16,6 +16,13 @@ flik_user_skill = db.Table(
     db.Column("skill_id", db.Integer, db.ForeignKey("skill.id")),
 )
 
+application_role_application_rule = db.Table(
+    "application_role_application_rule",
+    db.Column("application_role_id", db.Integer, db.ForeignKey("application_role.id")),
+    db.Column("application_rule_id", db.Integer, db.ForeignKey("application_rule.id"))
+)
+
+
 
 """ Models """
 class FlikRole(db.Model):
@@ -75,3 +82,21 @@ class ApplicationPage(db.Model):
 
     def __repr__(self):
         return f"<ApplicationPage {self.name}>"
+    
+class ApplicationRule(db.Model):
+    __tablename__ = "application_rule"
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    page_id = db.Column(db.Integer, db.ForeignKey("application_page.id"), nullable=False)
+
+    page = db.relationship("ApplicationPage", backref="application_rules")
+    
+    roles = db.relationship(
+        "ApplicationRole",
+        secondary=application_role_application_rule,
+        backref="application_rules"
+    )
+
+    def __repr__(self):
+        return f"<ApplicationRule {self.title}>"
