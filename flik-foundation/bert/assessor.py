@@ -17,73 +17,79 @@ def assess_documentation(bug_description, bug_description_role):
     # Store matching entries
     matches = []
 
+    documentation = []
+
     # Get documentation
-    documentation = [
-        {
-            "title": "Update Module Details",
-            "permitted_roles": ["manager"],
-            "not_permitted_roles": ["developer", "client"],
-            "action": (
-                "I am a manager user on the modules page. "
-                "I can update the details of a module on the modules page, including the name, year running and cover picture. "
-            )
-        },
-        {
-            "title": "Reset Password",
-            "permitted_roles": ["manager", "developer"],
-            "not_permitted_roles": ["client"],
-            "action": (
-                "I am a manager/developer user on the login page. "
-                "Any user can reset their password through the 'Forgot your Password?' button on the login page. "
-                "After accessing the link, the user is prompted to enter their email, where a new password reset link will be sent. "
-                "A user can open the link in the sent email to reset their password. "
-            )
-        },
-        {
-            "title": "Reset Account Password",
-            "permitted_roles": ["manager", "developer"],
-            "not_permitted_roles": ["client"],
-            "action": (
-                "I am a manager/developer user on the login page. "
-                "Any user can reset their password through the 'Change password' button on the account page. "
-                "After accessing the link, the user is prompted to enter their email, where a new password reset link will be sent. "
-                "A user can open the link in the sent email to reset their password. "
-            )
-        }
-    ]
+    # documentation = [
+    #     {
+    #         "title": "Update Module Details",
+    #         "permitted_roles": ["manager"],
+    #         "not_permitted_roles": ["developer", "client"],
+    #         "action": (
+    #             "I am a manager user on the modules page. "
+    #             "I can update the details of a module on the modules page, including the name, year running and cover picture. "
+    #         )
+    #     },
+    #     {
+    #         "title": "Reset Password",
+    #         "permitted_roles": ["manager", "developer"],
+    #         "not_permitted_roles": ["client"],
+    #         "action": (
+    #             "I am a manager/developer user on the login page. "
+    #             "Any user can reset their password through the 'Forgot your Password?' button on the login page. "
+    #             "After accessing the link, the user is prompted to enter their email, where a new password reset link will be sent. "
+    #             "A user can open the link in the sent email to reset their password. "
+    #         )
+    #     },
+    #     {
+    #         "title": "Reset Account Password",
+    #         "permitted_roles": ["manager", "developer"],
+    #         "not_permitted_roles": ["client"],
+    #         "action": (
+    #             "I am a manager/developer user on the login page. "
+    #             "Any user can reset their password through the 'Change password' button on the account page. "
+    #             "After accessing the link, the user is prompted to enter their email, where a new password reset link will be sent. "
+    #             "A user can open the link in the sent email to reset their password. "
+    #         )
+    #     }
+    # ]
 
     # Compare documentation entry with bug
-    for entry in documentation:
-        title = entry["title"]
-        action = entry["action"]
+    if documentation:
+        for entry in documentation:
+            title = entry["title"]
+            action = entry["action"]
 
-        # Embed action 
-        action_embedding = model.encode(action, convert_to_tensor=True)
+            # Embed action 
+            action_embedding = model.encode(action, convert_to_tensor=True)
 
-        # Assess similarity between bug description and documentation entry 
-        cosine_sim = util.pytorch_cos_sim(action_embedding, bug_description_embedding).item()
+            # Assess similarity between bug description and documentation entry 
+            cosine_sim = util.pytorch_cos_sim(action_embedding, bug_description_embedding).item()
 
-        print(f"Title: {title} - Cosine Similarity Score: {cosine_sim:.4f}")
+            print(f"Title: {title} - Cosine Similarity Score: {cosine_sim:.4f}")
 
-        # Check similarity
-        if cosine_sim >= threshold:
-            print("Documentation and bug description match")
-            # Check if role is permitted
-            if bug_description_role.lower() not in [r.lower() for r in entry["permitted_roles"]]:                
-                print("role is not permitted - likely a documentation error")
-                # Clean entry
-                cleaned_entry = re.sub(r"^I am a .*? page\.\s*", "", entry["action"])  # Remove "I am a <user> user on the <page> page sentence"
-                matches.append({
-                    "title": entry["title"],
-                    "permitted_roles": entry["permitted_roles"],
-                    "action": cleaned_entry,
-                    "sim_score": round(cosine_sim, 2)
-                })
-    # Return documentation matches
-    if matches:
-        return True, matches
+            # Check similarity
+            if cosine_sim >= threshold:
+                print("Documentation and bug description match")
+                # Check if role is permitted
+                if bug_description_role.lower() not in [r.lower() for r in entry["permitted_roles"]]:                
+                    print("role is not permitted - likely a documentation error")
+                    # Clean entry
+                    cleaned_entry = re.sub(r"^I am a .*? page\.\s*", "", entry["action"])  # Remove "I am a <user> user on the <page> page sentence"
+                    matches.append({
+                        "title": entry["title"],
+                        "permitted_roles": entry["permitted_roles"],
+                        "action": cleaned_entry,
+                        "sim_score": round(cosine_sim, 2)
+                    })
+        # Return documentation matches
+        if matches:
+            return True, matches
 
-    # No match found
+        # No match found
+        return False, None
+
+    # No documentation found
     return False, None
 
 # # Example usage

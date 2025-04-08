@@ -21,7 +21,7 @@ def test_scheduled_ticket_creation_using_existing_devs(app_context):
     assert developers, "⚠️ No developers found in DB — required for test."
 
     bug = {
-        "title": "PYTEST AUTOMATED SCRIPT",
+        "title": "MOCK TEST: Settings page loads with a white screen and no content",
         "role": "Student",
         "page": "Student Registration - Test",
         "description": "The settings page loads with a white screen and no content after clicking the settings icon. The settings page loads with a white screen and no content after clicking the settings icon. The settings page loads with a white screen and no content after clicking the settings icon.",
