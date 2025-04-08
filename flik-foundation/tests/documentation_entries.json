@@ -1,0 +1,204 @@
+[
+    {
+        "title": "Update Module Details",
+        "permitted_roles": [
+            "manager"
+        ],
+        "not_permitted_roles": [
+            "developer",
+            "client"
+        ],
+        "action": "I am a manager user on the modules page. I can update the details of a module on the modules page, including the name, year running and cover picture."
+    },
+    {
+        "title": "Reset Password",
+        "permitted_roles": [
+            "manager",
+            "developer"
+        ],
+        "not_permitted_roles": [
+            "client"
+        ],
+        "action": "I am a manager/developer user on the login page. Any user can reset their password through the 'Forgot your Password?' button on the login page. After accessing the link, the user is prompted to enter their email, where a new password reset link will be sent. A user can open the link in the sent email to reset their password."
+    },
+    {
+        "title": "Action 3",
+        "permitted_roles": [
+            "manager"
+        ],
+        "not_permitted_roles": [
+            "client"
+        ],
+        "action": "I am a manager user on the page Action 3. This action allows users to perform a specific function relevant to their role in context 3. It involves inputting data, interacting with page widgets, and possibly triggering backend logic."
+    },
+    {
+        "title": "Action 4",
+        "permitted_roles": [
+            "developer"
+        ],
+        "not_permitted_roles": [
+            "manager"
+        ],
+        "action": "I am a manager user on the page Action 4. This action allows users to perform a specific function relevant to their role in context 4. It involves inputting data, interacting with page widgets, and possibly triggering backend logic."
+    },
+    {
+        "title": "Action 5",
+        "permitted_roles": [
+            "client"
+        ],
+        "not_permitted_roles": [
+            "developer"
+        ],
+        "action": "I am a developer user on the page Action 5. This action allows users to perform a specific function relevant to their role in context 5. It involves inputting data, interacting with page widgets, and possibly triggering backend logic."
+    },
+    {
+        "title": "Action 6",
+        "permitted_roles": [
+            "manager"
+        ],
+        "not_permitted_roles": [
+            "client"
+        ],
+        "action": "I am a client user on the page Action 6. This action allows users to perform a specific function relevant to their role in context 6. It involves inputting data, interacting with page widgets, and possibly triggering backend logic."
+    },
+    {
+        "title": "Action 7",
+        "permitted_roles": [
+            "developer"
+        ],
+        "not_permitted_roles": [
+            "manager"
+        ],
+        "action": "I am a manager user on the page Action 7. This action allows users to perform a specific function relevant to their role in context 7. It involves inputting data, interacting with page widgets, and possibly triggering backend logic."
+    },
+    {
+        "title": "Action 8",
+        "permitted_roles": [
+            "client"
+        ],
+        "not_permitted_roles": [
+            "developer"
+        ],
+        "action": "I am a developer user on the page Action 8. This action allows users to perform a specific function relevant to their role in context 8. It involves inputting data, interacting with page widgets, and possibly triggering backend logic."
+    },
+    {
+        "title": "Action 9",
+        "permitted_roles": [
+            "manager"
+        ],
+        "not_permitted_roles": [
+            "client"
+        ],
+        "action": "I am a client user on the page Action 9. This action allows users to perform a specific function relevant to their role in context 9. It involves inputting data, interacting with page widgets, and possibly triggering backend logic."
+    },
+    {
+        "title": "Action 10",
+        "permitted_roles": [
+            "developer"
+        ],
+        "not_permitted_roles": [
+            "manager"
+        ],
+        "action": "I am a manager user on the page Action 10. This action allows users to perform a specific function relevant to their role in context 10. It involves inputting data, interacting with page widgets, and possibly triggering backend logic."
+    },
+    {
+        "title": "Action 11",
+        "permitted_roles": [
+            "client"
+        ],
+        "not_permitted_roles": [
+            "developer"
+        ],
+        "action": "I am a developer user on the page Action 11. This action allows users to perform a specific function relevant to their role in context 11. It involves inputting data, interacting with page widgets, and possibly triggering backend logic."
+    },
+    {
+        "title": "Action 12",
+        "permitted_roles": [
+            "manager"
+        ],
+        "not_permitted_roles": [
+            "client"
+        ],
+        "action": "I am a client user on the page Action 12. This action allows users to perform a specific function relevant to their role in context 12. It involves inputting data, interacting with page widgets, and possibly triggering backend logic."
+    },
+    {
+        "title": "Action 13",
+        "permitted_roles": [
+            "developer"
+        ],
+        "not_permitted_roles": [
+            "manager"
+        ],
+        "action": "I am a manager user on the page Action 13. This action allows users to perform a specific function relevant to their role in context 13. It involves inputting data, interacting with page widgets, and possibly triggering backend logic."
+    },
+    {
+        "title": "Action 14",
+        "permitted_roles": [
+            "client"
+        ],
+        "not_permitted_roles": [
+            "developer"
+        ],
+        "action": "I am a developer user on the page Action 14. This action allows users to perform a specific function relevant to their role in context 14. It involves inputting data, interacting with page widgets, and possibly triggering backend logic."
+    },
+    {
+        "title": "Action 15",
+        "permitted_roles": [
+            "manager"
+        ],
+        "not_permitted_roles": [
+            "client"
+        ],
+        "action": "I am a client user on the page Action 15. This action allows users to perform a specific function relevant to their role in context 15. It involves inputting data, interacting with page widgets, and possibly triggering backend logic."
+    },
+    {
+        "title": "Action 16",
+        "permitted_roles": [
+            "developer"
+        ],
+        "not_permitted_roles": [
+            "manager"
+        ],
+        "action": "I am a manager user on the page Action 16. This action allows users to perform a specific function relevant to their role in context 16. It involves inputting data, interacting with page widgets, and possibly triggering backend logic."
+    },
+    {
+        "title": "Action 17",
+        "permitted_roles": [
+            "client"
+        ],
+        "not_permitted_roles": [
+            "developer"
+        ],
+        "action": "I am a developer user on the page Action 17. This action allows users to perform a specific function relevant to their role in context 17. It involves inputting data, interacting with page widgets, and possibly triggering backend logic."
+    },
+    {
+        "title": "Action 18",
+        "permitted_roles": [
+            "manager"
+        ],
+        "not_permitted_roles": [
+            "client"
+        ],
+        "action": "I am a client user on the page Action 18. This action allows users to perform a specific function relevant to their role in context 18. It involves inputting data, interacting with page widgets, and possibly triggering backend logic."
+    },
+    {
+        "title": "Action 19",
+        "permitted_roles": [
+            "developer"
+        ],
+        "not_permitted_roles": [
+            "manager"
+        ],
+        "action": "I am a manager user on the page Action 19. This action allows users to perform a specific function relevant to their role in context 19. It involves inputting data, interacting with page widgets, and possibly triggering backend logic."
+    },
+    {
+        "title": "Action 20",
+        "permitted_roles": [
+            "client"
+        ],
+        "not_permitted_roles": [
+            "developer"
+        ],
+        "action": "I am a developer user on the page Action 20. This action allows users to perform a specific function relevant to their role in context 20. It involves inputting data, interacting with page widgets, and possibly triggering backend logic."
+    }
+]

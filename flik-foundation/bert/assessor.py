@@ -20,39 +20,39 @@ def assess_documentation(bug_description, bug_description_role):
     documentation = []
 
     # Get documentation
-    # documentation = [
-    #     {
-    #         "title": "Update Module Details",
-    #         "permitted_roles": ["manager"],
-    #         "not_permitted_roles": ["developer", "client"],
-    #         "action": (
-    #             "I am a manager user on the modules page. "
-    #             "I can update the details of a module on the modules page, including the name, year running and cover picture. "
-    #         )
-    #     },
-    #     {
-    #         "title": "Reset Password",
-    #         "permitted_roles": ["manager", "developer"],
-    #         "not_permitted_roles": ["client"],
-    #         "action": (
-    #             "I am a manager/developer user on the login page. "
-    #             "Any user can reset their password through the 'Forgot your Password?' button on the login page. "
-    #             "After accessing the link, the user is prompted to enter their email, where a new password reset link will be sent. "
-    #             "A user can open the link in the sent email to reset their password. "
-    #         )
-    #     },
-    #     {
-    #         "title": "Reset Account Password",
-    #         "permitted_roles": ["manager", "developer"],
-    #         "not_permitted_roles": ["client"],
-    #         "action": (
-    #             "I am a manager/developer user on the login page. "
-    #             "Any user can reset their password through the 'Change password' button on the account page. "
-    #             "After accessing the link, the user is prompted to enter their email, where a new password reset link will be sent. "
-    #             "A user can open the link in the sent email to reset their password. "
-    #         )
-    #     }
-    # ]
+    documentation = [
+        {
+            "title": "Update Module Details",
+            "permitted_roles": ["manager"],
+            "not_permitted_roles": ["developer", "client"],
+            "action": (
+                "I am a manager user on the modules page. "
+                "I can update the details of a module on the modules page, including the name, year running and cover picture. "
+            )
+        },
+        {
+            "title": "Reset Password",
+            "permitted_roles": ["manager", "developer"],
+            "not_permitted_roles": ["client"],
+            "action": (
+                "I am a manager/developer user on the login page. "
+                "Any user can reset their password through the 'Forgot your Password?' button on the login page. "
+                "After accessing the link, the user is prompted to enter their email, where a new password reset link will be sent. "
+                "A user can open the link in the sent email to reset their password. "
+            )
+        },
+        {
+            "title": "Reset Account Password",
+            "permitted_roles": ["manager", "developer"],
+            "not_permitted_roles": ["client"],
+            "action": (
+                "I am a manager/developer user on the login page. "
+                "Any user can reset their password through the 'Change password' button on the account page. "
+                "After accessing the link, the user is prompted to enter their email, where a new password reset link will be sent. "
+                "A user can open the link in the sent email to reset their password. "
+            )
+        }
+    ]
 
     # Compare documentation entry with bug
     if documentation:
@@ -75,7 +75,7 @@ def assess_documentation(bug_description, bug_description_role):
                 if bug_description_role.lower() not in [r.lower() for r in entry["permitted_roles"]]:                
                     print("role is not permitted - likely a documentation error")
                     # Clean entry
-                    cleaned_entry = re.sub(r"^I am a .*? page\.\s*", "", entry["action"])  # Remove "I am a <user> user on the <page> page sentence"
+                    cleaned_entry = re.sub(r"^I am a .*? page\.\s*", "", entry["action"])  # Remove "I am a <user> user on the <page> page" sentence
                     matches.append({
                         "title": entry["title"],
                         "permitted_roles": entry["permitted_roles"],

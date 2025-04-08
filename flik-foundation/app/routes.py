@@ -15,6 +15,7 @@ from bert.assigner import assign_developer
 from bert.assessor import assess_documentation
 from .models import FlikUser, Skill, ApplicationRole, db
 from .utils import roles_required
+import json
 
 main = Blueprint("main", __name__)
 
@@ -292,44 +293,5 @@ def raise_bug():
 
     return render_template("raise_bug.html", form=form, bug_details=bug_details, application_roles=application_roles)
 
-def create_ticket_scheduled(bug):
-    from bert.summariser import extractive_summary
-    from bert.prioritiser import predict_priority
-    from bert.assigner import assign_developer
-    from azure_integration.client import create_work_item
-    from azure_integration.config import ORGANISATION, PROJECT_NAME, RETRIEVAL_ACCESS_TOKEN
-
-    summary_input = (
-        f"{bug['title']}.\n"
-        f"I am a {bug['role']} user.\n"
-        f"I am on the {bug['page']} page.\n"
-        f"{bug['description']}.\n"
-        f"{bug['expected']}.\n"
-    )
-
-    summary = extractive_summary(summary_input)
-    priority_label, priority_level = predict_priority(summary_input)
-    assignee, tags = assign_developer(summary_input, ORGANISATION, PROJECT_NAME, RETRIEVAL_ACCESS_TOKEN)
-    structured_tags = ", ".join(tags) if tags else "Miscellaneous"
-
-    description = (
-        f"Summary:<br>{summary}<br><br>"
-        f"Priority: {priority_label}<br><br>"
-        f"--Steps to Reproduce--<br>"
-        f"Background:<br>I am a {bug['role']} user on the {bug['page']} page.<br><br>"
-        f"Problem Description:<br>{bug['description']}<br><br>"
-        f"Expected Behaviour:<br>{bug['expected']}<br><br>"
-    )
-
-    work_item = create_work_item(
-        PROJECT_NAME,
-        bug["title"],
-        description,
-        priority_level,
-        assignee,
-        structured_tags
-    )
-
-    return {"status": "success", "azure_id": work_item.id}
 
 
