@@ -1,5 +1,6 @@
 from sentence_transformers import SentenceTransformer, util
 import re
+import logging
 
 # Load model
 model = SentenceTransformer('distilbert-base-nli-stsb-mean-tokens')
@@ -26,7 +27,6 @@ def assess_documentation(bug_description, bug_description_role):
             "permitted_roles": ["manager"],
             "not_permitted_roles": ["developer", "client"],
             "action": (
-                "I am a manager user on the modules page. "
                 "I can update the details of a module on the modules page, including the name, year running and cover picture. "
             )
         },
@@ -46,7 +46,7 @@ def assess_documentation(bug_description, bug_description_role):
             "permitted_roles": ["manager", "developer"],
             "not_permitted_roles": ["client"],
             "action": (
-                "I am a manager/developer user on the login page. "
+                
                 "Any user can reset their password through the 'Change password' button on the account page. "
                 "After accessing the link, the user is prompted to enter their email, where a new password reset link will be sent. "
                 "A user can open the link in the sent email to reset their password. "
@@ -57,7 +57,6 @@ def assess_documentation(bug_description, bug_description_role):
     # Compare documentation entry with bug
     if documentation:
         for entry in documentation:
-            title = entry["title"]
             action = entry["action"]
 
             # Embed action 
@@ -65,17 +64,16 @@ def assess_documentation(bug_description, bug_description_role):
 
             # Assess similarity between bug description and documentation entry 
             cosine_sim = util.pytorch_cos_sim(action_embedding, bug_description_embedding).item()
-
-            print(f"Title: {title} - Cosine Similarity Score: {cosine_sim:.4f}")
+            logging.info(f"Cosine Similarity: {cosine_sim:.4f}")
 
             # Check similarity
             if cosine_sim >= threshold:
-                print("Documentation and bug description match")
+                logging.info(f"Threshold met: {cosine_sim:.4f}")
                 # Check if role is permitted
                 if bug_description_role.lower() not in [r.lower() for r in entry["permitted_roles"]]:                
-                    print("role is not permitted - likely a documentation error")
+                    logging.info("User role not in permitted roles - Return documentation to user.")
                     # Clean entry
-                    cleaned_entry = re.sub(r"^I am a .*? page\.\s*", "", entry["action"])  # Remove "I am a <user> user on the <page> page" sentence
+                    cleaned_entry = re.sub(r"^I am a .*? page\.\s*", "", entry["action"])  # Remove "I am a <user> user on the <page> page" sentence from documentation entry output
                     matches.append({
                         "title": entry["title"],
                         "permitted_roles": entry["permitted_roles"],
@@ -108,6 +106,7 @@ def assess_documentation(bug_description, bug_description_role):
 #     bug_description_role = "client"
     
 #     assess_documentation(bug_description, bug_description_role)
+
 
                 
 

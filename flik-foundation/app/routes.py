@@ -18,6 +18,7 @@ from .utils import roles_required
 
 main = Blueprint("main", __name__)
 
+
 # Redirect 403 (permission) errors to 403.html
 @main.errorhandler(403)
 def forbidden(e):
@@ -49,7 +50,9 @@ def list_users():
     users = FlikUser.query.all()
     return "<br>".join([f"{u.id} | {u.email} | {u.role}" for u in users])
 
+
 """ Flik Configuration"""
+
 
 @main.route("/teamsheet", methods=["GET", "POST"])
 @login_required
@@ -83,7 +86,9 @@ def teamsheet():
     skills = Skill.query.order_by(Skill.name).all()
     return render_template("teamsheet.html", developers=developers, skills=skills)
 
+
 """ Raise bug workflow """
+
 
 @main.route("/raise_bug", methods=["GET", "POST"])
 @login_required
@@ -94,30 +99,47 @@ def raise_bug():
     matching_docs = None
     tags = []
 
-    # Fetch database values
-    application_roles = ApplicationRole.query.order_by(ApplicationRole.name).all() 
-    application_pages = ApplicationPage.query.order_by(ApplicationPage.name).all() 
-    
-    # Check for database entries
+    # Fetch database values and check for database entries
+    application_roles = ApplicationRole.query.order_by(ApplicationRole.name).all()
+    application_pages = ApplicationPage.query.order_by(ApplicationPage.name).all()
+
     if current_user.role == "Client":
         if not application_roles and not application_pages:
-            flash("No application roles or pages available. You will not be able to submit a ticket until the development team have added at least one user role and page.", "danger")
+            flash(
+                "No application roles or pages available. You will not be able to submit a ticket until the development team have added at least one user role and page.",
+                "danger",
+            )
 
         if not application_roles:
-            flash("No application roles available. You will not be able to submit a ticket until the development team have added at least one user role.", "danger")
-        
+            flash(
+                "No application roles available. You will not be able to submit a ticket until the development team have added at least one user role.",
+                "danger",
+            )
+
         if not application_pages:
-            flash("No application pages available. You will not be able to submit a ticket until the development team have added at least one page.", "danger")
+            flash(
+                "No application pages available. You will not be able to submit a ticket until the development team have added at least one page.",
+                "danger",
+            )
     # Developer view
     else:
         if not application_roles and not application_pages:
-            flash("No application roles or pages available. Please define an application page and role in the 'Documentation' tab.", "danger")
+            flash(
+                "No application roles or pages available. Please define an application page and role in the 'Documentation' tab.",
+                "danger",
+            )
 
         if not application_roles:
-            flash("No application roles available. Please define an application role in the 'Documentation' tab.", "danger")
-        
+            flash(
+                "No application roles available. Please define an application role in the 'Documentation' tab.",
+                "danger",
+            )
+
         if not application_pages:
-            flash("No application pages available. YPlease define an application page in the 'Documentation' tab.", "danger")
+            flash(
+                "No application pages available. YPlease define an application page in the 'Documentation' tab.",
+                "danger",
+            )
 
     if form.validate_on_submit():
         # Check for additional comments from documentation match modal
@@ -132,23 +154,13 @@ def raise_bug():
             "expected": form.expected.data,
         }
 
-        # Check for additioal comments
+        # If no additional comments, check for documentation match
         if not additional_comments:
             # Generate documentation similarity
-            prep_documentation_comparison = (
-                "I am a "
-                + bug_details["role"].name
-                + "user on the "
-                + bug_details["page"].name
-                + "page.\n"
-                + bug_details["description"].strip()
-                + ".\n"
-                # + bug_details["expected"].strip()  # Include in comparison?
-                # + ".\n"
-            )
+            desc_extract = bug_details["description"].strip() + "."
             # Return matching documentation
             match, matching_docs = assess_documentation(
-                prep_documentation_comparison, bug_details["role"].name
+                desc_extract, bug_details["role"].name
             )
             # Display matching documentation
             if match and matching_docs:
@@ -157,35 +169,36 @@ def raise_bug():
                     form=form,
                     bug_details=None,
                     matching_docs=matching_docs,
-                ) 
+                )
 
         # Generate extractive summary of bug ticket
         prep_summary_data = (
-            bug_details["title"].strip()
-            + ".\n"  
-            + f"I am a "
-            + bug_details["role"].name
-            + "user.\n"
-            + f"I am on the "
-            + bug_details["page"].name
-            + "page.\n"
-            + bug_details["description"].strip()
+            bug_details["description"].strip()
             + ".\n"
             + bug_details["expected"].strip()
             + ".\n"
         )
 
+        # Prepare data for prioritiser and assigner
+        prep_classification_data = (
+            bug_details["title"].strip()
+            + ".\n"
+            + bug_details["description"].strip()
+            + ".\n"
+        )
+
         summary = extractive_summary(prep_summary_data)
-        priority_label, priority_level = predict_priority(prep_summary_data)
+        priority_label, priority_level = predict_priority(prep_classification_data)
 
         # Send ticket to Azure in html format
         description = (
-            f"Summary:<br>{summary}<br><br>"
-            f"Priority: {priority_label}<br><br>"
-            f"--Steps to Reproduce--<br>"
-            f"Background:<br>I am a {bug_details['role']} user on the {bug_details['page']} page.<br><br>"
-            f"Problem Description:<br>{bug_details['description']}<br><br>"
-            f"Expected Behaviour:<br>{bug_details['expected']}<br><br>"
+            f"<b>Summary</b>: As a <i>{bug_details['role'].name}</i> on the <i>{bug_details['page'].name}</i> page, {summary}<br><br>"
+            f"<b>Priority</b>: {priority_label}<br><br>"
+            f"<hr><br>"
+            f"<b>Background</b><br>"
+            f"<ul><li><i>User Role</i>: {bug_details['role'].name}.</li><li><i>Application Page</i>: {bug_details['page'].name}.</li></ul>"
+            f"<b>Problem Description</b><br><p>{bug_details['description']}</p><br><br>"
+            f"<b>Expected Behaviour</b><br><p>{bug_details['expected']}</p><br><br>"
         )
 
         # Append additional comments from documentation match modal
@@ -193,7 +206,7 @@ def raise_bug():
             description += f"This bug flagged a documentation issue. The author provided additional comments:<br>{additional_comments}<br><br>"
 
         assigned_to, tags = assign_developer(
-            prep_summary_data,
+            prep_classification_data,
             ORGANISATION,
             PROJECT_NAME,
             RETRIEVAL_ACCESS_TOKEN,
@@ -214,7 +227,7 @@ def raise_bug():
 
             # Successful output
             if additional_comments:  # Success message on documentation override
-                flash(
+                flash(  # Bug Logo: Bootstrap 5.2 images (https://icons.getbootstrap.com/)
                     """
                     <div class='text-center'>
                         <img src='/static/images/bug.png' alt='Bug Logo' class='img-fluid mb-2' style='max-width: 50px;'>
@@ -229,8 +242,7 @@ def raise_bug():
                 )
             # Standard success message
             else:
-                # Bug Logo: Bootstrap 5.2 images (https://icons.getbootstrap.com/)
-                flash(
+                flash(  # Bug Logo: Bootstrap 5.2 images (https://icons.getbootstrap.com/)
                     """
                     <div class='text-center'>
                         <img src='/static/images/bug.png' alt='Bug Logo' class='img-fluid mb-2' style='max-width: 50px;'> 
@@ -254,7 +266,4 @@ def raise_bug():
         except Exception as e:
             flash(f"Failed to create ticket: {e}", "danger")
 
-    return render_template("raise_bug.html", form=form, bug_details=bug_details, application_roles=application_roles)
-
-
-
+    return render_template("raise_bug.html", form=form, bug_details=bug_details)
