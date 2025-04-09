@@ -84,12 +84,14 @@ function setupSelectFieldValidation(field) {
   
   field.addEventListener('change', function() {
     const value = field.value;
-    if (value && value !== '' && value !== 'None') {
-      field.classList.remove('is-invalid');
-      field.classList.add('is-valid');
-    } else {
+    
+    // Check if the value is empty, 'None' or the placeholder (first option)
+    if (!value || value === '' || value === 'None' || field.selectedIndex === 0) {
       field.classList.remove('is-valid');
       field.classList.add('is-invalid');
+    } else {
+      field.classList.remove('is-invalid');
+      field.classList.add('is-valid');
     }
   });
 }
@@ -139,7 +141,8 @@ function validateStep1() {
   }
   
   // Validate Role
-  if (!elements.role.value || elements.role.value === "" || elements.role.value === "None") {
+  // Check for empty, placeholder text, or first option (index 0)
+  if (!elements.role.value || elements.role.value === "" || elements.role.value === "None" || elements.role.selectedIndex === 0) {
     elements.role.classList.add('is-invalid');
     elements.role.classList.remove('is-valid');
     valid = false;
@@ -149,7 +152,8 @@ function validateStep1() {
   }
   
   // Validate Page
-  if (!elements.page.value || elements.page.value === "" || elements.page.value === "None") {
+  // Check for empty, placeholder text, or first option (index 0)
+  if (!elements.page.value || elements.page.value === "" || elements.page.value === "None" || elements.page.selectedIndex === 0) {
     elements.page.classList.add('is-invalid');
     elements.page.classList.remove('is-valid');
     valid = false;
