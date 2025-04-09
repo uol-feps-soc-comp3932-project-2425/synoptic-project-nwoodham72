@@ -94,7 +94,7 @@ def raise_bug():
     matching_docs = None
     tags = []
 
-    # Fetch database values and set form fields
+    # Fetch database values
     application_roles = ApplicationRole.query.order_by(ApplicationRole.name).all() 
     application_pages = ApplicationPage.query.order_by(ApplicationPage.name).all() 
     

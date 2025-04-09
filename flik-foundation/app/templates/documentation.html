@@ -80,4 +80,75 @@
     <p class="text-muted"><i>No pages defined.</i></p>
 {% endif %}
 
+<hr class="my-5">
+
+<!-- ------------------------- -->
+<!-- Add New Rule -->
+<!-- ------------------------- -->
+<h4>Application Rules</h4>
+<p class="text-muted">
+    These rules define the functionality of your application.<br>
+    A rule contains a title, description, roles that are able to perform the action and the area of functionality the action takes place in.
+</p>
+
+<form method="POST" action="{{ url_for('runbook.add_application_rule') }}" class="mb-4">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{ form.title.label(class="form-label") }}
+        {{ form.title(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.description.label(class="form-label") }}
+        {{ form.description(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.page.label(class="form-label") }}
+        {{ form.page(class="form-select") }}
+    </div>
+    <div class="mb-3">
+        {{ form.roles.label(class="form-label") }}
+        {{ form.roles(class="form-select", multiple="multiple", size="5") }}
+        <small class="form-text text-muted">Hold Ctrl (CMD on Mac) to select multiple roles</small>
+    </div>
+    <button class="btn btn-success" type="submit">Add Rule</button>
+</form>
+
+<!-- ------------------------- -->
+<!-- List Rules -->
+<!-- ------------------------- -->
+{% if application_rules %}
+    <h5>Existing Rules:</h5>
+    <ul class="list-group">
+        {% for rule in application_rules %}
+            <li class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="mb-0">{{ rule.title }}</h5>
+                    <!-- <div>
+                        <a href="{{ url_for('runbook.edit_application_rule', rule_id=rule.id) }}" class="btn btn-outline-primary btn-sm">Edit</a>
+                        <form class="d-inline" method="POST" action="{{ url_for('runbook.delete_application_rule', rule_id=rule.id) }}">
+                            <button class="btn btn-outline-danger btn-sm" onclick="return confirm('Delete this rule?')" type="submit">Delete</button>
+                        </form>
+                    </div> -->
+                </div>
+                <p>{{ rule.description }}</p>
+                <!-- <div class="d-flex justify-content-between small">
+                    <div>
+                        <strong>Page:</strong> {{ rule.page.name if rule.page else 'None' }}
+                    </div>
+                    <div>
+                        <strong>Role(s) permitted to perform the action:</strong> 
+                        {% for role in rule.roles %}
+                            <span class="badge bg-secondary me-1">{{ role.name }}</span>
+                        {% endfor %}
+                    </div>
+                </div> -->
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p class="text-muted"><i>No rules defined.</i></p>
+{% endif %}
+
+<hr class="my-5">
+
 {% endblock %}
