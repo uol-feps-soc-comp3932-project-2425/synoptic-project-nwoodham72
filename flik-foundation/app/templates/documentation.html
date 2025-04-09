@@ -91,58 +91,79 @@
     A rule contains a title, description, roles that are able to perform the action and the area of functionality the action takes place in.
 </p>
 
-<form method="POST" action="{{ url_for('runbook.add_application_rule') }}" class="mb-4">
+<form method="POST" action="{{ url_for('runbook.add_application_rule', application_rule_id=application_rule_id) }}"">
     {{ form.hidden_tag() }}
+  
+    <!-- Title Input -->
     <div class="mb-3">
-        {{ form.title.label(class="form-label") }}
-        {{ form.title(class="form-control") }}
+      <label class="form-label">Rule Title</label>
+      <div class="input-group">
+        {{ form.title(class="form-control", placeholder="Enter rule title") }}
+      </div>
     </div>
+  
+    <!-- Description Input -->
     <div class="mb-3">
-        {{ form.description.label(class="form-label") }}
-        {{ form.description(class="form-control") }}
+      <label class="form-label">Description</label>
+      <div class="input-group">
+        {{ form.description(class="form-control", rows=2, placeholder="Describe what this rule does") }}
+      </div>
     </div>
+  
+    <!-- Page Select -->
     <div class="mb-3">
-        {{ form.page.label(class="form-label") }}
+      <label class="form-label">Select Page</label>
+      <div class="input-group">
         {{ form.page(class="form-select") }}
+      </div>
     </div>
+  
+    <!-- Permitted Roles Multi-Select -->
     <div class="mb-3">
-        {{ form.roles.label(class="form-label") }}
-        {{ form.roles(class="form-select", multiple="multiple", size="5") }}
-        <small class="form-text text-muted">Hold Ctrl (CMD on Mac) to select multiple roles</small>
+      <label class="form-label">Permitted Roles</label>
+      <div class="input-group">
+        {{ form.roles(class="form-select", multiple=True, size=5) }}
+      </div>
+      <small class="form-text text-muted">Hold Ctrl (CMD on Mac) to select multiple roles</small>
     </div>
-    <button class="btn btn-success" type="submit">Add Rule</button>
-</form>
+  
+    <!-- Submit -->
+    <div class="mb-3">
+      <button type="submit" class="btn btn-success">Add Rule</button>
+    </div>
+  </form>
+  
 
 <!-- ------------------------- -->
 <!-- List Rules -->
 <!-- ------------------------- -->
 {% if application_rules %}
-    <h5>Existing Rules:</h5>
-    <ul class="list-group">
-        {% for rule in application_rules %}
-            <li class="list-group-item">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h5 class="mb-0">{{ rule.title }}</h5>
-                    
-                </div>
-                <p>{{ rule.description }}</p>
-                <div class="d-flex justify-content-between small">
-                    <div>
-                        <strong>Page:</strong> {{ rule.page.name if rule.page else 'None' }}
-                    </div>
-                    <div>
-                        <strong>Role(s) permitted to perform the action:</strong> 
+    <h5 class="mb-3">Existing Rules:</h5>
+    {% if application_rules %}
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for rule in application_rules %}
+                <div class="col">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                    <h5 class="card-title">{{ rule.title }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ rule.page.name }}</h6>
+                    <p class="card-text">{{ rule.description }}</p>
+                    <div class="mb-3">
                         {% for role in rule.roles %}
-                            <span class="badge bg-secondary me-1">{{ role.name }}</span>
+                        <span class="badge bg-secondary">{{ role.name }}</span>
                         {% endfor %}
                     </div>
+                    <a href="#" class="btn btn-outline-primary btn-sm disabled">Update</a>
+                    </div>
                 </div>
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p class="text-muted"><i>No rules defined.</i></p>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+    <p class="fst-italic text-muted">No rules defined.</p>
+    {% endif %}
 {% endif %}
+
 
 <hr class="my-5">
 

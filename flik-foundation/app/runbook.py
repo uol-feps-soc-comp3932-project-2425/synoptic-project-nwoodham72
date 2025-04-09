@@ -169,9 +169,6 @@ def add_application_rule():
             db.session.add(new_rule)
             db.session.commit()
             flash(f"Rule '{form.title.data}' added to runbook.", "success")
-            flash(f"Debug: Rule created with ID {new_rule.id}, title: {new_rule.title}", "info")
-            flash(f"Debug: Page assigned: {new_rule.page.name if new_rule.page else 'None'}", "info")
-            flash(f"Debug: Roles assigned: {', '.join([r.name for r in new_rule.roles]) if new_rule.roles else 'None'}", "info")
         else:
             flash(f"Cannot add '{form.title.data}', the rule already exists.", "warning")
     else:
