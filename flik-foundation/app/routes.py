@@ -194,16 +194,15 @@ def raise_bug():
         description = (
             f"<b>Summary</b>: As a <i>{bug_details['role'].name}</i> on the <i>{bug_details['page'].name}</i> page, {summary}<br><br>"
             f"<b>Priority</b>: {priority_label}<br><br>"
-            f"<hr><br>"
-            f"<b>Background</b><br>"
-            f"<ul><li><i>User Role</i>: {bug_details['role'].name}.</li><li><i>Application Page</i>: {bug_details['page'].name}.</li></ul>"
-            f"<b>Problem Description</b><br><p>{bug_details['description']}</p><br><br>"
-            f"<b>Expected Behaviour</b><br><p>{bug_details['expected']}</p><br><br>"
+            f"<hr>"
+            f"<p><b>Background</b><br> <ul><li><i>User Role</i>: {bug_details['role'].name}.</li><li><i>Application Page</i>: {bug_details['page'].name}.</li></ul><p>"
+            f"<p><b>Problem Description</b><br>{bug_details['description']}</p>"
+            f"<p><b>Expected Behaviour</b><br>{bug_details['expected']}</p>"
         )
 
         # Append additional comments from documentation match modal
         if additional_comments:
-            description += f"This bug flagged a documentation issue. The author provided additional comments:<br>{additional_comments}<br><br>"
+            description += f"<i>This bug flagged a documentation issue. The author provided additional comments:<i><br>{additional_comments}<br><br>"
 
         assigned_to, tags = assign_developer(
             prep_classification_data,
