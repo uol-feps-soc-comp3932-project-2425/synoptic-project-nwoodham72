@@ -34,7 +34,7 @@ def documentation():
             "warning",
         )
     
-    applications_rules = ApplicationRule.query.order_by(ApplicationRule.title).all()
+    application_rules = ApplicationRule.query.order_by(ApplicationRule.title).all()
 
     form = ApplicationRuleForm()
 
@@ -42,7 +42,7 @@ def documentation():
         "documentation.html",
         application_roles=application_roles,
         application_pages=application_pages,
-        applications_rules=applications_rules,
+        application_rules=application_rules,
         form=form
     )
 
