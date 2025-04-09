@@ -19,24 +19,16 @@ def documentation():
     form.page.query = ApplicationPage.query.order_by(ApplicationPage.name)
     form.roles.query = ApplicationRole.query.order_by(ApplicationRole.name)
 
-    if form.validate_on_submit():
-        new_rule = ApplicationRule(
-            title=form.title.data,
-            description=form.description.data,
-            page=form.page.data
-        )
-        new_rule.roles.extend(form.roles.data)
-        db.session.add(new_rule)
-        db.session.commit()
-        flash("Rule added successfully.", "success")
-        return redirect(url_for("runbook.documentation", tab="rules"))
+    # Get tab (default = 'roles)
+    tab = request.args.get("tab", "roles") 
 
     return render_template(
         "documentation.html",
         application_roles=ApplicationRole.query.order_by(ApplicationRole.name),
         application_pages=ApplicationPage.query.order_by(ApplicationPage.name),
         application_rules=ApplicationRule.query.order_by(ApplicationRule.title),
-        form=form
+        form=form,
+        tab=tab
     )
 
 # ----- Role routes -----
