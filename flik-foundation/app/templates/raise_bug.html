@@ -36,7 +36,6 @@
   {% endif %}
 
   <!-- Display form -->
-
   <div class="card shadow-sm border-0 rounded-3">
     <div class="card-body">
       <form method="POST" novalidate>
@@ -66,18 +65,15 @@
                     {{ form.role(class="form-select", id="role") }}
                     <label for="role">Role</label>
                 
-                    <!-- Server-side WTForms error -->
                     {% if form.role.errors %}
                       <div class="invalid-feedback d-block">{{ form.role.errors[0] }}</div>
                     {% endif %}
                 
-                    <!-- Client-side feedback always shown if JS adds .is-invalid -->
                     <div class="invalid-feedback">
                       Please select a valid role.
                     </div>
                   </div>
                 </div>
-                
               
                 <!-- Page select with floating label -->
                 <div class="col-md-6 mb-3">
@@ -85,18 +81,15 @@
                     {{ form.page(class="form-select", id="page") }}
                     <label for="page">Page</label>
                 
-                    <!-- Server-side WTForms error -->
                     {% if form.page.errors %}
                       <div class="invalid-feedback d-block">{{ form.page.errors[0] }}</div>
                     {% endif %}
                 
-                    <!-- Client-side feedback always shown if JS adds .is-invalid -->
                     <div class="invalid-feedback">
                       Please select a valid page.
                     </div>
                   </div>
                 </div>
-                
               </div>
 
               <!-- Description -->
@@ -152,7 +145,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <p>If the documentation didn’t resolve your issue, you can still submit this bug report.</p>
+          <p>If the documentation didn't resolve your issue, you can still submit this bug report.</p>
           <div class="form-floating mb-3">
             <textarea class="form-control" id="additionalComments" name="additional_comments" placeholder="Explain why the documentation doesn't help..." aria_describedby="additional_comments-helpblock" style="height: 120px;"></textarea>
             <label for="additionalComments">Additional Comments</label>
@@ -212,454 +205,6 @@
     </div>
   </div>
 
-  <!-- JS -->
-
-  <!-- Pass additional input to DevOps -->
-  <script>
-    function submitWithExtra() {
-      const comment = document.getElementById('additionalComments').value.trim();
-      const hiddenInput = document.createElement('input');
-      hiddenInput.type = 'hidden';
-      hiddenInput.name = 'additional_comments';
-      hiddenInput.value = comment;
-      document.querySelector('form').appendChild(hiddenInput);
-      document.querySelector('form').submit();
-    }
-  </script>
-  
-
-  <!-- Event Listeners and Formatting -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const titleInput = document.getElementById('title');
-      const descInput = document.getElementById('description');
-      const roleSelect = document.getElementById('role');
-      const pageSelect = document.getElementById('page');
-      const expected_input = document.getElementById('expected');
-      const additional_input = document.getElementById('additionalComments');
-
-
-      // Title field formatting
-      titleInput.addEventListener('input', function(e) {
-        const value = e.target.value.trim();
-        if (value.length > 0 && value.length < 10) {
-          e.target.classList.remove('is-invalid', 'is-valid');
-          e.target.classList.add('is-warning');
-        } else if (value.length >= 10) {
-          e.target.classList.remove('is-invalid', 'is-warning');
-          e.target.classList.add('is-valid');
-        } else {
-          e.target.classList.remove('is-invalid', 'is-warning', 'is-valid');
-        }
-      });
-      // On blur, if title is too short, mark it red
-      titleInput.addEventListener('blur', function(e) {
-        const value = e.target.value.trim();
-        if (value.length > 0 && value.length < 10) {
-          e.target.classList.remove('is-warning');
-          e.target.classList.add('is-invalid');
-        }
-      });
-
-      // Description field formatting
-      descInput.addEventListener('input', function(e) {
-        const value = e.target.value.trim();
-        if (value.length > 0 && value.length < 100) {
-          e.target.classList.remove('is-invalid', 'is-valid');
-          e.target.classList.add('is-warning');
-        } else if (value.length >= 100) {
-          e.target.classList.remove('is-invalid', 'is-warning');
-          e.target.classList.add('is-valid');
-        } else {
-          e.target.classList.remove('is-invalid', 'is-warning', 'is-valid');
-        }
-      });
-      // On blur, if description is too short, mark it red
-      descInput.addEventListener('blur', function(e) {
-        const value = e.target.value.trim();
-        if (value.length > 0 && value.length < 100) {
-          e.target.classList.remove('is-warning');
-          e.target.classList.add('is-invalid');
-        }
-      });
-
-      // Role select formatting
-      roleSelect.addEventListener('change', function(e) {
-        const value = e.target.value.trim();
-        if (value !== '') {
-          e.target.classList.remove('is-invalid');
-          e.target.classList.add('is-valid');
-        } else {
-          e.target.classList.remove('is-valid');
-          e.target.classList.add('is-invalid');
-        }
-      });
-
-      // Page select formatting
-      pageSelect.addEventListener('change', function(e) {
-        const value = e.target.value.trim();
-        if (value !== '') {
-          e.target.classList.remove('is-invalid');
-          e.target.classList.add('is-valid');
-        } else {
-          e.target.classList.remove('is-valid');
-          e.target.classList.add('is-invalid');
-        }
-      });
-
-      // Expected field formatting
-      expected_input.addEventListener('input', function(e) {
-        const value = e.target.value.trim();
-        if (value.length > 0 && value.length < 30) {
-          e.target.classList.remove('is-invalid', 'is-valid');
-          e.target.classList.add('is-warning');
-        } else if (value.length >= 10) {
-          e.target.classList.remove('is-invalid', 'is-warning');
-          e.target.classList.add('is-valid');
-        } else {
-          e.target.classList.remove('is-invalid', 'is-warning', 'is-valid');
-        }
-      });
-      // On blur, if expected field is too short, mark it red
-      expected_input.addEventListener('blur', function(e) {
-        const value = e.target.value.trim();
-        if (value.length > 0 && value.length < 30) {
-          e.target.classList.remove('is-warning');
-          e.target.classList.add('is-invalid');
-        }
-      });
-
-      // Additional field formatting
-      additional_input.addEventListener('input', function(e) {
-        const value = e.target.value.trim();
-        if (value.length > 0 && value.length < 30) {
-          e.target.classList.remove('is-invalid', 'is-valid');
-          e.target.classList.add('is-warning');
-        } else if (value.length >= 10) {
-          e.target.classList.remove('is-invalid', 'is-warning');
-          e.target.classList.add('is-valid');
-        } else {
-          e.target.classList.remove('is-invalid', 'is-warning', 'is-valid');
-        }
-      });
-      // On blur, if expected field is too short, mark it red
-      additional_input.addEventListener('blur', function(e) {
-        const value = e.target.value.trim();
-        if (value.length > 0 && value.length < 30) {
-          e.target.classList.remove('is-warning');
-          e.target.classList.add('is-invalid');
-        }
-      });
-  
-    });
-  </script>
-
-  <!-- Validation for Step 1 on Next button click -->
-  <script>
-    function validateStep1() {
-      const titleInput = document.getElementById('title');
-      const roleInput = document.getElementById('role');
-      const pageInput = document.getElementById('page');
-      const descInput = document.getElementById('description');
-      let valid = true;
-
-      // Validate Title (min 10 characters)
-      if (titleInput.value.trim().length < 10) {
-        titleInput.classList.add('is-invalid');
-        titleInput.classList.remove('is-valid');
-        valid = false;
-      } else {
-        titleInput.classList.remove('is-invalid');
-        titleInput.classList.add('is-valid');
-      }
-
-      // Validate Role (must not be empty)
-      if (!roleInput.value || roleInput.value === "" || roleInput.value === "None") {
-        roleInput.classList.add('is-invalid');
-        roleInput.classList.remove('is-valid');
-        valid = false;
-      } else {
-        roleInput.classList.remove('is-invalid');
-        roleInput.classList.add('is-valid');
-      }
-
-      // Validate Page (must not be empty)
-      if (!pageInput.value || pageInput.value === "" || pageInput.value === "None") {
-        pageInput.classList.add('is-invalid');
-        pageInput.classList.remove('is-valid');
-        valid = false;
-      } else {
-        pageInput.classList.remove('is-invalid');
-        pageInput.classList.add('is-valid');
-      }
-
-      // Validate Description (min 100 characters)
-      if (descInput.value.trim().length < 100) {
-        descInput.classList.add('is-invalid');
-        descInput.classList.remove('is-valid');
-        valid = false;
-      } else {
-        descInput.classList.remove('is-invalid');
-        descInput.classList.add('is-valid');
-      }
-
-      if (valid) {
-        nextStep();
-      }
-    }
-
-    function nextStep() {
-      document.getElementById('formStepsInner').style.transform = 'translateX(-50%)';
-    }
-    function prevStep() {
-      document.getElementById('formStepsInner').style.transform = 'translateX(0)';
-    }
-  </script>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const expectedInput = document.getElementById('expected');
-    const submitBtn = document.getElementById('submit-btn');
-    
-    expectedInput.addEventListener('input', function(e) {
-      const value = e.target.value.trim();
-      if(value.length >= 30) {
-         submitBtn.disabled = false;
-         expectedInput.classList.remove('is-warning', 'is-invalid');
-         expectedInput.classList.add('is-valid');
-      } else {
-         submitBtn.disabled = true;
-         expectedInput.classList.remove('is-valid');
-         expectedInput.classList.add('is-warning');
-      }
-    });
-  });
-</script>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const additional_input = document.getElementById('additionalComments');
-    const submitBtn = document.getElementById('override-btn');
-    
-    additional_input.addEventListener('input', function(e) {
-      const value = e.target.value.trim();
-      if(value.length >= 30) {
-         submitBtn.disabled = false;
-         additional_input.classList.remove('is-warning', 'is-invalid');
-         additional_input.classList.add('is-valid');
-      } else {
-         submitBtn.disabled = true;
-         additional_input.classList.remove('is-valid');
-         additional_input.classList.add('is-warning');
-      }
-    });
-  });
-</script>
-
-<!-- Remove green tick when leavig the form for select fields -->
-<script>
-  document.querySelectorAll('.form-select').forEach(select => {
-    select.addEventListener('change', () => {
-      if (!select.value) {
-        select.classList.remove('is-valid');
-      }
-    });
-  });
-</script>
-
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const stage1 = document.getElementById("stage-1");
-    const nextBtn = document.getElementById("nextBtn");
-
-    // Add fields
-    const titleInput = document.getElementById("title");
-    const roleSelect = document.getElementById("role");
-    const pageSelect = document.getElementById("page");
-    const descInput = document.getElementById("description");
-
-    function isValidText(input, minLen) {
-      return input.value.trim().length >= minLen;
-    }
-
-    function isValidSelect(select) {
-      return select.value !== "";
-    }
-
-    function validateStage1() {
-      let valid = true;
-
-      if (!isValidText(titleInput, 10)) {
-        titleInput.classList.add("is-invalid");
-        valid = false;
-      } else {
-        titleInput.classList.remove("is-invalid");
-        titleInput.classList.add("is-valid");
-      }
-
-      if (!isValidSelect(roleSelect)) {
-        roleSelect.classList.add("is-invalid");
-        roleSelect.classList.remove("is-valid");
-        valid = false;
-      } else {
-        roleSelect.classList.remove("is-invalid");
-        roleSelect.classList.add("is-valid");
-      }
-
-      if (!isValidSelect(pageSelect)) {
-        pageSelect.classList.add("is-invalid");
-        pageSelect.classList.remove("is-valid");
-        valid = false;
-      } else {
-        pageSelect.classList.remove("is-invalid");
-        pageSelect.classList.add("is-valid");
-      }
-
-      if (!isValidText(descInput, 100)) {
-        descInput.classList.add("is-invalid");
-        valid = false;
-      } else {
-        descInput.classList.remove("is-invalid");
-        descInput.classList.add("is-valid");
-      }
-
-      return valid;
-    }
-
-    nextBtn.addEventListener("click", (e) => {
-      if (!validateStage1()) {
-        e.preventDefault(); // stop form from moving to next stage
-        e.stopPropagation();
-      } else {
-        // let the form move to stage 2
-      }
-    });
-  });
-</script>
-
-<script>
-  roleSelect.addEventListener("change", () => {
-    if (!isValidSelect(roleSelect)) {
-      roleSelect.classList.add("is-invalid");
-      roleSelect.classList.remove("is-valid");
-    } else {
-      roleSelect.classList.remove("is-invalid");
-      roleSelect.classList.add("is-valid");
-    }
-  });
-  
-    pageSelect.addEventListener("change", () => {
-    if (!isValidSelect(pageSelect)) {
-      pageSelect.classList.add("is-invalid");
-      pageSelect.classList.remove("is-valid");
-    } else {
-      pageSelect.classList.remove("is-invalid");
-      pageSelect.classList.add("is-valid");
-    }
-  });
-</script>
-
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const selects = document.querySelectorAll(".form-select");
-
-    selects.forEach(select => {
-      select.addEventListener("change", () => {
-        // Remove the placeholder option after user makes a valid selection
-        const placeholder = select.querySelector("option[value='']");
-        if (placeholder && select.value !== "") {
-          placeholder.remove();
-        }
-      });
-    });
-  });
-</script>
-
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const selects = document.querySelectorAll(".form-select");
-
-    selects.forEach(select => {
-      select.addEventListener("change", () => {
-        const placeholder = select.querySelector("option[value='']");
-        if (placeholder && select.value !== "") {
-          placeholder.remove();  // Removes the placeholder once a real option is selected
-        }
-      });
-    });
-  });
-</script>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const roleSelect = document.getElementById("role");
-    const pageSelect = document.getElementById("page");
-
-    // Function to validate select fields
-    function validateSelect(select) {
-      // Check if the value is empty or the placeholder option
-      if (!select.value || select.value === "" || select.selectedIndex === 0) {
-        select.classList.remove("is-valid");
-        select.classList.add("is-invalid");
-        return false;
-      } else {
-        select.classList.remove("is-invalid");
-        select.classList.add("is-valid");
-        return true;
-      }
-    }
-
-    // Add change event listeners to both select fields
-    roleSelect.addEventListener("change", function() {
-      validateSelect(roleSelect);
-    });
-
-    pageSelect.addEventListener("change", function() {
-      validateSelect(pageSelect);
-    });
-
-    // Update the validateStep1 function to use our new validation
-    const originalValidateStep1 = validateStep1;
-    window.validateStep1 = function() {
-      const titleInput = document.getElementById('title');
-      const descInput = document.getElementById('description');
-      let valid = true;
-
-      // Validate Title (min 10 characters)
-      if (titleInput.value.trim().length < 10) {
-        titleInput.classList.add('is-invalid');
-        titleInput.classList.remove('is-valid');
-        valid = false;
-      } else {
-        titleInput.classList.remove('is-invalid');
-        titleInput.classList.add('is-valid');
-      }
-
-      // Validate Role and Page using our new validation function
-      if (!validateSelect(roleSelect)) {
-        valid = false;
-      }
-      
-      if (!validateSelect(pageSelect)) {
-        valid = false;
-      }
-
-      // Validate Description (min 100 characters)
-      if (descInput.value.trim().length < 100) {
-        descInput.classList.add('is-invalid');
-        descInput.classList.remove('is-valid');
-        valid = false;
-      } else {
-        descInput.classList.remove('is-invalid');
-        descInput.classList.add('is-valid');
-      }
-
-      if (valid) {
-        nextStep();
-      }
-    };
-  });
-</script>
-
-
+  <!-- Include the external JS file -->
+  <script src="{{ url_for('static', filename='js/raise_bug_form.js') }}"></script>
 {% endblock %}
