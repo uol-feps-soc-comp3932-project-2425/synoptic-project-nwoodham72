@@ -1,4 +1,4 @@
-from transformers import DistilBertTokenizer, DistilBertForSequenceClassification, pipeline
+from transformers import DistilBertTokenizer, DistilBertForSequenceClassification 
 import torch
 import os
 
@@ -20,24 +20,23 @@ priority_mapping = {
     "LABEL_2": ("Low", 3)
 }
 
-
 # Predict priority of bug ticket
-def predict_priority(description, use_thresholding: bool = True):
+def predict_priority(description, use_thresholding):
     inputs = classification_tokeniser(description, return_tensors="pt", truncation=True, padding=True, max_length=512)
     with torch.no_grad():
         outputs = classification_model(**inputs)
-        probs = torch.softmax(outputs.logits, dim=1).squeeze()  # Fetch probabilities of eah label and convert probabilities into 1D vector
+        probs = torch.softmax(outputs.logits, dim=1).squeeze()  # Fetch probabilities of each label and convert probabilities into 1D vector
 
     # Apply post-softmax thresholding to avoid weak predictions and overprediction of 'medium' label
     if use_thresholding:
-        if probs[1] >= 0.60:
+        if probs[1] >= 0.60:  # 60% confidence for 'Medium', assign 'Medium'
             pred_idx = 1  # Medium
-        elif probs[2] > 0.40 and probs[1] < 0.50:
+        elif probs[2] > 0.40 and probs[1] < 0.50:  # 40% conficdence for 'Low' and less than 50% 'Medium' confidence, assign 'Low'
             pred_idx = 2  # Low
-        elif (probs[1] - probs[0]) < 0.10:
-            pred_idx = 0  # Return 'High' priority if unsure between 'High' and 'Medium'
+        elif (probs[1] - probs[0]) < 0.10:  # If 'Medium' and 'High' confidence difference is less than 10%, assign 'High'
+            pred_idx = 0  # High
         else:
-            pred_idx = torch.argmax(probs).item()
+            pred_idx = torch.argmax(probs).item()  # Select highest probability priority
     else:
         pred_idx = torch.argmax(probs).item()
 
