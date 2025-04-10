@@ -188,7 +188,7 @@ def raise_bug():
         )
 
         summary = extractive_summary(prep_summary_data)
-        priority_label, priority_level = predict_priority(prep_classification_data)
+        priority_label, priority_level = predict_priority(prep_classification_data, use_thresholding = True)
 
         # Send ticket to Azure in html format
         description = (

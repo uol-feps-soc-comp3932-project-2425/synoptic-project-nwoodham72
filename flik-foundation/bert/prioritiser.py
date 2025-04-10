@@ -15,9 +15,9 @@ classification_model.eval()
 
 # Ensure correct priority mapping (your model has 3 labels: High, Medium, Low)
 priority_mapping = {
-    "LABEL_0": ("High", 1), 
-    "LABEL_1": ("Medium", 2), 
-    "LABEL_2": ("Low", 3)
+    0: ("High", 1), 
+    1: ("Medium", 2), 
+    2: ("Low", 3)
 }
 
 # Predict priority of bug ticket
