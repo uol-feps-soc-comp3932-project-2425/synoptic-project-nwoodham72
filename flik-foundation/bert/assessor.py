@@ -1,6 +1,7 @@
 from sentence_transformers import SentenceTransformer, util
 import re
 import logging
+from app.models import ApplicationRule
 
 # Load model
 model = SentenceTransformer('distilbert-base-nli-stsb-mean-tokens')
@@ -9,7 +10,7 @@ model = SentenceTransformer('distilbert-base-nli-stsb-mean-tokens')
 
 
 def assess_documentation(bug_description, bug_description_role):
-    # Compute description embedding 
+    # Convert text to vector embedding
     bug_description_embedding = model.encode(bug_description, convert_to_tensor=True)
 
     # Similarity threshold 
@@ -18,77 +19,72 @@ def assess_documentation(bug_description, bug_description_role):
     # Store matching entries
     matches = []
 
-    documentation = []
+    documentation = ApplicationRule.query.all()
 
-    # Get documentation
-    documentation = [
-        {
-            "title": "Update Module Details",
-            "permitted_roles": ["manager"],
-            "not_permitted_roles": ["developer", "client"],
-            "action": (
-                "I can update the details of a module on the modules page, including the name, year running and cover picture. "
-            )
-        },
-        {
-            "title": "Reset Password",
-            "permitted_roles": ["manager", "developer"],
-            "not_permitted_roles": ["client"],
-            "action": (
-                "I am a manager/developer user on the login page. "
-                "Any user can reset their password through the 'Forgot your Password?' button on the login page. "
-                "After accessing the link, the user is prompted to enter their email, where a new password reset link will be sent. "
-                "A user can open the link in the sent email to reset their password. "
-            )
-        },
-        {
-            "title": "Reset Account Password",
-            "permitted_roles": ["manager", "developer"],
-            "not_permitted_roles": ["client"],
-            "action": (
+    # Compare rules with bug description
+    for rule in documentation:
+        action = rule.description
+        action_embedding = model.encode(action, convert_to_tensor=True)  # Convert text to vector embedding
+        cosine_sim = util.pytorch_cos_sim(action_embedding, bug_description_embedding).item()  # Assess similarity between bug description and rule
+        logging.info(f"Similarity: {cosine_sim:.4f}")
+
+        if cosine_sim >= threshold:
+            logging.info(f"Match - Similarity: {cosine_sim:.4f}")
+            permitted_roles = [r.name for r in rule.roles]
+            if bug_description_role.lower() not in [r.lower() for r in permitted_roles]:
+                logging.info("User role not in permitted roles - Return documentation to user.")
                 
-                "Any user can reset their password through the 'Change password' button on the account page. "
-                "After accessing the link, the user is prompted to enter their email, where a new password reset link will be sent. "
-                "A user can open the link in the sent email to reset their password. "
-            )
-        }
-    ]
+                matches.append({
+                    "title": rule.title,
+                    "permitted_roles": permitted_roles,
+                    "action": rule.description
+                })
+            # Role is permitted
+            else:
+                logging.info("User role is in permitted roles - Indicative of bug.")
+                    
+    # No matches found 
+    return (True, matches) if matches else (False, None)
 
-    # Compare documentation entry with bug
-    if documentation:
-        for entry in documentation:
-            action = entry["action"]
 
-            # Embed action 
-            action_embedding = model.encode(action, convert_to_tensor=True)
+                
 
-            # Assess similarity between bug description and documentation entry 
-            cosine_sim = util.pytorch_cos_sim(action_embedding, bug_description_embedding).item()
-            logging.info(f"Cosine Similarity: {cosine_sim:.4f}")
 
-            # Check similarity
-            if cosine_sim >= threshold:
-                logging.info(f"Threshold met: {cosine_sim:.4f}")
-                # Check if role is permitted
-                if bug_description_role.lower() not in [r.lower() for r in entry["permitted_roles"]]:                
-                    logging.info("User role not in permitted roles - Return documentation to user.")
-                    # Clean entry
-                    cleaned_entry = re.sub(r"^I am a .*? page\.\s*", "", entry["action"])  # Remove "I am a <user> user on the <page> page" sentence from documentation entry output
-                    matches.append({
-                        "title": entry["title"],
-                        "permitted_roles": entry["permitted_roles"],
-                        "action": cleaned_entry,
-                        "sim_score": round(cosine_sim, 2)
-                    })
-        # Return documentation matches
-        if matches:
-            return True, matches
+    # # Compare documentation entry with bug
+    # if documentation:
+    #     for entry in documentation:
+    #         action = entry["action"]
 
-        # No match found
-        return False, None
+    #         # Embed action 
+    #         action_embedding = model.encode(action, convert_to_tensor=True)
 
-    # No documentation found
-    return False, None
+    #         # Assess similarity between bug description and documentation entry 
+    #         cosine_sim = util.pytorch_cos_sim(action_embedding, bug_description_embedding).item()
+    #         logging.info(f"Cosine Similarity: {cosine_sim:.4f}")
+
+    #         # Check similarity
+    #         if cosine_sim >= threshold:
+    #             logging.info(f"Threshold met: {cosine_sim:.4f}")
+    #             # Check if role is permitted
+    #             if bug_description_role.lower() not in [r.lower() for r in entry["permitted_roles"]]:                
+    #                 logging.info("User role not in permitted roles - Return documentation to user.")
+    #                 # Clean entry
+    #                 cleaned_entry = re.sub(r"^I am a .*? page\.\s*", "", entry["action"])  # Remove "I am a <user> user on the <page> page" sentence from documentation entry output
+    #                 matches.append({
+    #                     "title": entry["title"],
+    #                     "permitted_roles": entry["permitted_roles"],
+    #                     "action": cleaned_entry,
+    #                     "sim_score": round(cosine_sim, 2)
+    #                 })
+    #     # Return documentation matches
+    #     if matches:
+    #         return True, matches
+
+    #     # No match found
+    #     return False, None
+
+    # # No documentation found
+    # return False, None
 
 # # Example usage
 # if __name__ == "__main__":
