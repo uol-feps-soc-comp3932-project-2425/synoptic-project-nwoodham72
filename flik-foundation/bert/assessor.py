@@ -87,7 +87,7 @@ def assess_documentation(bug_description, bug_description_role):
         # No match found
         return False, None
 
-    # No documentation found
+    # No documentation
     return False, None
 
 # # Example usage
