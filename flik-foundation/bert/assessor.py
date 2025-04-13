@@ -4,12 +4,12 @@ import logging
 from app.models import ApplicationRule
 
 # Load model
-model = SentenceTransformer('distilbert-base-nli-stsb-mean-tokens')
+model = SentenceTransformer('distilbert-base-nli-mean-tokens')
 
 # Compare bug description with ApplicationRule entries
-def assess_documentation(bug_description, bug_description_role):
+def assess_documentation(bug_description_expected, bug_description_role):
     # Convert text to vector embedding
-    bug_description_embedding = model.encode(bug_description, convert_to_tensor=True)
+    bug__embedding = model.encode(bug_description_expected, convert_to_tensor=True)
 
     # Similarity threshold 
     threshold = 0.6
@@ -23,11 +23,13 @@ def assess_documentation(bug_description, bug_description_role):
     for rule in documentation:
         action = rule.description
         action_embedding = model.encode(action, convert_to_tensor=True)  # Convert text to vector embedding
-        cosine_sim = util.pytorch_cos_sim(action_embedding, bug_description_embedding).item()  # Assess similarity between bug description and rule
+        cosine_sim = util.pytorch_cos_sim(action_embedding, bug__embedding).item()  # Assess similarity between bug description and rule
+        logging.info(f"[{rule.title}] Similarity: {cosine_sim:.4f}")
     
         if cosine_sim >= threshold:
             logging.info(f"Match - Similarity: {cosine_sim:.4f}")
             permitted_roles = [r.name for r in rule.roles]
+            # Check if user's role is not permitted to perform the described action / bug description
             if bug_description_role.lower() not in [r.lower() for r in permitted_roles]:
                 logging.info("User role not in permitted roles - Return documentation to user.")
                 

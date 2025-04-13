@@ -33,8 +33,8 @@ class RaiseBugForm(FlaskForm):
     submit = SubmitField("Report Bug")
 
 class ApplicationRuleForm(FlaskForm):
-    title = StringField("Rule Title", validators=[DataRequired(), Length(max=150)], render_kw={"id": "title"})
-    description = TextAreaField("Rule Description", validators=[DataRequired(), Length(min=10, max=1024)], render_kw={"id": "description"})
+    title = StringField("Rule Title", validators=[DataRequired(), Length(min=10, max=150)], render_kw={"id": "title"})
+    description = TextAreaField("Rule Description", validators=[DataRequired(), Length(min=50, max=1024)], render_kw={"id": "description"})
     page = QuerySelectField(
         "Page",
         query_factory=lambda: ApplicationPage.query.order_by(ApplicationPage.name).all(),

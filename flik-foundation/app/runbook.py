@@ -24,9 +24,9 @@ def documentation():
 
     return render_template(
         "documentation.html",
-        application_roles=ApplicationRole.query.order_by(ApplicationRole.name),
-        application_pages=ApplicationPage.query.order_by(ApplicationPage.name),
-        application_rules=ApplicationRule.query.order_by(ApplicationRule.title),
+        application_roles=ApplicationRole.query.order_by(ApplicationRole.name).all(),
+        application_pages=ApplicationPage.query.order_by(ApplicationPage.name).all(),
+        application_rules=ApplicationRule.query.order_by(ApplicationRule.title).all(),
         form=form,
         tab=tab
     )

@@ -110,10 +110,12 @@
             <div class="mb-3">
                 <label class="form-label">Rule Title</label>
                 <div class="input-group">{{ form.title(class="form-control") }}</div>
+                <small class="form-text text-muted">Minimum 10 characters.</small>
             </div>
             <div class="mb-3">
                 <label class="form-label">Description</label>
                 <div class="input-group">{{ form.description(class="form-control", style="height: 130px;") }}</div>
+                <small class="form-text text-muted">Minimum 50 characters.</small>
             </div>
             <div class="mb-3">
                 <label class="form-label">Page</label>
@@ -122,7 +124,7 @@
             <div class="mb-3">
                 <label class="form-label">Permitted Roles</label>
                 <div class="input-group">{{ form.roles(class="form-select", multiple=True, size=5) }}</div>
-                <small class="form-text text-muted">Hold Ctrl (CMD on Mac) to select multiple roles</small>
+                <small class="form-text text-muted">Hold Ctrl to select multiple roles.</small>
             </div>
             <div class="mb-3">
                 <button type="submit" class="btn btn-success">Add Rule</button>
@@ -130,7 +132,6 @@
         </form>
 
         {% if application_rules %}
-            <h5 class="mb-3">Existing Rules:</h5>
             <div class="row row-cols-1 row-cols-md-3 g-4">
                 {% for rule in application_rules %}
                 <div class="col">
@@ -144,7 +145,7 @@
                                     <span class="badge bg-secondary">{{ role.name }}</span>
                                 {% endfor %}
                             </div>
-                            <a href="#" class="btn btn-outline-primary btn-sm disabled">Update</a>
+                            <a href="#" class="btn btn-outline-primary btn-sm disabled">View</a>
                         </div>
                     </div>
                 </div>

@@ -157,10 +157,10 @@ def raise_bug():
         # If no additional comments, check for documentation match
         if not additional_comments:
             # Generate documentation similarity
-            desc_extract = bug_details["description"].strip() + "."
+            action_comparison = bug_details["description"].strip() + "." + "\n" + bug_details["expected"].strip() + "."
             # Return matching documentation
             match, matching_docs = assess_documentation(
-                desc_extract, bug_details["role"].name
+                action_comparison, bug_details["role"].name
             )
             # Display matching documentation
             if match and matching_docs:
@@ -195,7 +195,7 @@ def raise_bug():
             f"<b>Summary</b>: As a <i>{bug_details['role'].name}</i> on the <i>{bug_details['page'].name}</i> page, {summary}<br><br>"
             f"<b>Priority</b>: {priority_label}<br><br>"
             f"<hr>"
-            f"<p><b>Background</b><br> <ul><li><i>User Role</i>: {bug_details['role'].name}.</li><li><i>Application Page</i>: {bug_details['page'].name}.</li></ul><p>"
+            f"<p><b>Background</b><br> <ul><li><i>User Role</i>: {bug_details['role'].name}</li><li><i>Application Page</i>: {bug_details['page'].name}</li></ul><p>"
             f"<p><b>Problem Description</b><br>{bug_details['description']}</p>"
             f"<p><b>Expected Behaviour</b><br>{bug_details['expected']}</p>"
         )
