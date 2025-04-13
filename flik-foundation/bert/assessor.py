@@ -4,12 +4,12 @@ import logging
 from app.models import ApplicationRule
 
 # Load model
-model = SentenceTransformer('distilbert-base-nli-mean-tokens')
+model = SentenceTransformer('distilbert-base-nli-stsb-mean-tokens')
 
 # Compare bug description with ApplicationRule entries
-def assess_documentation(bug_description_expected, bug_description_role):
+def assess_documentation(action_comparison, bug_description_role):
     # Convert text to vector embedding
-    bug_embedding = model.encode(bug_description_expected, convert_to_tensor=True)
+    bug_embedding = model.encode(action_comparison, convert_to_tensor=True)
 
     # Similarity threshold 
     threshold = 0.6
