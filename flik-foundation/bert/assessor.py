@@ -9,7 +9,7 @@ model = SentenceTransformer('distilbert-base-nli-mean-tokens')
 # Compare bug description with ApplicationRule entries
 def assess_documentation(bug_description_expected, bug_description_role):
     # Convert text to vector embedding
-    bug__embedding = model.encode(bug_description_expected, convert_to_tensor=True)
+    bug_embedding = model.encode(bug_description_expected, convert_to_tensor=True)
 
     # Similarity threshold 
     threshold = 0.6
@@ -23,7 +23,7 @@ def assess_documentation(bug_description_expected, bug_description_role):
     for rule in documentation:
         action = rule.description
         action_embedding = model.encode(action, convert_to_tensor=True)  # Convert text to vector embedding
-        cosine_sim = util.pytorch_cos_sim(action_embedding, bug__embedding).item()  # Assess similarity between bug description and rule
+        cosine_sim = util.pytorch_cos_sim(action_embedding, bug_embedding).item()  # Assess similarity between bug description and rule
         logging.info(f"[{rule.title}] Similarity: {cosine_sim:.4f}")
     
         if cosine_sim >= threshold:
