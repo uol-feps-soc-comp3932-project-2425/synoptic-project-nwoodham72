@@ -36,8 +36,8 @@ label_mapping = {f"LABEL_{i}": name for i, name in enumerate(label_names)}
 
 
 # Tag bug description with defined labels
-def tag_bug(text, threshold=0.7):
-    results = classifier(text)
+def tag_bug(ticket, threshold=0.7):
+    results = classifier(ticket)
     if not results:
         return []
 
@@ -52,7 +52,7 @@ def tag_bug(text, threshold=0.7):
             user_friendly_label = label_mapping.get(label, label)
             predicted_tags.append(user_friendly_label)
 
-    return predicted_tags[:3]  # Return top 3 matching tags
+    return predicted_tags[:3]  # Return top 3 matching tags over threshold
 
 
 # Fetch developers and their assigned skills from the FlikUser table

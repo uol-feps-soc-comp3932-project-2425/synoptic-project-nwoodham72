@@ -8,7 +8,7 @@ from summarizer import Summarizer
 summariser = Summarizer(model="distilbert-base-uncased")
 
 # Generate extractive summary of bug ticket
-def extractive_summary(description, ratio=0.1):  # Retain 10% of ticket content
+def extractive_summary(description, ratio=0.3):  # :param text: The full bug description. :param ratio: Fraction of sentences to retain.
     summary = summariser(description, ratio=ratio)
     return summary
 
