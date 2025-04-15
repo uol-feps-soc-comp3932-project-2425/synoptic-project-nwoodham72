@@ -155,7 +155,7 @@ def update_application_rule(application_rule_id):
 
     new_title = request.form.get("title").strip()
     new_description = request.form.get("description").strip()
-    new_page_id = request.form.get("page_id")
+    new_page_id = request.form.get("page")
     new_roles = request.form.getlist("roles")
 
     # Validate updated inputs 
