@@ -117,6 +117,11 @@ def add_application_rule():
     form = ApplicationRuleForm()
     
     if form.validate_on_submit():
+        # Check for at least one rule
+        if not form.roles.data or len(form.roles.data) == 0:
+            flash("At least one application role must be selected.", "danger")
+            return redirect(url_for("runbook.documentation", tab="rules"))
+
         existing = ApplicationRule.query.filter_by(title=form.title.data).first()
         if not existing:
             # Create new rule
@@ -127,9 +132,8 @@ def add_application_rule():
             )
             
             # Add selected roles to the rule
-            if form.roles.data:
-                for role in form.roles.data:
-                    new_rule.roles.append(role)
+            for role in form.roles.data:
+                new_rule.roles.append(role)
                 
             db.session.add(new_rule)
             db.session.commit()
@@ -141,4 +145,39 @@ def add_application_rule():
             for error in errors:
                 flash(f"{getattr(form, field).label.text}: {error}", "danger")
                 
+    return redirect(url_for("runbook.documentation", tab="rules"))
+
+@runbook.route("/update-application-rule/<int:application_rule_id>", methods=["POST"])
+@login_required
+@roles_required("Developer")
+def update_application_rule(application_rule_id):
+    rule = ApplicationRule.query.get_or_404(application_rule_id)
+
+    new_title = request.form.get("title").strip()
+    new_description = request.form.get("description").strip()
+    new_page_id = request.form.get("page_id")
+    new_roles = request.form.getlist("roles")
+
+    # Validate updated inputs 
+    if not new_title or len(new_title) < 10:
+        flash("Title must be at least 10 characters.", "danger")
+    elif not new_description or len(new_description) < 50:
+        flash("Description must be at least 50 characters.", "danger")
+    elif not new_page_id:
+        flash("A page is required.", "danger")
+    elif not new_roles:
+        flash("At least one role is required.", "danger")
+    else:
+        existing = ApplicationRule.query.filter(ApplicationRule.title == new_title, ApplicationRule.id != rule.id).first()
+        if existing:
+            flash("A rule with that title already exists.", "danger")
+        else:
+            # Update rule
+            rule.title = new_title
+            rule.description = new_description
+            rule.page = ApplicationPage.query.get(new_page_id)
+            rule.roles = ApplicationRole.query.filter(ApplicationRole.id.in_(new_roles)).all()
+            db.session.commit()
+            flash("Rule updated successfully.", "success")
+
     return redirect(url_for("runbook.documentation", tab="rules"))

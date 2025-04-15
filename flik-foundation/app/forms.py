@@ -45,7 +45,8 @@ class ApplicationRuleForm(FlaskForm):
     roles = QuerySelectMultipleField(
         "Role(s) allowed to perform this action",
         query_factory=lambda: ApplicationRole.query.order_by(ApplicationRole.name).all(),
-        get_label="name"
+        get_label="name",
+        allow_blank=False,
     )
      
 class LoginForm(FlaskForm):
