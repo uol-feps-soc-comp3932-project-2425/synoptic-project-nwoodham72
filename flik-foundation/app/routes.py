@@ -109,35 +109,34 @@ def raise_bug():
                 "No application roles or pages available. You will not be able to submit a ticket until the development team have added at least one user role and page.",
                 "danger",
             )
-
-        if not application_roles:
+        elif not application_roles:
             flash(
                 "No application roles available. You will not be able to submit a ticket until the development team have added at least one user role.",
                 "danger",
             )
 
-        if not application_pages:
+        elif not application_pages:
             flash(
                 "No application pages available. You will not be able to submit a ticket until the development team have added at least one page.",
                 "danger",
             )
+
     # Developer view
     else:
         if not application_roles and not application_pages:
             flash(
-                "No application roles or pages available. Please define an application page and role in the 'Documentation' tab.",
+                "No application roles or pages available. Please define an application page and role in the 'Documentation' tab. Users will not be able to submit tickets until this is done.",
+                "danger",
+            )
+        elif not application_roles:
+            flash(
+                "No application roles available. Please define an application role in the 'Documentation' tab. Users will not be able to submit tickets until this is done.",
                 "danger",
             )
 
-        if not application_roles:
+        elif not application_pages:
             flash(
-                "No application roles available. Please define an application role in the 'Documentation' tab.",
-                "danger",
-            )
-
-        if not application_pages:
-            flash(
-                "No application pages available. YPlease define an application page in the 'Documentation' tab.",
+                "No application pages available. Please define an application page in the 'Documentation' tab. Users will not be able to submit tickets until this is done.",
                 "danger",
             )
 

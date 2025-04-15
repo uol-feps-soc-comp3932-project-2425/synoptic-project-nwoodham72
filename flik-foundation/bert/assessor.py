@@ -17,7 +17,11 @@ def assess_documentation(action_comparison, bug_description_role):
     # Store matching entries
     matches = []
 
-    documentation = ApplicationRule.query.all()
+    # Fetch complete rule entries
+    documentation = [
+        r for r in ApplicationRule.query.all()
+        if r.page is not None and r.roles
+    ]
 
     # Compare rules with bug description
     for rule in documentation:

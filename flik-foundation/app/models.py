@@ -18,8 +18,8 @@ flik_user_skill = db.Table(
 
 application_role_application_rule = db.Table(
     "application_role_application_rule",
-    db.Column("application_role_id", db.Integer, db.ForeignKey("application_role.id")),
-    db.Column("application_rule_id", db.Integer, db.ForeignKey("application_rule.id"))
+    db.Column("application_role_id", db.Integer, db.ForeignKey("application_role.id", ondelete="CASCADE", name="fk_role_rule")),
+    db.Column("application_rule_id", db.Integer, db.ForeignKey("application_rule.id", ondelete="CASCADE", name="fk_rule_role"))
 )
 
 
@@ -88,9 +88,9 @@ class ApplicationRule(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
-    page_id = db.Column(db.Integer, db.ForeignKey("application_page.id"), nullable=False)
+    page_id = db.Column(db.Integer, db.ForeignKey("application_page.id", ondelete="SET NULL"), nullable=True)
 
-    page = db.relationship("ApplicationPage", backref="application_rules")
+    page = db.relationship("ApplicationPage", backref=db.backref("application_rules", passive_deletes=True))
     
     roles = db.relationship(
         "ApplicationRole",

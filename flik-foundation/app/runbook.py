@@ -19,8 +19,16 @@ def documentation():
     form.page.query = ApplicationPage.query.order_by(ApplicationPage.name)
     form.roles.query = ApplicationRole.query.order_by(ApplicationRole.name)
 
-    # Get tab (default = 'roles)
+    # Get tab (default to 'roles')
     tab = request.args.get("tab", "roles") 
+
+    application_rules = ApplicationRule.query.order_by(ApplicationRule.title).all()
+
+    # Filter invalid rules
+    incomplete_rules = [rule for rule in application_rules if not rule.page or not rule.roles]
+
+    if incomplete_rules:
+        flash("Some rules are missing an application page or permitted roles. These rules will not be checked against incoming tickets.", "danger")
 
     return render_template(
         "documentation.html",
