@@ -2,159 +2,185 @@
 {% block title %}Flik - Documentation{% endblock %}
 
 {% block content %}
-<style>
-.card-text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 4; /* Show only 4 lines */
-    -webkit-box-orient: vertical;
-}
-</style>
+    <style>
+    .card-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 4; /* Show only 4 lines */
+        -webkit-box-orient: vertical;
+    }
+    </style>
 
-<h2 class="mb-4">Manage your Documentation</h2>
-<p class="text-muted">You must have at least one role and page defined to allow users to report bugs.</p>
+    <h2 class="mb-4">Manage your Documentation</h2>
+    <p class="text-muted">You must have at least one role and page defined to allow users to report bugs.</p>
 
-<div class="card">
-    <div class="card-header">
-        <!-- Tab headers -->
-        <ul class="nav nav-tabs card-header-tabs" id="docTabs" role="tablist">
-            <li class="nav-item">
-            <a class="nav-link {% if request.args.get('tab', 'roles') == 'roles' %}active{% endif %}" href="{{ url_for('runbook.documentation', tab='roles') }}">Roles</a>
-            </li>
-            <li class="nav-item">
-            <a class="nav-link {% if request.args.get('tab') == 'pages' %}active{% endif %}" href="{{ url_for('runbook.documentation', tab='pages') }}">Pages</a>
-            </li>
-            <li class="nav-item">
-            <a class="nav-link {% if request.args.get('tab') == 'rules' %}active{% endif %}" href="{{ url_for('runbook.documentation', tab='rules') }}">Rules</a>
-            </li>
-        </ul>
-    </div>
-  
-    {% if tab == 'roles' %}
-    <div class="card-body">
-        <!-- Roles Tab -->
-        <h4>Application Roles</h4>
-        <p class="text-muted">These roles are used when users report bugs (e.g. Lecturer, Student, etc.).</p>
-        <form method="POST" action="{{ url_for('runbook.add_application_role') }}" class="mb-4">
-            <input type="hidden" name="tab" value="roles">
-            <div class="input-group">
-                <input type="text" name="role_name" class="form-control" placeholder="Enter new role name" required>
-                <button class="btn btn-success" type="submit">Add Role</button>
-            </div>
-        </form>
-        {% if application_roles %}
-            <ul class="list-group">
-                {% for application_role in application_roles %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <form class="d-flex flex-grow-1" method="POST" action="{{ url_for('runbook.update_application_role', application_role_id=application_role.id) }}">
-                        <input type="hidden" name="tab" value="roles">
-                        <input name="new_name" class="form-control me-2" value="{{ application_role.name }}" required>
-                        <button class="btn btn-outline-primary" type="submit">Update</button>
-                    </form>
-                    <form method="POST" action="{{ url_for('runbook.delete_application_role', application_role_id=application_role.id) }}" class="ms-2">
-                        <input type="hidden" name="tab" value="roles">
-                        <button class="btn btn-outline-danger" onclick="return confirm('Delete this role?')" type="submit">Delete</button>
-                    </form>
+    <div class="card">
+        <div class="card-header">
+            <!-- Tab headers -->
+            <ul class="nav nav-tabs card-header-tabs" id="docTabs" role="tablist">
+                <li class="nav-item">
+                <a class="nav-link {% if request.args.get('tab', 'roles') == 'roles' %}active{% endif %}" href="{{ url_for('runbook.documentation', tab='roles') }}">Roles</a>
                 </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p class="text-muted"><i>No roles defined.</i></p>
-        {% endif %}
-    </div>
-    {% endif %}
-    
-    {% if tab == 'pages' %}
-    <div class="card-body">
-        <!-- Pages Tab -->
-        <h4>Application Pages</h4>
-        <p class="text-muted">These pages are used when users report bugs (e.g. Login, Dashboard, etc.).</p>
-        <form method="POST" action="{{ url_for('runbook.add_application_page') }}" class="mb-4">
-            <input type="hidden" name="tab" value="pages">
-            <div class="input-group">
-                <input type="text" name="page_name" class="form-control" placeholder="Enter new page name" required>
-                <button class="btn btn-success" type="submit">Add Page</button>
-            </div>
-        </form>
-        {% if application_pages %}
-            <ul class="list-group">
-                {% for application_page in application_pages %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <form class="d-flex flex-grow-1" method="POST" action="{{ url_for('runbook.update_application_page', application_page_id=application_page.id) }}">
-                        <input type="hidden" name="tab" value="pages">
-                        <input name="new_name" class="form-control me-2" value="{{ application_page.name }}" required>
-                        <button class="btn btn-outline-primary" type="submit">Update</button>
-                    </form>
-                    <form method="POST" action="{{ url_for('runbook.delete_application_page', application_page_id=application_page.id) }}" class="ms-2">
-                        <input type="hidden" name="tab" value="pages">
-                        <button class="btn btn-outline-danger" onclick="return confirm('Delete this page?')" type="submit">Delete</button>
-                    </form>
+                <li class="nav-item">
+                <a class="nav-link {% if request.args.get('tab') == 'pages' %}active{% endif %}" href="{{ url_for('runbook.documentation', tab='pages') }}">Pages</a>
                 </li>
-                {% endfor %}
+                <li class="nav-item">
+                <a class="nav-link {% if request.args.get('tab') == 'rules' %}active{% endif %}" href="{{ url_for('runbook.documentation', tab='rules') }}">Rules</a>
+                </li>
             </ul>
-        {% else %}
-            <p class="text-muted"><i>No pages defined.</i></p>
-        {% endif %}
-    </div>
-    {% endif %}
+        </div>
     
-    {% if tab == 'rules' %}
-    <div class="card-body">
-        <!-- Rules Tab -->
-        <h4>Application Rules</h4>
-        <p class="text-muted">These rules define what users are allowed to do, and where. A rule contains a title, description, permitted roles, and the relevant page of the app.</p>
-        <form method="POST" action="{{ url_for('runbook.add_application_rule', application_rule_id=application_rule_id) }}">
-            <input type="hidden" name="tab" value="rules">
-            {{ form.hidden_tag() }}
-            <div class="mb-3">
-                <label class="form-label">Rule Title</label>
-                <div class="input-group">{{ form.title(class="form-control") }}</div>
-                <small class="form-text text-muted">Minimum 10 characters.</small>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Description</label>
-                <div class="input-group">{{ form.description(class="form-control", style="height: 130px;") }}</div>
-                <small class="form-text text-muted">Minimum 50 characters.</small>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Page</label>
-                <div class="input-group">{{ form.page(class="form-select") }}</div>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Permitted Roles</label>
-                <div class="input-group">{{ form.roles(class="form-select", multiple=True, size=5) }}</div>
-                <small class="form-text text-muted">Hold Ctrl to select multiple roles.</small>
-            </div>
-            <div class="mb-3">
-                <button type="submit" class="btn btn-success">Add Rule</button>
-            </div>
-        </form>
+        {% if tab == 'roles' %}
+        <div class="card-body">
+            <!-- Roles Tab -->
+            <h4>Application Roles</h4>
+            <p class="text-muted">These roles are used when users report bugs (e.g. Lecturer, Student, etc.).</p>
+            <form method="POST" action="{{ url_for('runbook.add_application_role') }}" class="mb-4">
+                <input type="hidden" name="tab" value="roles">
+                <div class="input-group">
+                    <input type="text" name="role_name" class="form-control" placeholder="Enter new role name" required>
+                    <button class="btn btn-success" type="submit">Add Role</button>
+                </div>
+            </form>
+            {% if application_roles %}
+                <ul class="list-group">
+                    {% for application_role in application_roles %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <form class="d-flex flex-grow-1" method="POST" action="{{ url_for('runbook.update_application_role', application_role_id=application_role.id) }}">
+                            <input type="hidden" name="tab" value="roles">
+                            <input name="new_name" class="form-control me-2" value="{{ application_role.name }}" required>
+                            <button class="btn btn-outline-primary" type="submit">Update</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('runbook.delete_application_role', application_role_id=application_role.id) }}" class="ms-2">
+                            <input type="hidden" name="tab" value="roles">
+                            <button class="btn btn-outline-danger" onclick="return confirm('Delete this role?')" type="submit">Delete</button>
+                        </form>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted"><i>No roles defined.</i></p>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        {% if tab == 'pages' %}
+        <div class="card-body">
+            <!-- Pages Tab -->
+            <h4>Application Pages</h4>
+            <p class="text-muted">These pages are used when users report bugs (e.g. Login, Dashboard, etc.).</p>
+            <form method="POST" action="{{ url_for('runbook.add_application_page') }}" class="mb-4">
+                <input type="hidden" name="tab" value="pages">
+                <div class="input-group">
+                    <input type="text" name="page_name" class="form-control" placeholder="Enter new page name" required>
+                    <button class="btn btn-success" type="submit">Add Page</button>
+                </div>
+            </form>
+            {% if application_pages %}
+                <ul class="list-group">
+                    {% for application_page in application_pages %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <form class="d-flex flex-grow-1" method="POST" action="{{ url_for('runbook.update_application_page', application_page_id=application_page.id) }}">
+                            <input type="hidden" name="tab" value="pages">
+                            <input name="new_name" class="form-control me-2" value="{{ application_page.name }}" required>
+                            <button class="btn btn-outline-primary" type="submit">Update</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('runbook.delete_application_page', application_page_id=application_page.id) }}" class="ms-2">
+                            <input type="hidden" name="tab" value="pages">
+                            <button class="btn btn-outline-danger" onclick="return confirm('Delete this page?')" type="submit">Delete</button>
+                        </form>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted"><i>No pages defined.</i></p>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        {% if tab == 'rules' %}
+        <div class="card-body">
+            <!-- Rules Tab -->
+            <h4>Application Rules</h4>
+            <p class="text-muted">These rules define what users are allowed to do, and where. A rule contains a title, description, permitted roles, and the relevant page of the app.</p>
+            <form method="POST" action="{{ url_for('runbook.add_application_rule', application_rule_id=application_rule_id) }}">
+                <input type="hidden" name="tab" value="rules">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    <label class="form-label">Rule Title</label>
+                    <div class="input-group">{{ form.title(class="form-control") }}</div>
+                    <small class="form-text text-muted">Minimum 10 characters.</small>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <div class="input-group">{{ form.description(class="form-control", style="height: 130px;") }}</div>
+                    <small class="form-text text-muted">Minimum 50 characters.</small>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Page</label>
+                    <div class="input-group">{{ form.page(class="form-select") }}</div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Permitted Roles</label>
+                    <div class="input-group">{{ form.roles(class="form-select", multiple=True, size=5) }}</div>
+                    <small class="form-text text-muted">Hold Ctrl to select multiple roles.</small>
+                </div>
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-success">Add Rule</button>
+                </div>
+            </form>
 
-        {% if application_rules %}
-            <div class="row row-cols-1 row-cols-md-3 g-4">
-                {% for rule in application_rules %}
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ rule.title }}</h5>
-                            <h6 class="card-subtitle text-muted">{{ rule.page.name }}</h6>
-                            <p class="card-text">{{ rule.description }}</p>
-                            <div class="mb-2">
-                                {% for role in rule.roles %}
-                                    <span class="badge bg-secondary">{{ role.name }}</span>
-                                {% endfor %}
+            {% if application_rules %}
+                <div class="row row-cols-1 row-cols-md-3 g-4">
+                    {% for rule in application_rules %}
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ rule.title }}</h5>
+                                <h6 class="card-subtitle text-muted">{{ rule.page.name }}</h6>
+                                <p class="card-text">{{ rule.description }}</p>
+                                <div class="mb-2">
+                                    {% for role in rule.roles %}
+                                        <span class="badge bg-secondary">{{ role.name }}</span>
+                                    {% endfor %}
+                                </div>
+                                <a href="#" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#ruleModal{{ rule.id }}">View</a>
                             </div>
-                            <a href="#" class="btn btn-outline-primary btn-sm disabled">View</a>
                         </div>
                     </div>
+                    <!-- Modal for application rules -->
+                    <div class="modal fade" id="ruleModal{{ rule.id }}" tabindex="-1" aria-labelledby="ruleModalLabel{{ rule.id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                <h5 class="modal-title" id="ruleModalLabel{{ rule.id }}">{{ rule.title }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <h6 class="text-muted">{{ rule.page.name }}</h6>
+                                <p>{{ rule.description }}</p>
+                                <h6>Permitted Roles:</h6>
+                                <ul>
+                                    {% for role in rule.roles %}
+                                        <li>{{ role.name }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p class="fst-italic text-muted">No rules defined.</p>
+            {% else %}
+                <p class="fst-italic text-muted">No rules defined.</p>
+            {% endif %}
+        </div>
         {% endif %}
     </div>
-    {% endif %}
-</div>
+
+    
+
 {% endblock %}
