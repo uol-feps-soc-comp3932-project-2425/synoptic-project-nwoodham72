@@ -33,6 +33,8 @@ def documentation():
 
 # ----- Role routes -----
 @runbook.route("/add-role", methods=["POST"])
+@login_required
+@roles_required("Developer")
 def add_application_role():
     role_name = request.form.get("role_name")
     if role_name:
@@ -63,6 +65,8 @@ def update_application_role(application_role_id):
     return redirect(url_for("runbook.documentation", tab="roles"))
 
 @runbook.route("/delete-application-role/<int:application_role_id>", methods=["POST"])
+@login_required
+@roles_required("Developer")
 def delete_application_role(application_role_id):
     role = ApplicationRole.query.get_or_404(application_role_id)
     db.session.delete(role)
@@ -72,6 +76,8 @@ def delete_application_role(application_role_id):
 
 # ----- Page routes -----
 @runbook.route("/add-page", methods=["POST"])
+@login_required
+@roles_required("Developer")
 def add_application_page():
     page_name = request.form.get("page_name")
     if page_name:
@@ -102,6 +108,8 @@ def update_application_page(application_page_id):
     return redirect(url_for("runbook.documentation", tab="pages"))
 
 @runbook.route("/delete-application-page/<int:application_page_id>", methods=["POST"])
+@login_required
+@roles_required("Developer")
 def delete_application_page(application_page_id):
     page = ApplicationPage.query.get_or_404(application_page_id)
     db.session.delete(page)
@@ -181,4 +189,14 @@ def update_application_rule(application_rule_id):
             db.session.commit()
             flash("Rule updated successfully.", "success")
 
+    return redirect(url_for("runbook.documentation", tab="rules"))
+
+@runbook.route("/delete-application-rule/<int:application_rule_id>", methods=["POST"])
+@login_required
+@roles_required("Developer")
+def delete_application_rule(application_rule_id):
+    rule = ApplicationRule.query.get_or_404(application_rule_id)
+    db.session.delete(rule)
+    db.session.commit()
+    flash(f"Rule '{rule.title}' deleted.", "success")
     return redirect(url_for("runbook.documentation", tab="rules"))

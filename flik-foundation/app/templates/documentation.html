@@ -157,7 +157,7 @@
                         <div class="modal fade" id="ruleModal{{ rule.id }}" tabindex="-1" aria-labelledby="ruleModalLabel{{ rule.id }}" aria-hidden="true">
                             <div class="modal-dialog modal-lg">
                                 <div class="modal-content">
-                                    <form method="POST" action="{{ url_for('runbook.update_application_rule', application_rule_id=rule.id) }}">
+                                    <form id="update-form-{{ rule.id }}" method="POST" action="{{ url_for('runbook.update_application_rule', application_rule_id=rule.id) }}">
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="ruleModalLabel{{ rule.id }}">Edit Rule</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -191,11 +191,18 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="modal-footer">
-                                            <button type="submit" class="btn btn-primary">Save changes</button>
+                                    </form>
+                                    <div class="modal-footer d-flex justify-content-between">
+                                        <form method="POST" action="{{ url_for('runbook.delete_application_rule', application_rule_id=rule.id) }}" class="ms-2">
+                                            <input type="hidden" name="tab" value="rules">
+                                            <button class="btn btn-outline-danger" onclick="return confirm('Delete this rule?')" type="submit">Delete</button>
+                                        </form>
+                                        
+                                        <div>
+                                            <button type="submit" form="update-form-{{ rule.id }}" class="btn btn-primary">Save changes</button>
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                         </div>
-                                     </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>                          
