@@ -214,11 +214,15 @@ def raise_bug():
         # Add 'Flik' tag to tags 
         tags = ["Flik"] + (extracted_tags if extracted_tags else [])
 
+        # No tags extracted from ticket 
+        if len(tags) == 1:
+            tags.append("Miscellaneous")
+
         if additional_comments:
             tags.append("Documentation Misalignment")
 
         tags = [t.strip() for t in tags if t.strip()]  # Remove empty tags
-        structured_tags = ", ".join(tags) if tags else "Miscellaneous"
+        structured_tags = ", ".join(tags)
 
         try:
             work_item = create_work_item(
