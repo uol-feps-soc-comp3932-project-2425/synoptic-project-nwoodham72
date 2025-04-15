@@ -10,6 +10,10 @@
         -webkit-line-clamp: 4; /* Show only 4 lines */
         -webkit-box-orient: vertical;
     }
+    .modal-body {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
     </style>
 
     <h2 class="mb-4">Manage your Documentation</h2>
@@ -138,7 +142,7 @@
                             <div class="card h-100 shadow-sm">
                                 <div class="card-body">
                                     <h5 class="card-title">{{ rule.title }}</h5>
-                                    <h6 class="card-subtitle text-muted">{{ rule.page.name }}</h6>
+                                    <h6 class="card-subtitle text-muted">{{ rule.page.name if rule.page else 'No page selected' }}</h6>
                                     <p class="card-text">{{ rule.description }}</p>
                                     <div class="mb-2">
                                         {% for role in rule.roles %}
@@ -150,51 +154,51 @@
                             </div>
                         </div>
                         <!-- Modal for application rules -->
-                        <form method="POST" action="{{ url_for('runbook.update_application_rule', application_rule_id=rule.id) }}">
-                            <div class="modal fade" id="ruleModal{{ rule.id }}" tabindex="-1" aria-labelledby="ruleModalLabel{{ rule.id }}" aria-hidden="true">
-                                <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                                    <div class="modal-content">
+                        <div class="modal fade" id="ruleModal{{ rule.id }}" tabindex="-1" aria-labelledby="ruleModalLabel{{ rule.id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <form method="POST" action="{{ url_for('runbook.update_application_rule', application_rule_id=rule.id) }}">
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="ruleModalLabel{{ rule.id }}">Edit Rule</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
-                                    <div class="modal-body">
-                        
-                                    <div class="mb-3">
-                                        <label class="form-label">Title</label>
-                                        <input type="text" name="title" class="form-control" value="{{ rule.title }}" required minlength="10">
-                                    </div>
-                        
-                                    <div class="mb-3">
-                                        <label class="form-label">Description</label>
-                                        <textarea name="description" class="form-control" style="height: 130px;" required minlength="50">{{ rule.description }}</textarea>
-                                    </div>
-                        
-                                    <div class="mb-3">
-                                        <label class="form-label">Page</label>
-                                        <select name="page" class="form-select" required>
-                                        {% for page in application_pages %}
-                                            <option value="{{ page.id }}" {% if page.id == rule.page.id %}selected{% endif %}>{{ page.name }}</option>
-                                        {% endfor %}
-                                        </select>
-                                    </div>
-                        
-                                    <div class="mb-3">
-                                        <label class="form-label">Permitted Roles</label>
-                                        <select name="roles" class="form-select" multiple size="5" required>
-                                        {% for role in application_roles %}
-                                            <option value="{{ role.id }}" {% if role in rule.roles %}selected{% endif %}>{{ role.name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                    </div>
-                        
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-primary">Save changes</button>
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label class="form-label">Title</label>
+                                                <input type="text" name="title" class="form-control" value="{{ rule.title }}" required minlength="10">
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label class="form-label">Description</label>
+                                                <textarea name="description" class="form-control" style="height: 130px;" required minlength="50">{{ rule.description }}</textarea>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label class="form-label">Page</label>
+                                                <select name="page" class="form-select" required>
+                                                  {% for page in application_pages %}
+                                                    <option value="{{ page.id }}" {% if page.id == rule.page.id %}selected{% endif %}>{{ page.name }}</option>
+                                                  {% endfor %}
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label class="form-label">Permitted Roles</label>
+                                                <select name="roles" class="form-select" multiple size="5" required>
+                                                  {% for role in application_roles %}
+                                                    <option value="{{ role.id }}" {% if role in rule.roles %}selected{% endif %}>{{ role.name }}</option>
+                                                  {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">Save changes</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        </div>
+                                     </form>
                                 </div>
                             </div>
-                        </form>
+                        </div>                          
                     {% endfor %}
                 </div>
             {% else %}

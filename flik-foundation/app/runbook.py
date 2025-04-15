@@ -123,6 +123,7 @@ def add_application_rule():
             return redirect(url_for("runbook.documentation", tab="rules"))
 
         existing = ApplicationRule.query.filter_by(title=form.title.data).first()
+
         if not existing:
             # Create new rule
             new_rule = ApplicationRule(
