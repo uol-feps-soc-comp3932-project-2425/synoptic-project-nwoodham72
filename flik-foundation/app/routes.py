@@ -204,14 +204,20 @@ def raise_bug():
         if additional_comments:
             description += f"<i>This bug flagged a documentation issue. The author provided additional comments:<i><br>{additional_comments}<br><br>"
 
-        assigned_to, tags = assign_developer(
+        assigned_to, extracted_tags = assign_developer(
             prep_classification_data,
             ORGANISATION,
             PROJECT_NAME,
             RETRIEVAL_ACCESS_TOKEN,
         )
+
+        # Add 'Flik' tag to tags 
+        tags = ["Flik"] + (extracted_tags if extracted_tags else [])
+
         if additional_comments:
             tags.append("Documentation Misalignment")
+
+        tags = [t.strip() for t in tags if t.strip()]  # Remove empty tags
         structured_tags = ", ".join(tags) if tags else "Miscellaneous"
 
         try:
