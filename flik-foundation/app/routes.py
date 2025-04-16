@@ -13,6 +13,7 @@ from bert.summariser import extractive_summary
 from bert.prioritiser import predict_priority
 from bert.assigner import assign_developer
 from bert.assessor import assess_documentation
+from bert.ticket_officer import find_similar_tickets
 from .models import FlikUser, Skill, ApplicationRole, ApplicationPage, Bug, db
 from .utils import roles_required, save_bug
 import logging
@@ -218,6 +219,10 @@ def raise_bug():
             PROJECT_NAME,
             RETRIEVAL_ACCESS_TOKEN,
         )
+
+        # todo: fetch related tickets
+        if extracted_tags:
+            find_similar_tickets(bug_details["description"], extracted_tags)
 
         # Add 'Flik' tag to tags 
         tags = ["Flik"] + (extracted_tags if extracted_tags else [])

@@ -31,7 +31,7 @@ def assess_documentation(action_comparison, bug_description_role):
         logging.info(f"[{rule.title}] Similarity: {cosine_sim:.4f}")
     
         if cosine_sim >= threshold:
-            logging.info(f"Match - Similarity: {cosine_sim:.4f}")
+            logging.info(f"assessor: Match with {rule.title} - Similarity: {cosine_sim:.4f}")
             permitted_roles = [r.name for r in rule.roles]
             # Check if user's role is not permitted to perform the described action / bug description
             if bug_description_role.lower() not in [r.lower() for r in permitted_roles]:
