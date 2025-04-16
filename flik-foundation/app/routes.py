@@ -201,8 +201,8 @@ def raise_bug():
 
         # Send ticket to Azure in html format
         description = (
-            f"<b>Summary</b>: As a <i>{bug_details['role'].name}</i> on the <i>{bug_details['page'].name}</i> page, {summary}<br><br>"
-            f"<b>Priority</b>: {priority_label}<br><br>"
+            f"<p><b>Summary</b>: As a <i>{bug_details['role'].name}</i> on the <i>{bug_details['page'].name}</i> page, {summary}<br>"
+            f"<b>Priority</b>: {priority_label}</p>"
             f"<hr>"
             f"<p><b>Background</b><br> <ul><li><i>User Role</i>: {bug_details['role'].name}</li><li><i>Application Page</i>: {bug_details['page'].name}</li></ul><p>"
             f"<p><b>Problem Description</b><br>{bug_details['description']}</p>"
@@ -211,8 +211,12 @@ def raise_bug():
 
         # Append additional comments from documentation match modal
         if additional_comments:
-            description += f"<i>This bug flagged a documentation issue. The author provided additional comments:<i><br>{additional_comments}<br><br>"
-
+            description += (
+                f"<hr><p><b>Documentation Misalignment</b><br>"
+                f"This bug flagged a documentation issue. The author overrided the flag and provided additional comments:<br><i>{additional_comments}</i></p>"
+            )
+        
+        # Extract labels and assign developer
         assigned_to, extracted_tags = assign_developer(
             prep_classification_data,
             ORGANISATION,
@@ -220,9 +224,13 @@ def raise_bug():
             RETRIEVAL_ACCESS_TOKEN,
         )
 
-        # todo: fetch related tickets
-        if extracted_tags:
-            find_similar_tickets(bug_details["description"], extracted_tags)
+        # Fetch related tickets
+        related_match, related_tickets = find_similar_tickets(bug_details["description"], extracted_tags)
+        if related_match and related_tickets:
+            description += "<hr><p><b>Potential Duplicate Tickets</b><br>The following tickets may provide some insight to resolving this issue.<ul>"
+            for ticket in related_tickets:
+                description += f"<li>#{ticket['id']} – {ticket['title']}</li>"
+            description += "</ul></p>"
 
         # Add 'Flik' tag to tags 
         tags = ["Flik"] + (extracted_tags if extracted_tags else [])

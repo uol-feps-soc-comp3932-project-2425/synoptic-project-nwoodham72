@@ -21,28 +21,27 @@ def find_similar_tickets(incoming_description, tags):
 
     # Store matching tickets
     matches = []
-    tag_matches = []
 
     # Fetch related bugs
     for bug in Bug.query.all():
+        # Check tags of incoming ticket and saved ticket are equal
         skills = set(s.name.lower() for s in bug.skills)
         if (set(t.lower() for t in tags)).issubset(skills):
-            tag_matches.append(bug)
-    
-    for bug in tag_matches:
-        saved_description = bug.description
-        saved_embedding = model.encode(saved_description, convert_to_tensor=True)
-        cosine_sim = util.pytorch_cos_sim(saved_embedding, incoming_embedding).item()
-        logging.info(f"ticket_officer: [{bug.title}] Similarity: {cosine_sim:.4f}")
+            saved_embedding = model.encode(bug.description, convert_to_tensor=True)
+            cosine_sim = util.pytorch_cos_sim(saved_embedding, incoming_embedding).item()
 
-        if cosine_sim >= threshold:
-            logging.info(f"Match - Similarity: {cosine_sim:.4f}")
-            matches.append({
-                "title": bug.title
-            })
+            if cosine_sim >= threshold:
+                logging.info(f"ticket_officer: Match with [{bug.title}] ({cosine_sim:.4f})")
+                matches.append((
+                    bug.id, bug.title, cosine_sim
+                ))
+    
+    # Return three strongest matches
+    matches.sort(key=lambda x: x[2], reverse=True)
+    top_matches = [{"id": m[0], "title": m[1]} for m in matches[:3]]
 
     # No matches found
-    return (True, matches) if matches else (False, None)
+    return (True, top_matches) if top_matches else (False, None)
             
 
 
