@@ -25,10 +25,8 @@ def assess_documentation(action_comparison, bug_description_role):
 
     # Compare rules with bug description
     for rule in documentation:
-        action = rule.description
-        action_embedding = model.encode(action, convert_to_tensor=True)  # Convert text to vector embedding
-        cosine_sim = util.pytorch_cos_sim(action_embedding, bug_embedding).item()  # Assess similarity between bug description and rule
-        logging.info(f"[{rule.title}] Similarity: {cosine_sim:.4f}")
+        rule_embedding = model.encode(rule.description, convert_to_tensor=True)  # Convert rule to vector embedding
+        cosine_sim = util.pytorch_cos_sim(rule_embedding, bug_embedding).item()  # Assess similarity between bug description and rule
     
         if cosine_sim >= threshold:
             logging.info(f"assessor: Match with [{rule.title}] ({cosine_sim:.4f})")
