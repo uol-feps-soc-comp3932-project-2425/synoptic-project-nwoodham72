@@ -147,6 +147,8 @@
                                     <div class="mb-2">
                                         {% for role in rule.roles %}
                                             <span class="badge bg-secondary">{{ role.name }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">No roles assigned</span>
                                         {% endfor %}
                                     </div>
                                     <a href="#" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#ruleModal{{ rule.id }}">View</a>
