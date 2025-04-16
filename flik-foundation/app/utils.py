@@ -16,10 +16,31 @@ from bert.summariser import extractive_summary
 from bert.prioritiser import predict_priority
 from bert.assigner import assign_developer
 from bert.assessor import assess_documentation
-from .models import FlikUser, Skill, ApplicationRole, db
+from .models import FlikUser, Skill, ApplicationRole, Bug, db
 import json
 
 """ utils.py: Helper functions and decorators """
+
+# Save new bug to database for ticket_officer
+def save_bug(title, description, priority, role_id, page_id, assignee_id, author_id, skill_ids=None):
+    new_bug = Bug(
+        title=title,
+        description=description,
+        priority=priority,
+        application_role=role_id,
+        application_page=page_id,
+        assignee=assignee_id,
+        author=author_id,
+    )
+
+    if skill_ids:
+        skills = Skill.query.filter(Skill.id.in_(skill_ids)).all()
+        new_bug.skills = skills
+    
+    db.session.add(new_bug)
+    db.session.commit()
+
+    return new_bug
 
 # Restrict user roles to a route
 def roles_required(*role_names):

@@ -14,7 +14,7 @@ from bert.prioritiser import predict_priority
 from bert.assigner import assign_developer
 from bert.assessor import assess_documentation
 from .models import FlikUser, Skill, ApplicationRole, ApplicationPage, Bug, db
-from .utils import roles_required
+from .utils import roles_required, save_bug
 import logging
 
 main = Blueprint("main", __name__)
@@ -50,6 +50,16 @@ def index():
 def list_users():
     users = FlikUser.query.all()
     return "<br>".join([f"{u.id} | {u.email} | {u.role}" for u in users])
+@main.route("/bugs")
+def list_bugs():
+    bugs = Bug.query.all()
+    return "<br>".join([
+        f"{b.id} | {b.title} | {b.description} | {b.priority} | "
+        f"Assignee: {b.assignee} | Author: {b.author} | "
+        f"Page: {b.application_page} | Role: {b.application_role} | "
+        f"Skills: {', '.join([s.name for s in b.skills]) if b.skills else 'None'}"
+        for b in bugs
+    ])
 
 
 """ Flik Configuration"""
@@ -89,28 +99,6 @@ def teamsheet():
 
 
 """ Raise bug workflow """
-
-def save_bug(title, description, priority, role_id, page_id, assignee_id, author_id, skill_ids=None):
-    new_bug = Bug(
-        title=title,
-        description=description,
-        priority=priority,
-        application_role=role_id,
-        application_page=page_id,
-        assignee=assignee_id,
-        author=author_id,
-    )
-
-    if skill_ids:
-        skills = Skill.query.filter(Skill.id.in_(skill_ids)).all()
-        new_bug.skills = skills
-    
-    db.session.add(new_bug)
-    db.session.commit()
-
-    return new_bug
-
-
 @main.route("/raise_bug", methods=["GET", "POST"])
 @login_required
 def raise_bug():
