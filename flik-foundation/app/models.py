@@ -22,6 +22,12 @@ application_role_application_rule = db.Table(
     db.Column("application_rule_id", db.Integer, db.ForeignKey("application_rule.id", ondelete="CASCADE", name="fk_rule_role"))
 )
 
+bug_skills = db.Table(
+    "bug_skills",
+    db.Column("bug_id", db.Integer, db.ForeignKey("bug.id")),
+    db.Column("skill_id", db.Integer, db.ForeignKey("skill.id")),
+)
+
 
 
 """ Models """
@@ -38,7 +44,7 @@ class FlikUser(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
-    role = db.Column(db.String(20), nullable=False)  # 'Developer' or 'Client'
+    role = db.Column(db.String(20), nullable=False)
 
     roles = db.relationship("FlikRole", secondary="flik_user_roles", backref="users")
 
@@ -100,3 +106,21 @@ class ApplicationRule(db.Model):
 
     def __repr__(self):
         return f"<ApplicationRule {self.title}>"
+    
+class Bug(db.Model):
+    __table__name = "bug"
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    priority = db.Column(db.String(20), nullable=False) 
+
+    application_role = db.Column(db.Integer, db.ForeignKey("application_role.id"), nullable=True)
+    application_page = db.Column(db.Integer, db.ForeignKey("application_page.id"), nullable=True)
+
+    assignee = db.Column(db.Integer, db.ForeignKey("flik_user.id"), nullable=True)
+    author = db.Column(db.Integer, db.ForeignKey("flik_user.id"), nullable=True)
+
+    skills = db.relationship("Skill", secondary=bug_skills, backref="bugs")
+
+    def __repr__(self):
+        return f"<Bug {self.title}>"

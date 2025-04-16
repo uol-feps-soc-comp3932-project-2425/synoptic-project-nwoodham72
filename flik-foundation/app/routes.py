@@ -13,8 +13,9 @@ from bert.summariser import extractive_summary
 from bert.prioritiser import predict_priority
 from bert.assigner import assign_developer
 from bert.assessor import assess_documentation
-from .models import FlikUser, Skill, ApplicationRole, ApplicationPage, db
+from .models import FlikUser, Skill, ApplicationRole, ApplicationPage, Bug, db
 from .utils import roles_required
+import logging
 
 main = Blueprint("main", __name__)
 
@@ -88,6 +89,26 @@ def teamsheet():
 
 
 """ Raise bug workflow """
+
+def save_bug(title, description, priority, role_id, page_id, assignee_id, author_id, skill_ids=None):
+    new_bug = Bug(
+        title=title,
+        description=description,
+        priority=priority,
+        application_role=role_id,
+        application_page=page_id,
+        assignee=assignee_id,
+        author=author_id,
+    )
+
+    if skill_ids:
+        skills = Skill.query.filter(Skill.id.in_(skill_ids)).all()
+        new_bug.skills = skills
+    
+    db.session.add(new_bug)
+    db.session.commit()
+
+    return new_bug
 
 
 @main.route("/raise_bug", methods=["GET", "POST"])
@@ -263,6 +284,20 @@ def raise_bug():
                     """,
                     "success",
                 )
+
+            # Commit bug to database 
+            bug = save_bug(
+                title=bug_details["title"],
+                description=bug_details["description"],
+                priority=priority_label,
+                role_id=bug_details["role"].id,
+                page_id=bug_details["page"].id,
+                assignee_id=assigned_to,  # or None if unassigned
+                author_id=current_user.id,
+                skill_ids=[Skill.query.filter_by(name=tag).first().id for tag in extracted_tags if Skill.query.filter_by(name=tag).first()] if extracted_tags else None
+            )
+
+            logging.info(f"Bug {bug.id} saved to 'Bug' table.") 
 
             # Clear form after successful send
             form.title.data = ""
