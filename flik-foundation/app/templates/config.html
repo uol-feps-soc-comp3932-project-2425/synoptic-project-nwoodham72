@@ -3,18 +3,17 @@
 
 {% block content %}
     <h2 class="mb-4">Flik Configuration</h2>
-    <p class="text-muted">Define which columns should track developer workload.</p>
-    <p class="text-muted"><b>To comply with GDPR, bug tickets can only be retained for the shortest retention period used between the developer and client organisation. Define that period here.</b></p>
+    <p class="text-muted">Configure your team and client settings.</p>
 
     <div class="card">
         <div class="card-header">
             <!-- Tab headers -->
             <ul class="nav nav-tabs card-header-tabs" id="configTabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link {% if request.args.get('tab', 'columns') == 'columns' %}active{% endif %}" href="{{ url_for('main.config', tab='columns') }}">Azure DevOps Columns</a>
+                    <a class="nav-link {% if request.args.get('tab', 'columns') == 'columns' %}active{% endif %}" href="{{ url_for('config.load_config', tab='columns') }}">Azure DevOps Columns</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if request.args.get('tab') == 'database' %}active{% endif %}" href="{{ url_for('main.config', tab='database') }}">Database Retention Policy</a>
+                    <a class="nav-link {% if request.args.get('tab') == 'database' %}active{% endif %}" href="{{ url_for('config.load_config', tab='database') }}">Database Retention Policy</a>
                 </li>
             </ul>
         </div>
@@ -24,7 +23,7 @@
             <!-- Columns Tab -->
             <h4>Azure DevOps Column Tracking</h4>
             <p class="text-muted">These columns will be checked for developer workload during ticket assignment.</p>
-            <form method="POST" action="{{ url_for('main.config', tab='columns') }}" class="mb-4">
+            <form method="POST" action="{{ url_for('config.add_column') }}" class="mb-4">
                 <div class="input-group">
                     <input type="text" name="column_name" class="form-control" placeholder="Enter new column to track" required>
                     <button class="btn btn-success" type="submit">Add Column</button>
@@ -49,7 +48,7 @@
             <!-- Database Retention Tab -->
             <h4>Database Retention Policy</h4>
             <p class="text-muted">Define how long bug tickets are retained (in days). This helps ensure compliance with GDPR.</p>
-            <form method="POST" action="{{ url_for('main.config', tab='database') }}" class="mb-4">
+            <form method="POST" action="{{ url_for('config.update_retention') }}" class="mb-4">
                 <div class="input-group">
                     <input type="number" name="retention_days" class="form-control" placeholder="Days (e.g. 30)" value="{{ retention }}" required>
                     <button class="btn btn-success" type="submit">Update</button>

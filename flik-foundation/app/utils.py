@@ -16,7 +16,7 @@ from bert.summariser import extractive_summary
 from bert.prioritiser import predict_priority
 from bert.assigner import assign_developer
 from bert.assessor import assess_documentation
-from .models import FlikUser, Skill, ApplicationRole, Bug, db
+from .models import Skill, Configuration, Bug, db
 import json
 
 """ utils.py: Helper functions and decorators """
@@ -41,6 +41,16 @@ def save_bug(title, description, priority, role_id, page_id, assignee_id, author
     db.session.commit()
 
     return new_bug
+
+# Set configuration defaults
+def get_or_create_config():
+    config = Configuration.query.first()
+    if not config:
+        config = Configuration(columns_to_track="To Do", database_retention_period=120)
+        db.session.add(config)
+        db.session.commit()
+    return config
+
 
 # Restrict user roles to a route
 def roles_required(*role_names):

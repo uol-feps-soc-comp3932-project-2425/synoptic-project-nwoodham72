@@ -14,8 +14,8 @@ from bert.prioritiser import predict_priority
 from bert.assigner import assign_developer
 from bert.assessor import assess_documentation
 from bert.ticket_officer import find_similar_tickets
-from .models import FlikUser, Skill, ApplicationRole, ApplicationPage, Bug, Configuration, db
-from .utils import roles_required, save_bug
+from .models import FlikUser, Skill, ApplicationRole, ApplicationPage, Bug, db
+from .utils import roles_required, save_bug, get_or_create_config
 import logging
 
 main = Blueprint("main", __name__)
@@ -82,46 +82,6 @@ def teamsheet():
     developers.sort(key=lambda d: d.id != current_user.id)  # Display current user first
     skills = Skill.query.order_by(Skill.name).all()
     return render_template("teamsheet.html", developers=developers, skills=skills)
-
-@main.route("/config", methods=["GET", "POST"])
-@login_required
-@roles_required("Manager")
-def config():
-    tab = request.args.get("tab", "columns")
-    config = Configuration.query.first()
-
-    # Set defaults
-    if not config:
-        config = Configuration(columns_to_track="To Do", database_retention_period=120)
-        db.session.add(config)
-        db.session.commit()
-
-    # Handle updates
-    if request.method == "POST":
-        if tab == "columns":
-            new_col = request.form.get("column_name").strip()
-            if new_col:
-                existing_cols = config.columns_to_track.split(",") if config.columns_to_track else []
-                if new_col not in existing_cols:
-                    existing_cols.append(new_col)
-                    config.columns_to_track = ",".join(existing_cols)
-                    db.session.commit()
-                    flash("Column added successfully.", "success")
-        elif tab == "database":
-            try:
-                days = int(request.form.get("retention_days"))
-                config.database_retention_period = days
-                db.session.commit()
-                flash("Retention period updated.", "success")
-            except ValueError:
-                flash("Invalid input. Please enter a number.", "danger")
-
-        return redirect(url_for("main.config", tab=tab))    
-    
-    columns = config.columns_to_track.split(",") if config.columns_to_track else []
-    return render_template("config.html", tab=tab, columns=columns, retention=config.database_retention_period)
-
-
 
 
 """ Raise bug workflow """
