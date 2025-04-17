@@ -8,6 +8,7 @@ from transformers import (
 )
 from bert.workload import get_developer_workload
 from app.models import FlikUser
+from app.utils import get_columns_to_track
 
 """ assigner.py: Allocate developers to bug ticket based on pre-defined labels in fine_tuned_assigner/bug_themes.json. """
 
@@ -89,8 +90,13 @@ def select_developer_by_workload_and_skills(organisation, project, pat, assignme
     # Append best developers with lowest workload and most skills
     candidates = []
     for dev, matching_skills in assignments.items():
+
+        # Fetch columns to track
+        columns = get_columns_to_track()
+
+        # Get workload
         assignee_workload = get_developer_workload(
-            organisation, project, pat, dev, ["To Do"]
+            organisation, project, pat, dev, columns
         )
         # Matching skills are already found
         developer_general_skill_count = len(assignments.get(dev, []))
