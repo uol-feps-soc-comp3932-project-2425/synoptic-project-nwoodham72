@@ -15,6 +15,9 @@
                 <li class="nav-item">
                     <a class="nav-link {% if request.args.get('tab') == 'database' %}active{% endif %}" href="{{ url_for('config.load_config', tab='database') }}">Database Retention Policy</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.args.get('tab') == 'users' %}active{% endif %}" href="{{ url_for('config.load_config', tab='users') }}">Accounts</a>
+                </li>
             </ul>
         </div>
 
@@ -63,6 +66,44 @@
                 </div>
             </form>
         </div>
+        {% endif %}
+
+        {% if tab == 'users' %}
+            <div class="card-body">
+                <h4>Your Team</h4>
+                <p class="text-muted">View and delete developer members of your team and the client organisation.</p>
+            
+                <h5>Developers and Managers</h5>
+                <ul class="list-group mb-4">
+                    {% for dev in developers %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>
+                            {{ dev.email }}
+                            <span class="badge bg-secondary">{{ dev.role }}</span>
+                        </span>
+                        <form method="POST" action="{{ url_for('config.delete_user', user_id=dev.id) }}" class="ms-2">
+                            <button class="btn btn-outline-danger btn-sm" onclick="return confirm('Delete this user?')" type="submit">Delete</button>
+                        </form>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item text-muted"><i>No developer or manager accounts found.</i></li>
+                    {% endfor %}
+                </ul>
+            
+                <h5>Clients</h5>
+                <ul class="list-group">
+                    {% for client in clients %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>{{ client.email }}</span>
+                        <form method="POST" action="{{ url_for('config.delete_user', user_id=client.id) }}" class="ms-2">
+                            <button class="btn btn-outline-danger btn-sm" onclick="return confirm('Delete this user?')" type="submit">Delete</button>
+                        </form>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item text-muted"><i>No client accounts found.</i></li>
+                    {% endfor %}
+                </ul>
+            </div>        
         {% endif %}
     </div>
 {% endblock %}
