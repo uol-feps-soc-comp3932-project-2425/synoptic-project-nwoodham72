@@ -32,9 +32,17 @@
             {% if columns %}
                 <ul class="list-group">
                     {% for col in columns %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        {{ col }}
-                    </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <form class="d-flex flex-grow-1" method="POST" action="{{ url_for('config.update_column', column_name=col) }}">
+                                <input type="hidden" name="tab" value="columns">
+                                <input name="new_name" class="form-control me-2" value="{{ col }}" required>
+                                <button class="btn btn-outline-primary" type="submit">Update</button>
+                            </form>
+                            <form method="POST" action="{{ url_for('config.delete_column', column_name=col) }}" class="ms-2">
+                                <input type="hidden" name="tab" value="columns">
+                                <button class="btn btn-outline-danger" onclick="return confirm('Delete this column?')" type="submit">Delete</button>
+                            </form>
+                        </li>
                     {% endfor %}
                 </ul>
             {% else %}

@@ -40,6 +40,41 @@ def add_column():
 
     return redirect(url_for("config.load_config", tab="columns"))
 
+@config.route("/update-column/<string:column_name>", methods=["POST"])
+@login_required
+@roles_required("Manager")
+def update_column(column_name):
+    new_name = request.form.get("new_name", "").strip()
+    config = get_or_create_config()
+
+    existing_cols = config.columns_to_track.split(",") if config.columns_to_track else []
+    if column_name in existing_cols and new_name and new_name not in existing_cols:
+        updated_cols = [new_name if col == column_name else col for col in existing_cols]
+        config.columns_to_track = ",".join(updated_cols)
+        db.session.commit()
+        flash("Column updated successfully.", "success")
+    else:
+        flash("A column with that name already exists.", "warning")
+
+    return redirect(url_for("config.load_config", tab="columns"))
+
+@config.route("/delete-column/<string:column_name>", methods=["POST"])
+@login_required
+@roles_required("Manager")
+def delete_column(column_name):
+    config = get_or_create_config()
+    existing_cols = config.columns_to_track.split(",") if config.columns_to_track else []
+
+    if column_name in existing_cols:
+        existing_cols.remove(column_name)
+        config.columns_to_track = ",".join(existing_cols)
+        db.session.commit()
+        flash(f"Column '{column_name}' deleted.", "success")
+
+    return redirect(url_for("config.load_config", tab="columns"))
+
+
+
 # Update database retention period
 @config.route("/config/database", methods=["POST"])
 @login_required
