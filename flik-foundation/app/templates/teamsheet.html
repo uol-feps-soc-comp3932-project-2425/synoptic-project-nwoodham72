@@ -4,28 +4,35 @@
 
 {% block content %}
 <h2>Developer Teamsheet</h2>
+<p class="text-muted">
+    {% if is_manager %}
+        Click on a profile to update your own and other developer's skills.
+    {% else %}
+        Click on your profile to update your skills to ensure you get the right tickets.
+    {% endif %}
+</p>
 
 {% if developers %}
-    <p class="text-muted">Click on your profile to update your skills to ensure you get the right tickets.</p>
     <div class="list-group">
         {% for dev in developers %}
             <div class="mb-4">
-                {% if dev.id == current_user.id %}
-                <!-- Current profile) -->
-                <a class="list-group-item list-group-item-action mb-1"
-                data-bs-toggle="offcanvas"
-                href="#offcanvas{{ dev.id }}"
-                role="button"
-                aria-controls="offcanvas{{ dev.id }}">
-                    {{ dev.email }} <span>(you)</span>
-                </a>
+                {% if dev.id == current_user.id or is_manager %}
+                    <!-- Editable for own/manager view -->
+                    <a class="list-group-item list-group-item-action mb-1"
+                        data-bs-toggle="offcanvas"
+                        href="#offcanvas{{ dev.id }}"
+                        role="button"
+                        aria-controls="offcanvas{{ dev.id }}">
+                        {{ dev.email }}
+                        {% if dev.id == current_user.id %}<span>(you)</span>{% endif %}
+                    </a>
                 {% else %}
-                    <!-- Other developers -->
+                    <!-- Non editable for developers -->
                     <div class="list-group-item mb-1 text-muted">
                         {{ dev.email }}
                     </div>
                 {% endif %}
-
+            
                 <!-- Skills -->
                 <div class="mt-2">
                     {% for skill in dev.skills %}

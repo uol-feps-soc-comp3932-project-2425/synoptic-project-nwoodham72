@@ -55,12 +55,16 @@ def list_bugs():
 @login_required
 @roles_required("Developer", "Manager")
 def teamsheet():
+
+    user_roles = [r.name for r in current_user.roles]
+    is_manager = "Manager" in user_roles
+
     # Update skills
     if request.method == "POST":
         user_id = int(request.form.get("user_id"))
 
-        # Block updating other developer's profiles
-        if current_user.id != user_id:
+        # Block developers updating other developer profiles
+        if not is_manager and current_user.id != user_id:
             abort(403)
 
         selected_skills = request.form.getlist("skills")
@@ -78,10 +82,10 @@ def teamsheet():
         return redirect(url_for("main.teamsheet"))
 
     # Display developers
-    developers = FlikUser.query.filter_by(role="Developer").all()
+    developers = FlikUser.query.filter(FlikUser.role.in_(["Developer", "Manager"])).all()
     developers.sort(key=lambda d: d.id != current_user.id)  # Display current user first
     skills = Skill.query.order_by(Skill.name).all()
-    return render_template("teamsheet.html", developers=developers, skills=skills)
+    return render_template("teamsheet.html", developers=developers, skills=skills, is_manager=is_manager)
 
 
 """ Raise bug workflow """
