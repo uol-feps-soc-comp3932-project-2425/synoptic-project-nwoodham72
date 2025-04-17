@@ -124,3 +124,12 @@ class Bug(db.Model):
 
     def __repr__(self):
         return f"<Bug {self.title}>"
+    
+class Configuration(db.Model):
+    __tablename__ = "configuration"
+    id = db.Column(db.Integer, primary_key=True)
+    columns_to_track = db.Column(db.Text, nullable=True)
+    database_retention_period = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return f"<Configuration Columns: {self.columns_to_track}, Retention: {self.database_retention_period} days>"
