@@ -28,8 +28,6 @@ def get_developer_workload(org, project, pat, developer, columns):
     try:
         work_items = response.json()
         work_item_count = len(work_items.get("workItems", []))
-        print(developer, work_item_count)
-        print(columns)
     except json.decoder.JSONDecodeError as e:
         print("Error decoding JSON. Response may not be in JSON format.")
         raise e
