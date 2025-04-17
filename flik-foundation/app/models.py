@@ -108,7 +108,7 @@ class ApplicationRule(db.Model):
         return f"<ApplicationRule {self.title}>"
     
 class Bug(db.Model):
-    __table__name = "bug"
+    __tablename__ = "bug"
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
