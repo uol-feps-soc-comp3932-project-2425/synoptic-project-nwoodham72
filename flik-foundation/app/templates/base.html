@@ -31,6 +31,17 @@
                                 <a class="nav-link" href="{{ url_for('runbook.documentation') }}">Documentation</a>
                             </li>
                         {% endif %}
+                        {% if current_user.role.lower() == "manager" %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.teamsheet') }}">Teamsheet</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('runbook.documentation') }}">Documentation</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.config') }}">Configuration</a>
+                            </li>
+                        {% endif %}
                     {% endif %}
                 </ul>
                 <ul class="navbar-nav">
