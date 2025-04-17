@@ -97,6 +97,7 @@ def raise_bug():
     additional_comments = None
     matching_docs = None
     tags = []
+    author = FlikUser.query.get(current_user.id).email
 
     # Fetch database values and check for database entries
     application_roles = ApplicationRole.query.order_by(ApplicationRole.name).all()
@@ -192,6 +193,7 @@ def raise_bug():
         description = (
             f"<p><b>Summary</b>: As a <i>{bug_details['role'].name}</i> on the <i>{bug_details['page'].name}</i> page, {summary}<br>"
             f"<b>Priority</b>: {priority_label}</p>"
+            f"<b>Author</b>: <i>{author}</i></p>"
             f"<hr>"
             f"<p><b>Background</b><br> <ul><li><i>User Role</i>: {bug_details['role'].name}</li><li><i>Application Page</i>: {bug_details['page'].name}</li></ul><p>"
             f"<p><b>Problem Description</b><br>{bug_details['description']}</p>"
@@ -287,7 +289,7 @@ def raise_bug():
                 skill_ids=[Skill.query.filter_by(name=tag).first().id for tag in extracted_tags if Skill.query.filter_by(name=tag).first()] if extracted_tags else None
             )
 
-            logging.info(f"Bug {bug.id} saved to 'Bug' table.") 
+            logging.info(f"Bug {bug.id} saved to database.") 
 
             # Clear form after successful send
             form.title.data = ""
