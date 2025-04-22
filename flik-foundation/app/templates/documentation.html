@@ -14,6 +14,10 @@
         max-height: 70vh;
         overflow-y: auto;
     }
+    .required-asterisk {
+      color: red;
+      margin-left: 4px;
+    }
     </style>
 
     <h2 class="mb-4">Manage your Documentation</h2>
@@ -112,21 +116,21 @@
                 <input type="hidden" name="tab" value="rules">
                 {{ form.hidden_tag() }}
                 <div class="mb-3">
-                    <label class="form-label">Rule Title</label>
+                    <label class="form-label">Rule Title<span class="required-asterisk">*</span></label>
                     <div class="input-group">{{ form.title(class="form-control") }}</div>
                     <small class="form-text text-muted">Minimum 10 characters.</small>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Description</label>
+                    <label class="form-label">Description<span class="required-asterisk">*</span></label>
                     <div class="input-group">{{ form.description(class="form-control", style="height: 130px;") }}</div>
                     <small class="form-text text-muted">Minimum 50 characters.</small>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Page</label>
+                    <label class="form-label">Page<span class="required-asterisk">*</span></label>
                     <div class="input-group">{{ form.page(class="form-select") }}</div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Permitted Roles</label>
+                    <label class="form-label">Permitted Roles<span class="required-asterisk">*</span></label>
                     <div class="input-group">{{ form.roles(class="form-select", multiple=True, size=5) }}</div>
                     <small class="form-text text-muted">Hold Ctrl to select multiple roles.</small>
                 </div>
@@ -166,17 +170,17 @@
                                         </div>
                                         <div class="modal-body">
                                             <div class="mb-3">
-                                                <label class="form-label">Title</label>
+                                                <label class="form-label">Title<span class="required-asterisk">*</span></label>
                                                 <input type="text" name="title" class="form-control" value="{{ rule.title }}" required minlength="10">
                                             </div>
                                             
                                             <div class="mb-3">
-                                                <label class="form-label">Description</label>
+                                                <label class="form-label">Description<span class="required-asterisk">*</span></label>
                                                 <textarea name="description" class="form-control" style="height: 130px;" required minlength="50">{{ rule.description }}</textarea>
                                             </div>
                                             
                                             <div class="mb-3">
-                                                <label class="form-label">Page</label>
+                                                <label class="form-label">Page<span class="required-asterisk">*</span></label>
                                                 <select name="page" class="form-select" required>
                                                   {% for page in application_pages %}
                                                     <option value="{{ page.id }}" {% if page.id == rule.page.id %}selected{% endif %}>{{ page.name }}</option>
@@ -185,7 +189,7 @@
                                             </div>
                                             
                                             <div class="mb-3">
-                                                <label class="form-label">Permitted Roles</label>
+                                                <label class="form-label">Permitted Roles<span class="required-asterisk">*</span></label>
                                                 <select name="roles" class="form-select" multiple size="5" required>
                                                   {% for role in application_roles %}
                                                     <option value="{{ role.id }}" {% if role in rule.roles %}selected{% endif %}>{{ role.name }}</option>
