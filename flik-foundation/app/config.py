@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
-from app.models import FlikUser, db
+from app.models import FlikUser, FlikRole, db
 from app.utils import roles_required, get_or_create_config
 
 config = Blueprint("config", __name__)
@@ -26,10 +26,12 @@ def load_config():
     # Pass existing roles to 'users' tab
     if tab == "users":
         developers = FlikUser.query.filter(
-            FlikUser.role.in_(["Developer", "Manager"]), FlikUser.id != current_user.id
+            FlikUser.role.has(FlikRole.name.in_(["Developer", "Manager"])),
+            FlikUser.id != current_user.id
         ).all()
         clients = FlikUser.query.filter(
-            FlikUser.role == "Client", FlikUser.id != current_user.id
+            FlikUser.role.has(name="Client"),
+            FlikUser.id != current_user.id
         ).all()
 
     return render_template(

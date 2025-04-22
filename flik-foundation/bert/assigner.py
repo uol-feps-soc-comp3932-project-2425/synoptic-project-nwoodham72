@@ -7,7 +7,7 @@ from transformers import (
     pipeline,
 )
 from bert.workload import get_developer_workload
-from app.models import FlikUser
+from app.models import FlikUser, FlikRole
 from app.utils import get_columns_to_track
 
 """ assigner.py: Allocate developers to bug ticket based on pre-defined labels in fine_tuned_assigner/bug_themes.json. """
@@ -60,7 +60,7 @@ def tag_bug(ticket, threshold=0.7):
 def get_developers():
     developers = {}
     # Fetch Flik 'Developers'
-    flik_devs = FlikUser.query.filter_by(role="Developer").all()
+    flik_devs = FlikUser.query.filter(FlikUser.role.has(FlikRole.name.in_(["Developer", "Manager"]))).all()
     for dev in flik_devs:
         developers[dev.email] = {s.name for s in dev.skills}
 

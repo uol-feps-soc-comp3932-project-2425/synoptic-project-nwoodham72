@@ -25,13 +25,13 @@
                         aria-controls="offcanvas{{ dev.id }}">
                         {{ dev.email }}
                         {% if dev.id == current_user.id %}<span>(you)</span>{% endif %}
-                        <span class="badge bg-secondary ms-2">{{ dev.role }}</span>
+                        <span class="badge bg-secondary ms-2">{{ dev.role.name }}</span>
                     </a>
                 {% else %}
                     <!-- Non editable for developers -->
                     <div class="list-group-item mb-1 text-muted">
                         {{ dev.email }}
-                        <span class="badge bg-secondary ms-2">{{ dev.role }}</span>
+                        <span class="badge bg-secondary ms-2">{{ dev.role.name }}</span>
                     </div>
                 {% endif %}
             

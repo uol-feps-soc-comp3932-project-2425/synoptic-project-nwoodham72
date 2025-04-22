@@ -79,7 +79,7 @@
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <span>
                             {{ dev.email }}
-                            <span class="badge bg-secondary">{{ dev.role }}</span>
+                            <span class="badge bg-secondary">{{ dev.role.name }}</span>
                         </span>
                         <form method="POST" action="{{ url_for('config.delete_user', user_id=dev.id) }}" class="ms-2">
                             <button class="btn btn-outline-danger btn-sm" onclick="return confirm('Delete this user?')" type="submit">Delete</button>

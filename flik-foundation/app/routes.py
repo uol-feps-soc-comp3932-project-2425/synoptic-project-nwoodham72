@@ -62,7 +62,7 @@ def list_config():
 @roles_required("Developer", "Manager")
 def teamsheet():
 
-    is_manager = current_user.role == "Manager"
+    is_manager = current_user.role.name == "Manager"
 
     # Update skills
     if request.method == "POST":
@@ -80,9 +80,9 @@ def teamsheet():
         if set(user.skills) != set(new_skills):
             user.skills = new_skills
             db.session.commit()
-            flash("Your skills were successfully updated!", "success")
+            flash("Skills were successfully updated!", "success")
         else:
-            flash("No changes made to your skills", "info")
+            flash("No changes made to skills", "info")
 
         return redirect(url_for("main.teamsheet"))
 
@@ -94,7 +94,7 @@ def teamsheet():
 
     # Order selected skills
     skills = Skill.query.order_by(Skill.name).all()
-    
+
     return render_template("teamsheet.html", developers=developers, skills=skills, is_manager=is_manager)
 
 
@@ -225,9 +225,16 @@ def raise_bug():
             RETRIEVAL_ACCESS_TOKEN,
         )
 
-        # Fetch assigne ID 
-        assigned_user = FlikUser.query.filter_by(email=assigned_email).first()
-        assignee_id = assigned_user.id if assigned_user else None
+        # No developer or email doesn't exist in DevOps
+        if not assigned_email:
+            assignee_id = None
+            assigned_email = None
+        else:
+            # Fetch assigne ID 
+            assigned_user = FlikUser.query.filter_by(email=assigned_email).first()
+            assignee_id = assigned_user.id if assigned_user else None
+
+        
 
         # Fetch related tickets
         related_match, related_tickets = find_similar_tickets(bug_details["description"], extracted_tags)
