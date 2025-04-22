@@ -214,12 +214,16 @@ def raise_bug():
             )
         
         # Extract labels and assign developer
-        assigned_to, extracted_tags = assign_developer(
+        assigned_email, extracted_tags = assign_developer(
             prep_classification_data,
             ORGANISATION,
             PROJECT_NAME,
             RETRIEVAL_ACCESS_TOKEN,
         )
+
+        # Fetch assigne ID 
+        assigned_user = FlikUser.query.filter_by(email=assigned_email).first()
+        assignee_id = assigned_user.id if assigned_user else None
 
         # Fetch related tickets
         related_match, related_tickets = find_similar_tickets(bug_details["description"], extracted_tags)
@@ -248,7 +252,7 @@ def raise_bug():
                 bug_details["title"],
                 description,
                 priority_level,
-                assigned_to,
+                assigned_email,
                 structured_tags,
             )
 
@@ -290,7 +294,7 @@ def raise_bug():
                 priority=priority_label,
                 role_id=bug_details["role"].id,
                 page_id=bug_details["page"].id,
-                assignee_id=assigned_to,  # or None if unassigned
+                assignee_id=assignee_id,  # or None if unassigned
                 author_id=current_user.id,
                 skill_ids=[Skill.query.filter_by(name=tag).first().id for tag in extracted_tags if Skill.query.filter_by(name=tag).first()] if extracted_tags else None
             )
