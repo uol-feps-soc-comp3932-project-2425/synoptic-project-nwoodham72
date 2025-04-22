@@ -14,7 +14,7 @@ from bert.prioritiser import predict_priority
 from bert.assigner import assign_developer
 from bert.assessor import assess_documentation
 from bert.ticket_officer import find_similar_tickets
-from .models import FlikUser, Skill, ApplicationRole, ApplicationPage, Bug, Configuration, db
+from .models import FlikUser, FlikRole, Skill, ApplicationRole, ApplicationPage, Bug, Configuration, db
 from .utils import roles_required, save_bug
 import logging
 
@@ -62,8 +62,7 @@ def list_config():
 @roles_required("Developer", "Manager")
 def teamsheet():
 
-    user_roles = [r.name for r in current_user.roles]
-    is_manager = "Manager" in user_roles
+    is_manager = current_user.role == "Manager"
 
     # Update skills
     if request.method == "POST":
@@ -88,9 +87,14 @@ def teamsheet():
         return redirect(url_for("main.teamsheet"))
 
     # Display developers
-    developers = FlikUser.query.filter(FlikUser.role.in_(["Developer", "Manager"])).all()
+    dev_role = FlikRole.query.filter_by(name="Developer").first()
+    mgr_role = FlikRole.query.filter_by(name="Manager").first()
+    developers = FlikUser.query.filter(FlikUser.role_id.in_([dev_role.id, mgr_role.id])).all()
     developers.sort(key=lambda d: d.id != current_user.id)  # Display current user first
+
+    # Order selected skills
     skills = Skill.query.order_by(Skill.name).all()
+    
     return render_template("teamsheet.html", developers=developers, skills=skills, is_manager=is_manager)
 
 

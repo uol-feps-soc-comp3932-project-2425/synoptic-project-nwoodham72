@@ -43,12 +43,10 @@ def register():
             return redirect(url_for("auth.register"))
 
         # Create user account
-        user = FlikUser(email=form.email.data, role=selected_role.name)
-        user.roles.append(selected_role)
+        user = FlikUser(email=form.email.data, role=selected_role)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
         return redirect(url_for("auth.login"))
-
 
     return render_template("register.html", form=form)

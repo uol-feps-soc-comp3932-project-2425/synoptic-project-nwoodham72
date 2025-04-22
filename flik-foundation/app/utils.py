@@ -57,18 +57,16 @@ def get_columns_to_track():
     return [col.strip() for col in config.columns_to_track.split(",") if col.strip()]
 
 # Restrict user roles to a route
-def roles_required(*role_names):
+def roles_required(*required_roles):
     def decorator(f):
         @wraps(f)
-        def wrapped(*args, **kwargs):
-            if not current_user.is_authenticated:
-                abort(403)
-            user_roles = {role.name for role in current_user.roles}
-            if not any(role in user_roles for role in role_names):
+        def decorated_function(*args, **kwargs):
+            if current_user.role.name not in required_roles:
                 abort(403)
             return f(*args, **kwargs)
-        return wrapped
+        return decorated_function
     return decorator
+
 
 # Run raise_bug without Flask for testing
 # def create_ticket_scheduled(bug):
