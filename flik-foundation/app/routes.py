@@ -14,8 +14,8 @@ from bert.prioritiser import predict_priority
 from bert.assigner import assign_developer
 from bert.assessor import assess_documentation
 from bert.ticket_officer import find_similar_tickets
-from .models import FlikUser, Skill, ApplicationRole, ApplicationPage, Bug, db
-from .utils import roles_required, save_bug, get_or_create_config
+from .models import FlikUser, Skill, ApplicationRole, ApplicationPage, Bug, Configuration, db
+from .utils import roles_required, save_bug
 import logging
 
 main = Blueprint("main", __name__)
@@ -46,7 +46,13 @@ def list_bugs():
         f"Skills: {', '.join([s.name for s in b.skills]) if b.skills else 'None'}"
         for b in bugs
     ])
-
+@main.route("/settings")
+def list_config():
+    config = Configuration.query.first()
+    if config:
+        return f"Columns to track: {config.columns_to_track}, Database retention period: {config.database_retention_period} days"
+    else:
+        return "No configuration found."
 
 """ Flik Configuration"""
 
