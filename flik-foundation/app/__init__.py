@@ -9,12 +9,20 @@ from flask_babel import Babel
 import os
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
+import sqlite3  
 
 @event.listens_for(Engine, "connect")
 def enforce_foreign_keys(dbapi_connection, connection_record):
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
+
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    if isinstance(dbapi_connection, sqlite3.Connection):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA foreign_keys=ON;")
+        cursor.close()
 
 load_dotenv()
 

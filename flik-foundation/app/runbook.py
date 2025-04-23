@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required
-from app.models import db, ApplicationRole, ApplicationPage, ApplicationRule
+from app.models import db, ApplicationRole, ApplicationPage, ApplicationRule, Bug
 from app.forms import ApplicationRuleForm
-from app.utils import roles_required
+from app.utils import roles_required, get_deleted_page, get_deleted_role
 
 runbook = Blueprint("runbook", __name__)
 
@@ -16,8 +16,8 @@ def forbidden(e):
 @roles_required("Developer", "Manager")
 def documentation():
     form = ApplicationRuleForm()
-    form.page.query = ApplicationPage.query.order_by(ApplicationPage.name)
-    form.roles.query = ApplicationRole.query.order_by(ApplicationRole.name)
+    form.page.query = ApplicationPage.query.filter(ApplicationPage.name != "flik-deleted-page").order_by(ApplicationPage.name)
+    form.roles.query = ApplicationRole.query.filter(ApplicationRole.name != "flik-deleted-role").order_by(ApplicationRole.name)
 
     # Get tab (default to 'roles')
     tab = request.args.get("tab", "roles") 
@@ -32,8 +32,8 @@ def documentation():
 
     return render_template(
         "documentation.html",
-        application_roles=ApplicationRole.query.order_by(ApplicationRole.name).all(),
-        application_pages=ApplicationPage.query.order_by(ApplicationPage.name).all(),
+        application_pages = ApplicationPage.query.filter(ApplicationPage.name != "flik-deleted-page").order_by(ApplicationPage.name).all(),
+        application_roles = ApplicationRole.query.filter(ApplicationRole.name != "flik-deleted-role").order_by(ApplicationRole.name).all(),
         application_rules=ApplicationRule.query.order_by(ApplicationRule.title).all(),
         form=form,
         tab=tab
@@ -77,6 +77,10 @@ def update_application_role(application_role_id):
 @roles_required("Developer", "Manager")
 def delete_application_role(application_role_id):
     role = ApplicationRole.query.get_or_404(application_role_id)
+    deleted_role = get_deleted_role()
+
+    Bug.query.filter_by(application_role=role.id).update({"application_role": deleted_role.id})
+
     db.session.delete(role)
     db.session.commit()
     flash(f"Role '{role.name}' deleted.", "success")
@@ -102,6 +106,7 @@ def add_application_page():
 def update_application_page(application_page_id):
     new_name = request.form.get("new_name")
 
+
     page = ApplicationPage.query.get_or_404(application_page_id)
 
     if new_name and new_name != page.name:
@@ -120,6 +125,10 @@ def update_application_page(application_page_id):
 @roles_required("Developer", "Manager")
 def delete_application_page(application_page_id):
     page = ApplicationPage.query.get_or_404(application_page_id)
+    deleted_page = get_deleted_page()
+
+    Bug.query.filter_by(application_page=page.id).update({"application_page": deleted_page.id})
+
     db.session.delete(page)
     db.session.commit()
     flash(f"Page '{page.name}' deleted.", "success")

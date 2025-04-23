@@ -113,8 +113,17 @@ class Bug(db.Model):
     description = db.Column(db.Text, nullable=False)
     priority = db.Column(db.String(20), nullable=False) 
 
-    application_role = db.Column(db.Integer, db.ForeignKey("application_role.id"), nullable=True)
-    application_page = db.Column(db.Integer, db.ForeignKey("application_page.id"), nullable=True)
+    application_role = db.Column(
+        db.Integer,
+        db.ForeignKey("application_role.id", ondelete="SET NULL"),
+        nullable=True
+    )
+
+    application_page = db.Column(
+        db.Integer,
+        db.ForeignKey("application_page.id", ondelete="SET NULL"),
+        nullable=True
+    )
 
     assignee = db.Column(db.Integer, db.ForeignKey("flik_user.id"), nullable=True)
     author = db.Column(db.Integer, db.ForeignKey("flik_user.id"), nullable=True)
