@@ -62,7 +62,7 @@ class RegisterForm(FlaskForm):
     )
     role = QuerySelectField(
         "Flik Role",
-        query_factory=lambda: FlikRole.query.order_by(FlikRole.name).all(),
+        query_factory=lambda: FlikRole.query.filter(FlikRole.name != "Deleted").order_by(FlikRole.name).all(),
         get_label="name",
         allow_blank=True,
     )

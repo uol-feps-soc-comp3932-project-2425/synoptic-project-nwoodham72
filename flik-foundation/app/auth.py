@@ -38,8 +38,8 @@ def register():
     if form.validate_on_submit():
         # Check selected role
         selected_role = form.role.data  
-        if not selected_role:
-            flash("Please select a role.", "danger")
+        if not selected_role or form.role.data.name == "Deleted":
+            flash("Please select a valid role.", "danger")
             return redirect(url_for("auth.register"))
 
         # Create user account
