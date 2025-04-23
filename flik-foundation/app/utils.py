@@ -16,10 +16,16 @@ from flask_login import login_required, current_user
 # from bert.prioritiser import predict_priority
 # from bert.assigner import assign_developer
 # from bert.assessor import assess_documentation
-from .models import Skill, Configuration, Bug, db
+from .models import FlikUser, Skill, Configuration, Bug, db
 import json
 
 """ utils.py: Helper functions and decorators """
+
+# Fetch deleted user accont 
+def get_deleted_account():
+    deleted_account = FlikUser.query.filter_by(email="deleteduser@flik.com").first()
+    return deleted_account
+
 
 # Save new bug to database for ticket_officer
 def save_bug(title, description, priority, role_id, page_id, assignee_id, author_id, skill_ids=None):

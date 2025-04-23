@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
-from app.models import FlikUser, FlikRole, db
-from app.utils import roles_required, get_or_create_config
+from app.models import FlikUser, FlikRole, Bug, db
+from app.utils import roles_required, get_or_create_config, get_deleted_account
 
 config = Blueprint("config", __name__)
 
@@ -130,10 +130,16 @@ def update_retention():
 @roles_required("Manager")
 def delete_user(user_id):
     user = FlikUser.query.get_or_404(user_id)
+    deleted_account = get_deleted_account()
     
     if user.id == current_user.id:
         flash("You cannot delete your own account.", "danger")
     else:
+        # Reassign all bugs where account is author or assignee
+        Bug.query.filter_by(author=user.id).update({Bug.author: deleted_account.id})
+        Bug.query.filter_by(assignee=user.id).update({Bug.assignee: deleted_account.id})
+
+        # Delete account
         db.session.delete(user)
         db.session.commit()
         flash(f"User '{user.email}' deleted.", "success")
