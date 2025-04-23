@@ -104,7 +104,7 @@ def select_developer_by_workload_and_skills(organisation, project, pat, assignme
             assignee_workload = get_developer_workload(
                 organisation, project, pat, dev, columns
             )
-        candidates.append((dev, assignee_workload, developer_general_skill_count))
+            candidates.append((dev, assignee_workload, developer_general_skill_count))
 
     if not candidates:
         return None

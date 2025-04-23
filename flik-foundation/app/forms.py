@@ -9,7 +9,7 @@ class RaiseBugForm(FlaskForm):
     title = StringField("Bug Title", validators=[DataRequired(), Length(max=150)], render_kw={"id": "title"})
     role = QuerySelectField(
         "Role",
-        query_factory=lambda: ApplicationRole.query.order_by(ApplicationRole.name).all(),
+        query_factory=lambda: ApplicationRole.query.filter(ApplicationRole.name != "flik-deleted-role").order_by(ApplicationRole.name).all(),
         allow_blank=True,
         blank_text="Select a role...",
         get_label="name",
@@ -19,7 +19,7 @@ class RaiseBugForm(FlaskForm):
 
     page = QuerySelectField(
         "Page",
-        query_factory=lambda: ApplicationPage.query.order_by(ApplicationPage.name).all(),
+        query_factory=lambda: ApplicationPage.query.filter(ApplicationPage.name != "flik-deleted-page").order_by(ApplicationPage.name).all(),
         allow_blank=True,
         blank_text="Select a page...",
         get_label="name",
