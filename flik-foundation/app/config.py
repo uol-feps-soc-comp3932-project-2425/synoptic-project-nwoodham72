@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from app.models import FlikUser, FlikRole, Bug, db
 from app.utils import roles_required, get_or_create_config, get_deleted_account
+from datetime import datetime, timedelta, timezone
 
 config = Blueprint("config", __name__)
 
@@ -20,6 +21,9 @@ def load_config():
     tab = request.args.get("tab", "columns")
     config = get_or_create_config()
     columns = config.columns_to_track.split(",") if config.columns_to_track else []
+
+    # Fetch current date for database retention period
+    cleardown_date = (datetime.now(timezone.utc) + timedelta(days=config.database_retention_period)).date()
 
     developers, clients = [], []
 
@@ -41,6 +45,7 @@ def load_config():
         developers=developers,
         clients=clients,
         retention=config.database_retention_period,
+        cleardown_date=cleardown_date
     )
 
 
@@ -124,6 +129,28 @@ def update_retention():
 
     return redirect(url_for("config.load_config", tab="database"))
 
+@config.route("/run-database-cleardown", methods=["POST"])
+@login_required
+@roles_required("Manager")
+def run_database_cleardown():
+    from datetime import datetime, timedelta
+    config = get_or_create_config()
+
+    current_date = datetime.now(timezone.utc).date()  # Today
+    cleardown_date = config.database_retention_period  # Days
+
+    # Use scheduled date logic from load_config()
+    date_set = current_date - timedelta(days=cleardown_date)
+
+    # If today >= original_set_date + retention_days => delete
+    if current_date >= date_set + timedelta(days=cleardown_date):
+        deleted = Bug.query.delete()
+        db.session.commit()
+        flash(f"Bug table cleared. Only new bugs will be used for duplicate detection and insights.", "success")
+    else:
+        flash("Scheduled deletion date has not yet arrived.", "warning")
+
+    return redirect(url_for("config.load_config", tab="database"))
 
 @config.route("/delete-user/<int:user_id>", methods=["POST"])
 @login_required

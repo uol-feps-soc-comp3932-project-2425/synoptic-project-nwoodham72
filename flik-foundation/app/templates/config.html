@@ -65,6 +65,14 @@
                     <button class="btn btn-success" type="submit">Update</button>
                 </div>
             </form>
+            <p class="text-muted">
+                All bugs will be deleted on <strong>{{ cleardown_date }}</strong>. After this date, all previously raised bugs will not be used for duplicate detection or insights.
+            </p>
+            <form method="POST" action="{{ url_for('config.run_database_cleardown') }}">
+                <button class="btn btn-outline-danger mt-2" onclick="return confirm('Remove all saved bug reports now?')">
+                    Remove Bugs Now
+                </button>
+            </form>                     
         </div>
         {% endif %}
 
