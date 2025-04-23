@@ -61,7 +61,7 @@
             <p class="text-muted">Define how long bug tickets are retained (in days). This helps ensure compliance with GDPR.</p>
             <form method="POST" action="{{ url_for('config.update_retention') }}" class="mb-4">
                 <div class="input-group">
-                    <input type="number" name="retention_days" class="form-control" placeholder="Days (e.g. 30)" value="{{ retention }}" required>
+                    <input type="number" name="retention_days" class="form-control" placeholder="Days (e.g. 30)" value="{{ retention }}" min="1" required>
                     <button class="btn btn-success" type="submit">Update</button>
                 </div>
             </form>

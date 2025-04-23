@@ -121,6 +121,8 @@ def update_retention():
     config = get_or_create_config()
     try:
         days = int(request.form.get("retention_days"))
+        if days <= 0:
+            raise ValueError("Retention period must be greater than 0 days.")
         config.database_retention_period = days
         db.session.commit()
         flash("Retention period updated.", "success")
