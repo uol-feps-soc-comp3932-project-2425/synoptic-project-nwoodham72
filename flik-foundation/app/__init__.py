@@ -7,6 +7,14 @@ from dotenv import load_dotenv
 from flask_admin import Admin
 from flask_babel import Babel
 import os
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
+
+@event.listens_for(Engine, "connect")
+def enforce_foreign_keys(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
 load_dotenv()
 

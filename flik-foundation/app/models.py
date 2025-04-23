@@ -6,8 +6,8 @@ from flask_login import UserMixin
 """ Association tables for many-to-many relationships """
 flik_user_skill = db.Table(
     "flik_user_skill",
-    db.Column("user_id", db.Integer, db.ForeignKey("flik_user.id")),
-    db.Column("skill_id", db.Integer, db.ForeignKey("skill.id")),
+    db.Column("user_id", db.Integer, db.ForeignKey("flik_user.id", name="fk_user_skill_user")),
+    db.Column("skill_id", db.Integer, db.ForeignKey("skill.id", name="fk_user_skill_skill")),
 )
 
 application_role_application_rule = db.Table(
@@ -18,10 +18,9 @@ application_role_application_rule = db.Table(
 
 bug_skills = db.Table(
     "bug_skills",
-    db.Column("bug_id", db.Integer, db.ForeignKey("bug.id")),
-    db.Column("skill_id", db.Integer, db.ForeignKey("skill.id")),
+    db.Column("bug_id", db.Integer, db.ForeignKey("bug.id", ondelete="CASCADE", name="fk_bug_skill_bug")),
+    db.Column("skill_id", db.Integer, db.ForeignKey("skill.id", ondelete="CASCADE", name="fk_bug_skill_skill")),
 )
-
 
 
 """ Models """
@@ -120,7 +119,13 @@ class Bug(db.Model):
     assignee = db.Column(db.Integer, db.ForeignKey("flik_user.id"), nullable=True)
     author = db.Column(db.Integer, db.ForeignKey("flik_user.id"), nullable=True)
 
-    skills = db.relationship("Skill", secondary=bug_skills, backref="bugs")
+    skills = db.relationship(
+        "Skill",
+        secondary=bug_skills,
+        backref=db.backref("bugs", lazy="dynamic"),
+        cascade="all, delete",
+        passive_deletes=True
+    )
 
     def __repr__(self):
         return f"<Bug {self.title}>"
