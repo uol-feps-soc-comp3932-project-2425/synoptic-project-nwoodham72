@@ -17,6 +17,7 @@ from bert.ticket_officer import find_similar_tickets
 from .models import FlikUser, FlikRole, Skill, ApplicationRole, ApplicationPage, Bug, Configuration, db
 from .utils import roles_required, save_bug
 import logging
+import html
 
 main = Blueprint("main", __name__)
 
@@ -199,6 +200,10 @@ def raise_bug():
         summary = extractive_summary(prep_summary_data)
         priority_label, priority_level = predict_priority(prep_classification_data, use_thresholding = True)
 
+        # Sanitise input
+        escaped_description = html.escape(bug_details['description'])
+        escaped_expected = html.escape(bug_details['expected'])
+
         # Send ticket to Azure in html format
         description = (
             f"<p><b>Summary</b>: As a <i>{bug_details['role'].name}</i> on the <i>{bug_details['page'].name}</i> page, {summary}<br>"
@@ -206,15 +211,17 @@ def raise_bug():
             f"<b>Author</b>: <i>{author}</i></p>"
             f"<hr>"
             f"<p><b>Background</b><br> <ul><li><i>User Role</i>: {bug_details['role'].name}</li><li><i>Application Page</i>: {bug_details['page'].name}</li></ul><p>"
-            f"<p><b>Problem Description</b><br>{bug_details['description']}</p>"
-            f"<p><b>Expected Behaviour</b><br>{bug_details['expected']}</p>"
+            f"<p><b>Problem Description</b><br>{escaped_description}</p>"
+            f"<p><b>Expected Behaviour</b><br>{escaped_expected}</p>"
         )
 
         # Append additional comments from documentation match modal
         if additional_comments:
+            # Sanitise 
+            escaped_additional_comments = html.escape(additional_comments)
             description += (
                 f"<hr><p><b>Documentation Misalignment</b><br>"
-                f"This bug flagged a documentation issue. The author overrided the flag and provided additional comments:<br><i>{additional_comments}</i></p>"
+                f"This bug flagged a documentation issue. The author overrided the flag and provided additional comments:<br><i>{escaped_additional_comments}</i></p>"
             )
         
         # Extract labels and assign developer
@@ -260,7 +267,7 @@ def raise_bug():
         try:
             work_item = create_work_item(
                 PROJECT_NAME,
-                bug_details["title"],
+                bug_details["title"],  # Doesn't require escaped_title since AD renders this as plain text
                 description,
                 priority_level,
                 assigned_email,
