@@ -248,7 +248,7 @@ def raise_bug():
         if related_match and related_tickets:
             description += "<hr><p><b>Potential Duplicate Tickets</b><br>The following tickets may provide some insight to resolving this issue.<ul>"
             for ticket in related_tickets:
-                description += f"<li>#{ticket['id']} – {ticket['title']}</li>"
+                description += f"<li>#{ticket['id']}: {ticket['title']}</li>"
             description += "</ul></p>"
 
         # Add 'Flik' tag to tags 
@@ -265,9 +265,23 @@ def raise_bug():
         structured_tags = ", ".join(tags)
 
         try:
+            # Commit bug to database 
+            bug = save_bug(
+                title=bug_details["title"],
+                description=bug_details["description"],
+                priority=priority_label,
+                role_id=bug_details["role"].id,
+                page_id=bug_details["page"].id,
+                assignee_id=assignee_id,  # or None if unassigned
+                author_id=current_user.id,
+                skill_ids=[Skill.query.filter_by(name=tag).first().id for tag in extracted_tags if Skill.query.filter_by(name=tag).first()] if extracted_tags else None
+            )
+
+            logging.info(f"Bug {bug.id} saved to database.") 
+
             work_item = create_work_item(
                 PROJECT_NAME,
-                bug_details["title"],  # Doesn't require escaped_title since AD renders this as plain text
+                f"#{bug.id}: {bug_details['title']}",  # Doesn't require escaped_title since AD renders this as plain text
                 description,
                 priority_level,
                 assigned_email,
@@ -304,20 +318,6 @@ def raise_bug():
                     """,
                     "success",
                 )
-
-            # Commit bug to database 
-            bug = save_bug(
-                title=bug_details["title"],
-                description=bug_details["description"],
-                priority=priority_label,
-                role_id=bug_details["role"].id,
-                page_id=bug_details["page"].id,
-                assignee_id=assignee_id,  # or None if unassigned
-                author_id=current_user.id,
-                skill_ids=[Skill.query.filter_by(name=tag).first().id for tag in extracted_tags if Skill.query.filter_by(name=tag).first()] if extracted_tags else None
-            )
-
-            logging.info(f"Bug {bug.id} saved to database.") 
 
             # Clear form after successful send
             form.title.data = ""
