@@ -1,0 +1,44 @@
+[
+  {
+    "description": "After changing my profile picture and updating my name, my phone number and address fields were completely cleared. This data appears lost even after refreshing. I expected only the fields I changed to be updated, and all other data to be preserved.",
+    "reference": "After changing my profile picture and updating my name, my phone number and address fields were completely cleared. This data appears lost even after refreshing. I expected only the fields I changed to be updated, and all other data to be preserved."
+  },
+  {
+    "description": "I uploaded several PDF documents through the upload modal on the dashboard. After the confirmation message, I expected them to appear in the document list, but nothing was updated visually. I tried refreshing, logging out and back in, but the documents are still missing. I expected the documents I uploaded to appear in my dashboard immediately.",
+    "reference": "I uploaded several PDF documents through the upload modal on the dashboard. After the confirmation message, I expected them to appear in the document list, but nothing was updated visually."
+  },
+  {
+    "description": "After entering payment details and clicking Confirm, the page hangs for a long time and then shows a timeout error. The transaction does not complete and we cannot proceed. I expected the payment to process quickly and show a confirmation message.",
+    "reference": "After entering payment details and clicking Confirm, the page hangs for a long time and then shows a timeout error. The transaction does not complete and we cannot proceed. I expected the payment to process quickly and show a confirmation message."
+  },
+  {
+    "description": "I used the 'Add Team Member' button to invite a colleague to the workspace. After entering their email and clicking save, the modal closes, but the team member doesn't appear in the list. There is no success message or error shown. I expected the new team member to be listed and receive an invite email.",
+    "reference": "After entering their email and clicking save, the modal closes, but the team member doesn't appear in the list. There is no success message or error shown. I expected the new team member to be listed and receive an invite email."
+  },
+  {
+    "description": "When I fill out the registration form and click Submit, the entire site freezes for a few seconds and then shows a server error. I am unable to complete the registration process. I expected the registration form to submit without crashing the system.",
+    "reference": "When I fill out the registration form and click Submit, the entire site freezes for a few seconds and then shows a server error. I am unable to complete the registration process. I expected the registration form to submit without crashing the system."
+  },
+  {
+    "description": "I updated my phone number and notification preferences and clicked Save, but when I reload the page, my changes are gone and the old values are still there. I expected my changes to be saved and shown correctly after refreshing.",
+    "reference": "I updated my phone number and notification preferences and clicked Save, but when I reload the page, my changes are gone and the old values are still there. I expected my changes to be saved and shown correctly after refreshing."
+  },
+  {
+    "description": "On my very first login, the welcome page shows a loading spinner that never goes away. I have to refresh the page manually to see my profile content. I expected the content to load automatically after the initial login.",
+    "reference": "On my very first login, the welcome page shows a loading spinner that never goes away. I expected the content to load automatically after the initial login."
+  },
+  {
+    "description": "I added five new users by email and submitted the invitation form. None of them received any email invites even after 15 minutes, and there were no errors shown. I expected each added user to receive an invitation email promptly.",
+    "reference": "I added five new users by email and submitted the invitation form. None of them received any email invites even after 15 minutes, and there were no errors shown. I expected each added user to receive an invitation email promptly."
+  },
+  {
+    "description": "None of my team members are able to upload files — we receive a persistent 'Upload failed' error with no explanation. This is blocking us from submitting essential project documents. I expected uploaded files to be accepted and listed normally.",
+    "reference": "None of my team members are able to upload files — we receive a persistent 'Upload failed' error with no explanation. I expected uploaded files to be accepted and listed normally."
+  },
+  {
+    "description": "I have just reset my account password using the 'Reset Password' link on the Login Page. I received the email and changed my password, where I was then told I could log back into the application. I have tried to login with my new password, and I am shown a 403 error message saying I do not have permission to login with my new valid credentials. I expected to be able to log into my account with the new password.",
+    "reference": "I have just reset my account password using the 'Reset Password' link on the Login Page. I have tried to login with my new password, and I am shown a 403 error message saying I do not have permission to login with my new valid credentials."
+  }
+]
+
+

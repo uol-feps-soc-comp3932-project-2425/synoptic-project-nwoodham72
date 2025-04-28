@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Flik - Configuration{% endblock %}
+
+{% block content %}
+    <h2 class="mb-4">Flik Configuration</h2>
+    <p class="text-muted">Configure your team and client settings.</p>
+
+    <div class="card">
+        <div class="card-header">
+            <!-- Tab headers -->
+            <ul class="nav nav-tabs card-header-tabs" id="configTabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.args.get('tab', 'columns') == 'columns' %}active{% endif %}" href="{{ url_for('config.load_config', tab='columns') }}">Azure DevOps Columns</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.args.get('tab') == 'database' %}active{% endif %}" href="{{ url_for('config.load_config', tab='database') }}">Database Retention Policy</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.args.get('tab') == 'users' %}active{% endif %}" href="{{ url_for('config.load_config', tab='users') }}">Accounts</a>
+                </li>
+            </ul>
+        </div>
+
+        {% if tab == 'columns' %}
+        <div class="card-body">
+            <!-- Columns Tab -->
+            <h4>Azure DevOps Column Tracking</h4>
+            <p class="text-muted">These columns will be checked for developer workload during ticket assignment.</p>
+            <form method="POST" action="{{ url_for('config.add_column') }}" class="mb-4">
+                <div class="input-group">
+                    <input type="text" name="column_name" class="form-control" placeholder="Enter new column to track" required>
+                    <button class="btn btn-success" type="submit">Add Column</button>
+                </div>
+            </form>
+            {% if columns %}
+                <ul class="list-group">
+                    {% for col in columns %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <form class="d-flex flex-grow-1" method="POST" action="{{ url_for('config.update_column', column_name=col) }}">
+                                <input type="hidden" name="tab" value="columns">
+                                <input name="new_name" class="form-control me-2" value="{{ col }}" required>
+                                <button class="btn btn-outline-primary" type="submit">Update</button>
+                            </form>
+                            <form method="POST" action="{{ url_for('config.delete_column', column_name=col) }}" class="ms-2">
+                                <input type="hidden" name="tab" value="columns">
+                                <button class="btn btn-outline-danger" onclick="return confirm('Delete this column?')" type="submit">Delete</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted"><i>No columns defined.</i></p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if tab == 'database' %}
+        <div class="card-body">
+            <!-- Database Retention Tab -->
+            <h4>Database Retention Policy</h4>
+            <p class="text-muted">Define how long bug tickets are retained (in days). This helps ensure compliance with GDPR.</p>
+            <form method="POST" action="{{ url_for('config.update_retention') }}" class="mb-4">
+                <div class="input-group">
+                    <input type="number" name="retention_days" class="form-control" placeholder="Days (e.g. 30)" value="{{ retention }}" min="1" required>
+                    <button class="btn btn-success" type="submit">Update</button>
+                </div>
+            </form>
+            <p class="text-muted">
+                All bugs will be deleted on <strong>{{ cleardown_date }}</strong>. After this date, all previously raised bugs will not be used for duplicate detection or insights.
+            </p>
+            <form method="POST" action="{{ url_for('config.run_database_cleardown') }}">
+                <button class="btn btn-outline-danger mt-2" onclick="return confirm('Remove all saved bug reports now?')">
+                    Remove Bugs Now
+                </button>
+            </form>                     
+        </div>
+        {% endif %}
+
+        {% if tab == 'users' %}
+            <div class="card-body">
+                <h4>Your Team</h4>
+                <p class="text-muted">View and delete developer members of your team and the client organisation.</p>
+            
+                <h5>Developers and Managers</h5>
+                <ul class="list-group mb-4">
+                    {% for dev in developers %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>
+                            {{ dev.email }}
+                            <span class="badge bg-secondary">{{ dev.role.name }}</span>
+                        </span>
+                        <form method="POST" action="{{ url_for('config.delete_user', user_id=dev.id) }}" class="ms-2">
+                            <button class="btn btn-outline-danger btn-sm" onclick="return confirm('Delete this user?')" type="submit">Delete</button>
+                        </form>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item text-muted"><i>No developer or manager accounts found.</i></li>
+                    {% endfor %}
+                </ul>
+            
+                <h5>Clients</h5>
+                <ul class="list-group">
+                    {% for client in clients %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>{{ client.email }}</span>
+                        <form method="POST" action="{{ url_for('config.delete_user', user_id=client.id) }}" class="ms-2">
+                            <button class="btn btn-outline-danger btn-sm" onclick="return confirm('Delete this user?')" type="submit">Delete</button>
+                        </form>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item text-muted"><i>No client accounts found.</i></li>
+                    {% endfor %}
+                </ul>
+            </div>        
+        {% endif %}
+    </div>
+{% endblock %}
