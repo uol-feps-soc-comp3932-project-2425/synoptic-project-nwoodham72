@@ -33,27 +33,27 @@ def index():
 
 
 # List user accounts for testing
-@main.route("/users")
-def list_users():
-    users = FlikUser.query.all()
-    return "<br>".join([f"{u.id} | {u.email} | {u.role}" for u in users])
-@main.route("/bugs")
-def list_bugs():
-    bugs = Bug.query.all()
-    return "<br>".join([
-        f"{b.id} | {b.title} | {b.description} | {b.priority} | "
-        f"Assignee: {b.assignee} | Author: {b.author} | "
-        f"Page: {b.application_page} | Role: {b.application_role} | "
-        f"Skills: {', '.join([s.name for s in b.skills]) if b.skills else 'None'}"
-        for b in bugs
-    ])
-@main.route("/settings")
-def list_config():
-    config = Configuration.query.first()
-    if config:
-        return f"Columns to track: {config.columns_to_track}, Database retention period: {config.database_retention_period} days"
-    else:
-        return "No configuration found."
+# @main.route("/users")
+# def list_users():
+#     users = FlikUser.query.all()
+#     return "<br>".join([f"{u.id} | {u.email} | {u.role}" for u in users])
+# @main.route("/bugs")
+# def list_bugs():
+#     bugs = Bug.query.all()
+#     return "<br>".join([
+#         f"{b.id} | {b.title} | {b.description} | {b.priority} | "
+#         f"Assignee: {b.assignee} | Author: {b.author} | "
+#         f"Page: {b.application_page} | Role: {b.application_role} | "
+#         f"Skills: {', '.join([s.name for s in b.skills]) if b.skills else 'None'}"
+#         for b in bugs
+#     ])
+# @main.route("/settings")
+# def list_config():
+#     config = Configuration.query.first()
+#     if config:
+#         return f"Columns to track: {config.columns_to_track}, Database retention period: {config.database_retention_period} days"
+#     else:
+#         return "No configuration found."
 
 """ Flik Configuration"""
 
