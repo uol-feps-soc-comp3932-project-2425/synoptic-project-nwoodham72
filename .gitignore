@@ -1,0 +1,9 @@
+flik/
+__pycache__/
+instance/
+.env
+.flaskenv
+*.pyc
+flik-foundation/bert/models/fine_tuned_prioritiser
+flik-foundation/bert/models/fine_tuned_assigner
+flik-foundation/bert/trainers
