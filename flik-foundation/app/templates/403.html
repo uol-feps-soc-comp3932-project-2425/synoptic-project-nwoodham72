@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Access Denied{% endblock %}
+{% block content %}
+<div class="text-center mt-5">
+    <h1 class="display-4">🚫 You do not have access to this page.</h1>
+    <p class="lead">It seems like you've gotten lost! If you're looking to raise a bug, you can click on the button below.</p>
+
+    {% if current_user.is_authenticated %}
+        <a href="{{ url_for('main.raise_bug') }}" class="btn btn-primary mt-3">Report a Bug</a>
+    {% else %}
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary mt-3">Go to Login</a>
+    {% endif %}
+</div>
+{% endblock %}

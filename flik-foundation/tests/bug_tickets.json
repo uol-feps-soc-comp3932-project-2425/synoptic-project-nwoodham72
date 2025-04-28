@@ -1,0 +1,142 @@
+[
+    {
+        "title": "Cannot login after resetting password",
+        "role": "Client",
+        "page": "Login",
+        "description": "I have just reset my account password using the 'Reset Password' link on the Login Page. I received the email and changed my password, where I was then told I could log back into the application. I have tried to login with my new password, and I am shown a 403 error message saying I do not have permission to login with my new valid credentials.",
+        "expected": "I expected to be able to log into my account with the new password."
+    },
+    {
+        "title": "Uploaded documents not appearing in dashboard",
+        "role": "Client",
+        "page": "Dashboard",
+        "description": "I uploaded several PDF documents through the upload modal on the dashboard. After the confirmation message, I expected them to appear in the document list, but nothing was updated visually. I tried refreshing, logging out and back in, but the documents are still missing.",
+        "expected": "I expected the documents I uploaded to appear in my dashboard immediately."
+    },
+    {
+        "title": "Search bar shows no results for valid queries",
+        "role": "Client",
+        "page": "Resource Library",
+        "description": "When I search for documents using exact titles I know exist, the search results always return empty. This happens even if I enter the full title with correct spelling and case. It used to work previously.",
+        "expected": "I expected to see relevant results when searching with valid keywords or titles."
+    },
+    {
+        "title": "Team members not saving when added",
+        "role": "Client",
+        "page": "Team Settings",
+        "description": "I used the 'Add Team Member' button to invite a colleague to the workspace. After entering their email and clicking save, the modal closes, but the team member doesn't appear in the list. There is no success message or error shown.",
+        "expected": "I expected the new team member to be listed and receive an invite email."
+    },
+    {
+        "title": "Date selector stuck on today's date",
+        "role": "Client",
+        "page": "Booking Calendar",
+        "description": "The date picker on the calendar page is stuck on today's date. When I try to select future or past dates, the calendar doesn't change or update the view.",
+        "expected": "I expected to be able to select a different date from the calendar."
+    },
+    {
+        "title": "File preview not loading for large PDFs",
+        "role": "Client",
+        "page": "Document Viewer",
+        "description": "When I open a large PDF file (around 10MB) using the document viewer, the preview spinner loads indefinitely. Smaller files work fine, but larger ones never show any pages.",
+        "expected": "I expected the preview to load for larger PDF files just like it does for small ones."
+    },
+    {
+        "title": "Comment not submitted after pressing Enter",
+        "role": "Client",
+        "page": "Feedback Section",
+        "description": "I typed a comment and pressed Enter, but nothing happened. The comment remained in the textbox and was not saved or shown on the page.",
+        "expected": "I expected the comment to be submitted and appear below the item when pressing Enter."
+    },
+    {
+        "title": "Table filters not being remembered after navigation",
+        "role": "Client",
+        "page": "Reports Table",
+        "description": "When I filter the reports by status and then navigate away to another page, returning to the table resets all filters and I have to reapply them manually.",
+        "expected": "I expected my previously selected filters to persist after navigating away and back."
+    },
+    {
+        "title": "Wrong tooltip showing for help icon",
+        "role": "Client",
+        "page": "Profile Settings",
+        "description": "Hovering over the help icon next to 'Preferred Contact Method' shows a tooltip about document expiry, which seems completely unrelated to the contact settings.",
+        "expected": "I expected the tooltip to explain the contact method options, not something irrelevant."
+    },
+    {
+        "title": "Loading spinner never disappears on first login",
+        "role": "Client",
+        "page": "Welcome Page",
+        "description": "On my very first login, the welcome page shows a loading spinner that never goes away. I have to refresh the page manually to see my profile content.",
+        "expected": "I expected the content to load automatically after the initial login."
+    },
+    {
+        "title": "Settings not saved after editing user details",
+        "role": "Client",
+        "page": "Account Settings",
+        "description": "I updated my phone number and notification preferences and clicked Save, but when I reload the page, my changes are gone and the old values are still there.",
+        "expected": "I expected my changes to be saved and shown correctly after refreshing."
+    },
+    {
+        "title": "Invitation emails not being sent",
+        "role": "Client",
+        "page": "User Management",
+        "description": "I added five new users by email and submitted the invitation form. None of them received any email invites even after 15 minutes, and there were no errors shown.",
+        "expected": "I expected each added user to receive an invitation email promptly."
+    },
+    {
+        "title": "Search suggestions dropdown overlaps form fields",
+        "role": "Client",
+        "page": "Search Page",
+        "description": "When I start typing in the search box, the suggestion list that appears blocks other form fields below it, making it hard to fill out the rest of the form.",
+        "expected": "I expected the dropdown to appear properly without overlapping the form layout."
+    },
+    {
+        "title": "Back button redirects to login screen",
+        "role": "Client",
+        "page": "Project Overview",
+        "description": "Clicking the browser back button from the project overview page unexpectedly sends me back to the login page, even though I'm still logged in.",
+        "expected": "I expected the back button to return me to the last page I visited, not log me out."
+    },
+    {
+        "title": "Data export not including all columns",
+        "role": "Client",
+        "page": "Reports",
+        "description": "When exporting data to CSV, several columns shown in the table view are missing from the downloaded file. This includes 'Last Updated' and 'Status'.",
+        "expected": "I expected the CSV export to include all visible columns from the table view."
+    },
+    {
+        "title": "System crash when submitting registration form",
+        "role": "Client",
+        "page": "Student Registration",
+        "description": "When I fill out the registration form and click Submit, the entire site freezes for a few seconds and then shows a server error. I am unable to complete the registration process.",
+        "expected": "I expected the registration form to submit without crashing the system."
+    },
+    {
+        "title": "Application down after logging in",
+        "role": "Client",
+        "page": "Dashboard",
+        "description": "Immediately after logging in, I am taken to a blank page with an error saying the server is unavailable. This happens every time, and I cannot access any functionality.",
+        "expected": "I expected the dashboard to load successfully after logging in."
+    },
+    {
+        "title": "Critical file upload failing for all users",
+        "role": "Client",
+        "page": "Upload Center",
+        "description": "None of my team members are able to upload files \u2014 we receive a persistent 'Upload failed' error with no explanation. This is blocking us from submitting essential project documents.",
+        "expected": "I expected uploaded files to be accepted and listed normally."
+    },
+    {
+        "title": "Timeout error on payment confirmation page",
+        "role": "Client",
+        "page": "Payments",
+        "description": "After entering payment details and clicking Confirm, the page hangs for a long time and then shows a timeout error. The transaction does not complete and we cannot proceed.",
+        "expected": "I expected the payment to process quickly and show a confirmation message."
+    },
+    {
+        "title": "User data lost after profile update",
+        "role": "Client",
+        "page": "Profile Settings",
+        "description": "After changing my profile picture and updating my name, my phone number and address fields were completely cleared. This data appears lost even after refreshing.",
+        "expected": "I expected only the fields I changed to be updated, and all other data to be preserved."
+    }
+]

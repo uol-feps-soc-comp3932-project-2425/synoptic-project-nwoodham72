@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% block title %}Report Bug - Flik{% endblock %}
+
+{% block content %}
+  <style>
+    .is-warning {
+      border-color: #ffc107 !important;
+      box-shadow: 0 0 0 0.25rem rgba(255,193,7,0.25);
+    }
+    #title:focus, #role:focus, #page:focus, #description:focus, #expected:focus, #additionalComments:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    .required-asterisk {
+      color: red;
+      margin-left: 4px;
+    }
+</style>
+
+  </style>
+
+  <h1 class="mb-3">Report a Bug</h1>
+  <p class="text-muted">Please provide details about the issue you encountered.</p> 
+
+  {% if matching_docs %}
+    <div class="alert alert-warning shadow-sm">
+      <h5 class="alert-heading">We're not quite sure that's a bug...</h5>
+      <h6>Your bug report was similar to the provider's documentation. Please check your role and the permitted actions below to see if it resolves your issue.</h6>
+      <hr>
+      {% for doc in matching_docs %}
+        <p>
+          <strong><em>{{ doc.title }}</em></strong><br>
+          Permitted Roles: <i>{{ doc.permitted_roles | join(', ') }}</i><br>
+          Action: <i>{{ doc.action }}</i>
+        </p>
+        <hr>
+      {% endfor %}
+      <p>
+        <a href="#" data-bs-toggle="modal" data-bs-target="#documentation-modal">Still feel as if your bug hasn't been resolved?</a>
+      </p>
+    </div>
+  {% endif %}
+
+  <!-- Display form -->
+  <div class="card shadow-sm border-0 rounded-3">
+    <div class="card-body">
+      <form method="POST" novalidate>
+        {{ form.hidden_tag() }}
+        <!-- Multi-Step Form Container -->
+        <div class="form-steps-container">
+          <div class="form-steps-inner" id="formStepsInner">
+
+            <!-- Step 1 -->
+            <div class="form-step" id="step1">
+              <!-- Title with floating label and validation feedback -->
+              <div class="form-floating mb-3">
+                {{ form.title(class="form-control", placeholder="Bug Title") }}
+                <label for="title">Please give your bug a title<span class="required-asterisk">*</span></label>
+                <div id="description-helpblock" class="form-text">
+                  Your title must be at least 10 characters.
+                </div>
+                <div class="invalid-feedback">
+                  Title must be at least 10 characters.
+                </div>
+              </div>
+
+              <div class="row">
+                <!-- Role select with floating label -->
+                <div class="col-md-6 mb-3">
+                  <div class="form-floating mb-3">
+                    {{ form.role(class="form-select", id="role") }}
+                    <label for="role">Role<span class="required-asterisk">*</span></label>
+                
+                    {% if form.role.errors %}
+                      <div class="invalid-feedback d-block">{{ form.role.errors[0] }}</div>
+                    {% endif %}
+                
+                    <div class="invalid-feedback">
+                      Please select a valid role.
+                    </div>
+                  </div>
+                </div>
+              
+                <!-- Page select with floating label -->
+                <div class="col-md-6 mb-3">
+                  <div class="form-floating mb-3">
+                    {{ form.page(class="form-select", id="page") }}
+                    <label for="page">Page<span class="required-asterisk">*</span></label>
+                
+                    {% if form.page.errors %}
+                      <div class="invalid-feedback d-block">{{ form.page.errors[0] }}</div>
+                    {% endif %}
+                
+                    <div class="invalid-feedback">
+                      Please select a valid page.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Description -->
+              <div class="form-floating mb-3">
+                {{ form.description(class="form-control", placeholder="Describe the issue, what happened?", aria_describedby="description-helpblock", style="height: 130px;") }}
+                <label for="description">Describe the issue, what happened?<span class="required-asterisk">*</span></label>
+                <div id="description-helpblock" class="form-text">
+                  Please describe what you are trying to do. What happens, and what error messages do you encounter? (Minimum 100 characters). See an example bug ticket <a href="#" data-bs-toggle="modal" data-bs-target="#step1-modal">here</a>.
+                </div>
+                <div class="invalid-feedback">
+                  Description must be at least 100 characters.
+                </div>
+              </div>
+
+              <div class="d-grid">
+                <button id="next-btn" type="button" class="btn btn-primary" onclick="validateStep1()">
+                  Next
+                </button>
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="form-step" id="step2">
+              <div class="form-floating mb-3">
+                {{ form.expected(class="form-control", placeholder="What should have happened instead?", aria_describedby="expected-helpblock", style="height: 100px;") }}
+                <label for="expected">What did you expect to happen instead?<span class="required-asterisk">*</span></label>
+                <div id="expected-helpblock" class="form-text">
+                  Please describe what you expected to happen or see, or what you thought your role should have been able to do. (Minimum 30 characters). See an example bug ticket <a href="#" data-bs-toggle="modal" data-bs-target="#step2-modal">here</a>.
+                </div>
+                <div class="invalid-feedback">
+                  Expected behaviour must be at least 30 characters.
+                </div>
+              </div>
+              <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary" onclick="prevStep()">Previous</button>
+                <button type="submit" id="submit-btn" class="btn btn-primary" disabled>Submit Bug</button>
+              </div>
+            </div>
+
+          </div> <!-- /.form-steps-inner -->
+        </div> <!-- /.form-steps-container -->
+      </form>
+    </div>
+  </div>
+  
+  <!-- Modals -->
+  <!-- Modal for Matching Documentation -->
+  <div class="modal fade" id="documentation-modal" tabindex="-1" aria-labelledby="docModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="docModalLabel">Still think it's a bug?</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>If the documentation didn't resolve your issue, you can still submit this bug report.</p>
+          <div class="form-floating mb-3">
+            <textarea class="form-control" id="additionalComments" name="additional_comments" placeholder="Explain why the documentation doesn't help..." aria_describedby="additional_comments-helpblock" style="height: 120px;"></textarea>
+            <label for="additionalComments">Additional Comments<span class="required-asterisk">*</span></label>
+            <div id="additional_comments-helpblock" class="form-text">
+              Minimum 30 characters.
+            </div>
+            <div class="invalid-feedback">
+              Your additional comments must be at least 30 characters.
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" id="override-btn" class="btn btn-primary" onclick="submitWithExtra()" disabled>Submit Bug</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>  
+
+  <!-- Modal for Example Bug Ticket -->
+  <div class="modal fade" id="step1-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Example</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Bug Title: </strong>Cannot log into platform after updating password</p>
+          <p><strong>Description: </strong>I am trying to log in with valid credentials into the Student portal. When I click login it says that my account is not recognised, and it seems that your reset password link is not working either. I also get a 403 error and the system crashes.</p>
+          <p><strong>What should have happened instead? (next page): </strong>I should have been able to log in and access my dashboard.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2 modal -->
+  <div class="modal fade" id="step2-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Example</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Bug Title (previous page): </strong>Cannot log into platform after updating password</p>
+          <p><strong>Description (previous page): </strong>I have reset the password on my account. When I try to log into the platform with valid credentials, the page freezes and I get a 403 error saying I do not have permission to log in.</p>
+          <p><strong>What should have happened instead?: </strong>I should have been able to log in and access my dashboard.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Include the external JS file -->
+  <script src="{{ url_for('static', filename='js/raise_bug_form.js') }}"></script>
+{% endblock %}

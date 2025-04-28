@@ -1,0 +1,219 @@
+from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask_login import login_required
+from app.models import db, ApplicationRole, ApplicationPage, ApplicationRule, Bug
+from app.forms import ApplicationRuleForm
+from app.utils import roles_required, get_deleted_page, get_deleted_role
+
+runbook = Blueprint("runbook", __name__)
+
+# Redirect 403 (permission) errors to 403.html
+@runbook.errorhandler(403)
+def forbidden(e):
+    return render_template("403.html"), 403
+
+@runbook.route("/documentation", methods=["GET", "POST"])
+@login_required
+@roles_required("Developer", "Manager")
+def documentation():
+    form = ApplicationRuleForm()
+    form.page.query = ApplicationPage.query.filter(ApplicationPage.name != "flik-deleted-page").order_by(ApplicationPage.name)
+    form.roles.query = ApplicationRole.query.filter(ApplicationRole.name != "flik-deleted-role").order_by(ApplicationRole.name)
+
+    # Get tab (default to 'roles')
+    tab = request.args.get("tab", "roles") 
+
+    application_rules = ApplicationRule.query.order_by(ApplicationRule.title).all()
+
+    # Filter invalid rules
+    incomplete_rules = [rule for rule in application_rules if not rule.page or not rule.roles]
+
+    if incomplete_rules:
+        flash("Some rules are missing an application page or permitted roles. These rules will not be checked against incoming tickets.", "danger")
+
+    return render_template(
+        "documentation.html",
+        application_pages = ApplicationPage.query.filter(ApplicationPage.name != "flik-deleted-page").order_by(ApplicationPage.name).all(),
+        application_roles = ApplicationRole.query.filter(ApplicationRole.name != "flik-deleted-role").order_by(ApplicationRole.name).all(),
+        application_rules=ApplicationRule.query.order_by(ApplicationRule.title).all(),
+        form=form,
+        tab=tab
+    )
+
+# ----- Role routes -----
+@runbook.route("/add-role", methods=["POST"])
+@login_required
+@roles_required("Developer", "Manager")
+def add_application_role():
+    role_name = request.form.get("role_name")
+    if role_name:
+        exists = ApplicationRole.query.filter_by(name=role_name).first()
+        if not exists:
+            db.session.add(ApplicationRole(name=role_name))
+            db.session.commit()
+            flash(f"Role '{role_name}' added.", "success")
+    return redirect(url_for("runbook.documentation", tab="roles"))
+
+@runbook.route("/update-application-role/<int:application_role_id>", methods=["POST"])
+@login_required
+@roles_required("Developer", "Manager")
+def update_application_role(application_role_id):
+    new_name = request.form.get("new_name")
+
+    role = ApplicationRole.query.get_or_404(application_role_id)
+
+    if new_name and new_name != role.name:
+        exists = ApplicationRole.query.filter_by(name=new_name).first()
+        if exists:
+            flash("A role with that name already exists.", "warning")
+        else:
+            role.name = new_name
+            db.session.commit()
+            flash("Role updated successfully.", "success")
+
+    return redirect(url_for("runbook.documentation", tab="roles"))
+
+@runbook.route("/delete-application-role/<int:application_role_id>", methods=["POST"])
+@login_required
+@roles_required("Developer", "Manager")
+def delete_application_role(application_role_id):
+    role = ApplicationRole.query.get_or_404(application_role_id)
+    deleted_role = get_deleted_role()
+
+    Bug.query.filter_by(application_role=role.id).update({"application_role": deleted_role.id})
+
+    db.session.delete(role)
+    db.session.commit()
+    flash(f"Role '{role.name}' deleted.", "success")
+    return redirect(url_for("runbook.documentation", tab="roles"))
+
+# ----- Page routes -----
+@runbook.route("/add-page", methods=["POST"])
+@login_required
+@roles_required("Developer", "Manager")
+def add_application_page():
+    page_name = request.form.get("page_name")
+    if page_name:
+        exists = ApplicationPage.query.filter_by(name=page_name).first()
+        if not exists:
+            db.session.add(ApplicationPage(name=page_name))
+            db.session.commit()
+            flash(f"Page '{page_name}' added.", "success")
+    return redirect(url_for("runbook.documentation", tab="pages"))
+
+@runbook.route("/update-application-page/<int:application_page_id>", methods=["POST"])
+@login_required
+@roles_required("Developer", "Manager")
+def update_application_page(application_page_id):
+    new_name = request.form.get("new_name")
+
+
+    page = ApplicationPage.query.get_or_404(application_page_id)
+
+    if new_name and new_name != page.name:
+        exists = ApplicationPage.query.filter_by(name=new_name).first()
+        if exists:
+            flash("A page with that name already exists.", "warning")
+        else:
+            page.name = new_name
+            db.session.commit()
+            flash("Page updated successfully.", "success")
+
+    return redirect(url_for("runbook.documentation", tab="pages"))
+
+@runbook.route("/delete-application-page/<int:application_page_id>", methods=["POST"])
+@login_required
+@roles_required("Developer", "Manager")
+def delete_application_page(application_page_id):
+    page = ApplicationPage.query.get_or_404(application_page_id)
+    deleted_page = get_deleted_page()
+
+    Bug.query.filter_by(application_page=page.id).update({"application_page": deleted_page.id})
+
+    db.session.delete(page)
+    db.session.commit()
+    flash(f"Page '{page.name}' deleted.", "success")
+    return redirect(url_for("runbook.documentation", tab="pages"))
+
+# ----- Rule routes -----
+@runbook.route("/add-rule", methods=["POST"])
+@login_required
+@roles_required("Developer", "Manager")
+def add_application_rule():
+    form = ApplicationRuleForm()
+    
+    if form.validate_on_submit():
+        # Check for at least one rule
+        if not form.roles.data or len(form.roles.data) == 0:
+            flash("At least one application role must be selected.", "danger")
+            return redirect(url_for("runbook.documentation", tab="rules"))
+
+        existing = ApplicationRule.query.filter_by(title=form.title.data).first()
+
+        if not existing:
+            # Create new rule
+            new_rule = ApplicationRule(
+                title=form.title.data,
+                description=form.description.data,
+                page=form.page.data
+            )
+            
+            # Add selected roles to the rule
+            for role in form.roles.data:
+                new_rule.roles.append(role)
+                
+            db.session.add(new_rule)
+            db.session.commit()
+            flash(f"Rule '{form.title.data}' added to runbook.", "success")
+        else:
+            flash(f"Cannot add '{form.title.data}', the rule already exists.", "warning")
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f"{getattr(form, field).label.text}: {error}", "danger")
+                
+    return redirect(url_for("runbook.documentation", tab="rules"))
+
+@runbook.route("/update-application-rule/<int:application_rule_id>", methods=["POST"])
+@login_required
+@roles_required("Developer", "Manager")
+def update_application_rule(application_rule_id):
+    rule = ApplicationRule.query.get_or_404(application_rule_id)
+
+    new_title = request.form.get("title").strip()
+    new_description = request.form.get("description").strip()
+    new_page_id = request.form.get("page")
+    new_roles = request.form.getlist("roles")
+
+    # Validate updated inputs 
+    if not new_title or len(new_title) < 10:
+        flash("Title must be at least 10 characters.", "danger")
+    elif not new_description or len(new_description) < 50:
+        flash("Description must be at least 50 characters.", "danger")
+    elif not new_page_id:
+        flash("A page is required.", "danger")
+    elif not new_roles:
+        flash("At least one role is required.", "danger")
+    else:
+        existing = ApplicationRule.query.filter(ApplicationRule.title == new_title, ApplicationRule.id != rule.id).first()
+        if existing:
+            flash("A rule with that title already exists.", "danger")
+        else:
+            # Update rule
+            rule.title = new_title
+            rule.description = new_description
+            rule.page = ApplicationPage.query.get(new_page_id)
+            rule.roles = ApplicationRole.query.filter(ApplicationRole.id.in_(new_roles)).all()
+            db.session.commit()
+            flash("Rule updated successfully.", "success")
+
+    return redirect(url_for("runbook.documentation", tab="rules"))
+
+@runbook.route("/delete-application-rule/<int:application_rule_id>", methods=["POST"])
+@login_required
+@roles_required("Developer", "Manager")
+def delete_application_rule(application_rule_id):
+    rule = ApplicationRule.query.get_or_404(application_rule_id)
+    db.session.delete(rule)
+    db.session.commit()
+    flash(f"Rule '{rule.title}' deleted.", "success")
+    return redirect(url_for("runbook.documentation", tab="rules"))
