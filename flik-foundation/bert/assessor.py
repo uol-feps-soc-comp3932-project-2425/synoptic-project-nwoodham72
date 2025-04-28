@@ -7,7 +7,7 @@ from app.models import ApplicationRule
 model = SentenceTransformer('distilbert-base-nli-stsb-mean-tokens')
 
 # Compare bug description with ApplicationRule entries
-def assess_documentation(action_comparison, ticket_application_role):
+def assess_documentation(action_comparison, bug_description_role):
     # Convert text to vector embedding
     bug_embedding = model.encode(action_comparison, convert_to_tensor=True)
 
@@ -24,20 +24,21 @@ def assess_documentation(action_comparison, ticket_application_role):
     ]
 
     # Compare rules with bug description
-    for d in documentation:
-        rule_embedding = model.encode(documentation.description, convert_to_tensor=True)  # Convert rule to vector embedding
+    for rule in documentation:
+        rule_embedding = model.encode(rule.description, convert_to_tensor=True)  # Convert rule to vector embedding
         cosine_sim = util.pytorch_cos_sim(rule_embedding, bug_embedding).item()  # Assess similarity between bug description and rule
     
         if cosine_sim >= threshold:
-            permitted_roles = [d.name for d in documentation.roles]
-            # Check if user's role is not permitted to perform the described action 
-            if ticket_application_role.lower() not in [d.lower() for d in permitted_roles]:
+            logging.info(f"assessor: Match with [{rule.title}] ({cosine_sim:.4f})")
+            permitted_roles = [r.name for r in rule.roles]
+            # Check if user's role is not permitted to perform the described action / bug description
+            if bug_description_role.lower() not in [r.lower() for r in permitted_roles]:
                 logging.info("User role not in permitted roles - Return documentation to user.")
                 
                 matches.append({
-                    "title": documentation.title,
+                    "title": rule.title,
                     "permitted_roles": permitted_roles,
-                    "action": documentation.description
+                    "action": rule.description
                 })
             # Role is permitted
             else:
@@ -62,8 +63,3 @@ def assess_documentation(action_comparison, ticket_application_role):
 #     bug_description_role = "client"
     
 #     assess_documentation(bug_description, bug_description_role)
-
-
-                
-
-
