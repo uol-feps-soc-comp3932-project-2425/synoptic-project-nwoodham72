@@ -1,11 +1,15 @@
 
 """ confg.py: AD Integration Config """
 
-# Board and work item configuration
-ORGANISATION_URL = "https://dev.azure.com/comp3932-flik"
-ORGANISATION = "comp3932-flik"
-# PERSONAL_ACCESS_TOKEN can read/write/manage work items
-PERSONAL_ACCESS_TOKEN = "5zds2C05WsUhsK8csXiV4ntu1tkoNa9S6MQEuP9n1mshO79VpDmJJQQJ99BCACAAAAAAAAAAAAASAZDO2ADY"
-RETRIEVAL_ACCESS_TOKEN = "TmwkawvRYbz2weeboOdSmkHFAPh0oo8clMu9ZsNiGuSyLA6pN62mJQQJ99BCACAAAAAAAAAAAAASAZDO2xCF"
-PROJECT_NAME = "Flik"
-ISSUE_TYPE = "Issue"
+# config.py
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+ORGANISATION_URL = os.getenv("ORGANISATION_URL")
+ORGANISATION = ORGANISATION_URL.split("/")[-1]
+PERSONAL_ACCESS_TOKEN = os.getenv("PERSONAL_ACCESS_TOKEN")
+RETRIEVAL_ACCESS_TOKEN = os.getenv("RETRIEVAL_ACCESS_TOKEN")
+PROJECT_NAME = os.getenv("PROJECT_NAME")
+ISSUE_TYPE = os.getenv("ISSUE_TYPE")
