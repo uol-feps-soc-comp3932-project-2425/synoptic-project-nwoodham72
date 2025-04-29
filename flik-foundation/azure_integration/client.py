@@ -1,9 +1,3 @@
-""" PROTOTYPE: Azure DevOps Integration: Client """
-
-"""
-    Handles connection to Azure DevOps and creates the work items via the Azure DevOps API. 
-"""
-
 import logging
 import azure_integration.logger_config
 from azure.devops.connection import Connection
@@ -11,6 +5,8 @@ from msrest.authentication import BasicAuthentication
 from azure_integration.config import ORGANISATION_URL, PERSONAL_ACCESS_TOKEN, ISSUE_TYPE
 from azure_integration.data_preparation import prepare_work_item_data
 from azure_integration.validation import validate_input
+
+""" client.py: Handles connection to Azure DevOps and creates the work items via the Azure DevOps API. """
 
 log = logging.getLogger(__name__)
 

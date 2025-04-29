@@ -1,14 +1,11 @@
-""" PROTOTYPE: Azure DevOps Integration: Main """
-
-"""
-    Runs the project to create user-defined tickets in Azure DevOps.
-"""
 import logging
 import azure_integration.logger_config
 from azure_integration.config import PROJECT_NAME
 from azure_integration.client import create_work_item
 
 log = logging.getLogger(__name__)
+
+""" main.py: Run the AD component independently. """
 
 
 # Create work item

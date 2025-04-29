@@ -1,8 +1,5 @@
-""" PROTOTYPE: Azure DevOps Integration: Configuration """
 
-"""
-    Azure DevOps configuration.
-"""
+""" confg.py: AD Integration Config """
 
 # Board and work item configuration
 ORGANISATION_URL = "https://dev.azure.com/comp3932-flik"

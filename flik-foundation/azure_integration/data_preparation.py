@@ -1,11 +1,7 @@
-""" PROTOTYPE: Azure DevOps Integration: Configuration: Data Preparation """
-
-"""
-    Prepares a JSON patch document to be sent to Azre DevOps.
-"""
-
 from azure.devops.v7_1.work_item_tracking.models import JsonPatchOperation
 
+
+""" data_preparation.py: Prepares a JSON patch document to be sent to Azure DevOps. """
 
 # Format work item data
 def prepare_work_item_data(title, description, priority, assignee, tags):

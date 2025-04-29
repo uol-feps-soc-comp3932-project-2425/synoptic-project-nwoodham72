@@ -1,14 +1,10 @@
-""" PROTOTYPE: Azure DevOps Integration: Validation """
-
-"""
-    Validates the input from the BERT model, performing presence checks and ensuring data is in the correct format.
-"""
-
 import re
 import logging
 import azure_integration.logger_config
 
 log = logging.getLogger(__name__)
+
+""" validation.py: Validates the input from DistilBERT model, performing presence checks and ensuring data is in the correct format. """
 
 # Regular expressions for validation
 # SCRIPT_PATTERN = re.compile(r"<\s*script\b", re.IGNORECASE)  # Check for <script> tags

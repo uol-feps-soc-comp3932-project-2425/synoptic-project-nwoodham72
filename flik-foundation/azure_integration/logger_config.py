@@ -1,10 +1,6 @@
-""" PROTOTYPE: Azure DevOps Integration: Logger """
-
-"""
-    Import logging to track actions in the project.
-"""
-
 import logging 
+
+""" logger_conifg.py: Import logging to track actions in the project. """
 
 logging.basicConfig(
     level=logging.INFO, 
