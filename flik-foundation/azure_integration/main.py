@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 # Create work item
 def main():
     project_name = PROJECT_NAME
-    title = 'MVP-1 Integration Test'
+    title = "MVP-1 Integration Test"
     description = "Testing Description without any malicious content."
     priority = 4  # Priority range: 1 (highest) to 4.
     assignee = "nathanmw72@gmail.com"  # Must be valid in Azure DevOps.
