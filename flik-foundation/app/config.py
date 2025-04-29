@@ -148,7 +148,7 @@ def run_database_cleardown():
     if current_date >= date_set + timedelta(days=cleardown_date):
         deleted = Bug.query.delete()
         db.session.commit()
-        flash(f"Bug table cleared. Only new bugs will be used for duplicate detection and insights.", "success")
+        flash(f"Bug tickets cleared. Only new bugs will be used for duplicate detection and insights.", "success")
     else:
         flash("Scheduled deletion date has not yet arrived.", "warning")
 
